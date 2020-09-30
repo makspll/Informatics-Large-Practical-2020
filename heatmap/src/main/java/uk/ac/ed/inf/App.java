@@ -2,16 +2,12 @@ package uk.ac.ed.inf;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import static java.util.Map.entry;    
 
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
