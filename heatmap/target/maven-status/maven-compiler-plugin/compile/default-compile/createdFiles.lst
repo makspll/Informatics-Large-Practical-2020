@@ -1,3 +1,5 @@
-uk/ac/ed/inf/Main$ErrorCode.class
-uk/ac/ed/inf/Main$1.class
-uk/ac/ed/inf/Main.class
+uk/ac/ed/inf/App$ErrorCode.class
+uk/ac/ed/inf/ColourMap.class
+uk/ac/ed/inf/App$1.class
+uk/ac/ed/inf/UniformIntToHexStringColourMap.class
+uk/ac/ed/inf/App.class

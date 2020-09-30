@@ -2,12 +2,12 @@ ifeq ($(IN),)
 IN := predictions.txt
 endif
 
-DEPENDENCY_SUFFIX="-jar-with-dependencies"
+JARNAME="heatmap-0.0.1-SNAPSHOT.jar"
 MVNROOT="./heatmap"
 build:
 	mvn clean package -Dmaven.test.skip=true -f $(MVNROOT)/pom.xml ;
 run: build
-	java -ea -jar `find $(MVNROOT)/target/ -name "*$(DEPENDENCY_SUFFIX).jar"` $(IN)
+	java -ea -jar $(MVNROOT)/target/$(JARNAME) $(IN)
 test:
 	mvn test -f $(MVNROOT)/pom.xml ;
 watch:

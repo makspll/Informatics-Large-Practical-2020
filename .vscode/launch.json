@@ -6,17 +6,17 @@
     "configurations": [
         {
             "type": "java",
-            "name": "Debug (Launch) - Current File",
+            "name": "CodeLens (Launch) - App",
             "request": "launch",
-            "mainClass": "${file}"
+            "mainClass": "uk.ac.ed.inf.App",
+            "projectName": "heatmap"
         },
         {
             "type": "java",
-            "name": "Debug (Launch)-Main<heatmap>",
+            "name": "Debug (Launch) - Current File",
             "request": "launch",
             "args": "${command:SpecifyProgramArgs}",
-            "mainClass": "uk.ac.ed.inf.Main",
-            "projectName": "heatmap"
+            "mainClass": "${file}"
         }
     ]
 }
