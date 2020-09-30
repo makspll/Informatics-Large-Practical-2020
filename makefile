@@ -1,5 +1,5 @@
 ifeq ($(IN),)
-IN := predictions.txt
+IN:=predictions.txt
 endif
 
 JARNAME="heatmap-0.0.1-SNAPSHOT.jar"

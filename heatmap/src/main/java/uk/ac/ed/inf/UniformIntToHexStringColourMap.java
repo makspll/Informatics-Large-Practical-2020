@@ -18,7 +18,7 @@ public class UniformIntToHexStringColourMap implements ColourMap<Integer,String>
      */
     @Override
     public String getColour(Integer value) throws IndexOutOfBoundsException{
-        if (value < max && value >= min)   
+        if (value >= max || value < min)   
             throw new IndexOutOfBoundsException("Value was outside of bounds");
 
         // we simply have to find which colour bucket the value falls into,

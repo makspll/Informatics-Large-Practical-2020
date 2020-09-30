@@ -164,10 +164,15 @@ public class App{
             // split each line on the comma char and expect 10 strings to be present
             var stringReadings = currLine.split(",");
 
-            // make sure the file is of the right dimensions so far
+            // make sure there aren't too many readings in the line and that
+            // there aren't too many lines in the file
             if(stringReadings.length != SENSORS_COUNT_X 
                 || y + 1 > SENSORS_COUNT_Y){
-                throw new IllegalArgumentException("File contents are invalid");
+                throw new IllegalArgumentException("The shape of the input file is invalid, should be: " 
+                                                    + SENSORS_COUNT_Y 
+                                                    + " lines of " 
+                                                    + SENSORS_COUNT_X + " comma separated numbers between 0-255 inclusive \n" 
+                                                    + " no line should end in a comma.");
             }
 
             // extract integer values from the line we just read
@@ -177,7 +182,12 @@ public class App{
                 var cleanedReadingString = stringReadings[x].trim();
 
                 // parse the integer
-                var integer = Integer.parseInt(cleanedReadingString);
+                int integer = 0;
+                try{
+                    integer = Integer.parseInt(cleanedReadingString);
+                } catch(NumberFormatException e){
+                    throw new IllegalArgumentException("The value: \""+ cleanedReadingString + "\" is not a valid number.");
+                }
 
                 if(integer > 255 || integer < 0)
                     throw new IllegalArgumentException("Value is out of range (0,255)");
@@ -189,7 +199,13 @@ public class App{
             y++;
             currLine = fileReader.readLine();
         } while(currLine != null);
-            
+        
+        // check we don't have too few lines of readings
+        // y will be equal to the number of lines read here
+        if(y != SENSORS_COUNT_Y){
+            throw new IllegalArgumentException("There are too many lines, expected: "+ SENSORS_COUNT_Y);
+        }
+
         // release resources
         fileReader.close();
 
