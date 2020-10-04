@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -178,7 +179,7 @@ public class App{
                 var cleanedReadingString = stringReadings[x].trim();
 
                 // parse the integer
-                int integer = 0;
+                var integer = 0;
                 try{
                     integer = Integer.parseInt(cleanedReadingString);
                 } catch(NumberFormatException e){
@@ -197,9 +198,9 @@ public class App{
         } while(currLine != null);
         
         // check we don't have too few lines of readings
-        // y will be equal to the number of lines read here
-        if(y != SENSORS_COUNT_Y){
-            throw new IllegalArgumentException("There are too many lines, expected: "+ SENSORS_COUNT_Y);
+        // y will be equal to the number of lines read in the end
+        if(y < SENSORS_COUNT_Y){
+            throw new IllegalArgumentException("There are too few lines, expected: "+ SENSORS_COUNT_Y);
         }
 
         // release resources
@@ -246,7 +247,8 @@ public class App{
 
     /**
      * Converts the given sensor readings as a 2D geo-json grid of rectangles coloured according to sensor emissions.
-     * @param sensorReadings a 2D integer grid of sensor readings between 0 and 255 of dimensions: SENSOR_COUNT_Y by SENSOR_COUNT_X 
+     * @param sensorReadings a 2D integer grid of sensor readings between 0 and 255 of dimensions: 
+     * SENSOR_COUNT_Y by SENSOR_COUNT_X 
      * @return A list of geo-json features representing a rectangular grid with each rectnagle 
      * coloured according to its emission value.
      */
@@ -257,26 +259,27 @@ public class App{
          // generate the geo-json data for each rectangle
 
          // find the dimensions in degrees of each rectangle
-         var rectDimensions = Point.fromLngLat(CONFINEMENT_WIDTH / SENSORS_COUNT_X, CONFINEMENT_HEIGHT / SENSORS_COUNT_Y);
-            
+         var rectangleDimensions = Point.fromLngLat(CONFINEMENT_WIDTH / SENSORS_COUNT_X, CONFINEMENT_HEIGHT / SENSORS_COUNT_Y);
+        
          // at the same time we also flatten the 2d data into a one-dimensional array of features
-         var polygons = new Feature[SENSORS_COUNT_Y * SENSORS_COUNT_X];
+         var polygons = new ArrayList<Feature>(SENSORS_COUNT_X * SENSORS_COUNT_Y);
 
          for (var y = 0; y < SENSORS_COUNT_Y; y++) {
 
              for (var x = 0; x < SENSORS_COUNT_X; x++) {
 
-                // calculate the long/latitudinal offset of the top-left corner of the rectangle
-                var xOffset = rectDimensions.longitude() * x;
-                var yOffset = rectDimensions.latitude() * -y; // south is in the negative direction
+                // Calculate the rectangle's top left corner coordinate
+                var xOffset = rectangleDimensions.longitude() * x;
+                var yOffset = rectangleDimensions.latitude() * -y; // more negative latitude = more southern coordinate
 
                 var rectTopLeft = Point.fromLngLat(CONFINEMENT_TOP_LFT.longitude() + xOffset,
                                                     CONFINEMENT_TOP_LFT.latitude() + yOffset);
 
-                //  Construct the polygon geometry and its corresponding feature
+                // Construct the polygon geometry and its corresponding feature from the 
+                // x and y offsets
                 var polygonGeometry = constructRectangle(rectTopLeft, 
-                                rectDimensions.longitude(),
-                                rectDimensions.latitude());
+                                rectangleDimensions.longitude(),
+                                rectangleDimensions.latitude());
 
                 var polygonFeature = Feature.fromGeometry(polygonGeometry);
 
@@ -287,8 +290,8 @@ public class App{
                 polygonFeature.addNumberProperty("fill-opacity", 0.75f);
         
 
-                // Store the polygon at idx = x + ROW_WIDTH * y
-                polygons[x + SENSORS_COUNT_X  * y] = polygonFeature;
+                // Store the polygon
+                polygons.add(polygonFeature);
              }
          }
 

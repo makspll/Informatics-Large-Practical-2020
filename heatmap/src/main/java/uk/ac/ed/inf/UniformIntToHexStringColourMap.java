@@ -14,7 +14,7 @@ public class UniformIntToHexStringColourMap implements ColourMap<Integer,String>
     }
 
     /**
-     * Maps given integer value (between min and max, inclusive and exclusve respectively) to a hex string
+     * Maps given integer value (between min and max, inclusive and exclusive respectively) to a hex string
      */
     @Override
     public String getColour(Integer value) throws IndexOutOfBoundsException{
@@ -25,7 +25,7 @@ public class UniformIntToHexStringColourMap implements ColourMap<Integer,String>
         // each bucket contains (max - min) / no.of. colours
 
         int bucketSize = (max - min) / rgbStringValues.length;
-        int bucketNumber = (int)Math.floor(value / bucketSize);
+        int bucketNumber = value / bucketSize;
 
         return rgbStringValues[bucketNumber];
     
