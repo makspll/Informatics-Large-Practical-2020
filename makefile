@@ -2,19 +2,39 @@ ifeq ($(IN),)
 IN:=predictions.txt
 endif
 
-JARNAME="heatmap-0.0.1-SNAPSHOT.jar"
-MVNROOT=./heatmap
-MVNFLAGS=--f "${MVNROOT}/pom.xml"
-build:
-	mvn clean package -Dmaven.test.skip=true ${MVNFLAGS} ;
-run: build
-	java -ea -jar $(MVNROOT)/target/$(JARNAME) $(IN)
-test:
-	mvn test ${MVNFLAGS};
-watch:
-	while inotifywait -e close_write test.txt; do make run IN="$(IN)" ; done
-submit:
-	mvn clean ${MVNFLAGS};
+JARNAME_CW1="heatmap-0.0.1-SNAPSHOT.jar"
+MVNROOT_CW1=./heatmap
+MVNFLAGS_CW1=--f "${MVNROOT_CW1}/pom.xml"
+buildcw1:
+	mvn clean package -Dmaven.test.skip=true ${MVNFLAGS_CW1} ;
+runcw1: buildcw1
+	java -ea -jar $(MVNROOT_CW1)/target/$(JARNAME_CW1) $(IN)
+testcw1:
+	mvn test ${MVNFLAGS_CW1};
+watchcw1:
+	while inotifywait -e close_write test.txt; do make runcw1 IN="$(IN)" ; done
+submitcw1:
+	mvn clean ${MVNFLAGS_CW1};
 	rm -rf bin;
 	mkdir bin;
-	zip -r bin/heatmap.zip ${MVNROOT};
+	zip -r bin/heatmap.zip ${MVNROOT_CW1};
+
+JARNAME_CW2="flightpath-0.0.1-SNAPSHOT.jar"
+MVNROOT_CW2=./flightpath
+MVNFLAGS_CW2=--f "${MVNROOT_CW2}/pom.xml"
+buildcw2:
+	mvn clean package -Dmaven.test.skip=true ${MVNFLAGS_CW2} ;
+runcw2: buildcw2
+	java -ea -jar $(MVNROOT_CW2)/target/$(JARNAME_CW2)
+testcw2:
+	mvn test ${MVNFLAGS_CW2};
+watchcw2:
+	while inotifywait -e close_write test.txt; do make runcw2" ; done
+submitcw2:
+	mvn clean ${MVNFLAGS_CW2};
+	rm -rf bin;
+	mkdir bin;
+	zip -r bin/heatmap.zip ${MVNROOT_CW2};
+
+
+
