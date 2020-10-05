@@ -19,8 +19,8 @@ submitcw1:
 	mkdir bin;
 	zip -r bin/heatmap.zip ${MVNROOT_CW1};
 
-JARNAME_CW2="flightpath-0.0.1-SNAPSHOT.jar"
-MVNROOT_CW2=./flightpath
+JARNAME_CW2="aqmaps-0.0.1-SNAPSHOT.jar"
+MVNROOT_CW2=./aqmaps
 MVNFLAGS_CW2=--f "${MVNROOT_CW2}/pom.xml"
 buildcw2:
 	mvn clean package -Dmaven.test.skip=true ${MVNFLAGS_CW2} ;
