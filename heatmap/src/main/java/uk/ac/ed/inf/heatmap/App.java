@@ -24,6 +24,8 @@ public class App{
     
     /**
      * Main method. Will always gracefully terminate the program on encountering known errors.
+     * Expects the input file to contain SENSOR_COUNT_Y lines of SENSOR_COUNT_X comma separated integers
+     * between 0 and 255 inclusive followed by a newline.
      * @param args the program's arguments, expects only the input file name as the first argument
      */
     public static void main(String[] args) {
@@ -164,7 +166,7 @@ public class App{
                 throw new IllegalArgumentException("File is empty");
                 
             
-            // split each line on the comma char and expect 10 strings to be present
+            // split each line on the comma char and expect SENSOR_COUNT_X strings to be present
             String[] stringReadings = currLine.split(",");
 
             // make sure there aren't too many readings in the line and that
@@ -174,8 +176,8 @@ public class App{
                 throw new IllegalArgumentException("The shape of the input file is invalid, should be: " 
                                                     + SENSORS_COUNT_Y 
                                                     + " lines of " 
-                                                    + SENSORS_COUNT_X + " comma separated numbers between 0-255 inclusive \n" 
-                                                    + " no line should end in a comma.");
+                                                    + SENSORS_COUNT_X + " comma separated numbers between 0-255 inclusive. \n" 
+                                                    + " each line should end with a newline.");
             }
 
             // extract integer values from the line we just read
@@ -334,7 +336,11 @@ public class App{
         switch (errorCode){
             case BAD_PROGRAM_USAGE:
                 System.out.println("Usage: java "+App.class.getSimpleName()+" predictions.txt");
-                System.out.println("where  predictions.txt is a file containing 10 lines of text with 10 comma separated values");
+                System.out.println("where  predictions.txt is a file containing " 
+                                    + SENSORS_COUNT_Y 
+                                    + " lines of text with "
+                                    + SENSORS_COUNT_X
+                                    + " comma separated values");
                 break;
             case INPUT_FILE_MISSING:
                 System.err.println("Error: Input file cannot be found.");
