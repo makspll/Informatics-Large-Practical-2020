@@ -1,4 +1,4 @@
-package uk.ac.ed.inf;
+package uk.ac.ed.inf.heatmap;
 
 /**
  * An interface guaranteeing a value to colour mapping functionality for different types
