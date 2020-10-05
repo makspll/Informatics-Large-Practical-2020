@@ -1,4 +1,4 @@
-package uk.ac.ed.inf;
+package uk.ac.ed.inf.heatmap;
 
 public class UniformIntToHexStringColourMap implements ColourMap<Integer,String> {
 

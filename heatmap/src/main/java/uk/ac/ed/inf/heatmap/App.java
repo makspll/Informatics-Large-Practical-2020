@@ -1,4 +1,4 @@
-package uk.ac.ed.inf;
+package uk.ac.ed.inf.heatmap;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -16,11 +16,16 @@ import com.mapbox.geojson.Point;
 import com.mapbox.geojson.Polygon;
 
 /**
- * The program which generates a geo-json file which visualises the sensor data given according to emission values. 
+ * Generates a geo-json file which visualises the sensor data given,
+ * according to emission values of each sensor. 
  */
 public class App{
 
     
+    /**
+     * Main method. Will always gracefully terminate the program on encountering known errors.
+     * @param args the program's arguments, expects only the input file name as the first argument
+     */
     public static void main(String[] args) {
 
         // if program is launched incorrectly, we have to terminate the program
@@ -43,7 +48,8 @@ public class App{
 
 
             // generate polygon features and put them into a feature collection
-            var featureCollection = generateFeaturesGrid(sensorReadings);
+            // we don't use var on function calls for readability
+            FeatureCollection featureCollection = generateFeaturesGrid(sensorReadings);
 
             // write the geo-json to a file
             FileWriter fileWriter;
@@ -159,7 +165,7 @@ public class App{
                 
             
             // split each line on the comma char and expect 10 strings to be present
-            var stringReadings = currLine.split(",");
+            String[] stringReadings = currLine.split(",");
 
             // make sure there aren't too many readings in the line and that
             // there aren't too many lines in the file
@@ -176,7 +182,7 @@ public class App{
             for (var x = 0; x < SENSORS_COUNT_X; x++) {
 
                 // remove whitespace at start and end
-                var cleanedReadingString = stringReadings[x].trim();
+                String cleanedReadingString = stringReadings[x].trim();
 
                 // parse the integer
                 var integer = 0;
@@ -223,13 +229,13 @@ public class App{
 
         // we build each point of the rectangle, keeping in mind that longitude grows east-ward and 
         // latitude grows north-ward
-        var topRight = Point.fromLngLat(topLeft.longitude() + width,
+        Point topRight = Point.fromLngLat(topLeft.longitude() + width,
                 topLeft.latitude());
 
-        var botRight = Point.fromLngLat(topLeft.longitude() + width,
+        Point botRight = Point.fromLngLat(topLeft.longitude() + width,
                 topLeft.latitude() - height);                
 
-        var botLeft = Point.fromLngLat(topLeft.longitude() ,
+        Point botLeft = Point.fromLngLat(topLeft.longitude() ,
                 topLeft.latitude() - height);
                    
         // polygons are defined as lists of lists, to support complex shapes
@@ -259,9 +265,10 @@ public class App{
          // generate the geo-json data for each rectangle
 
          // find the dimensions in degrees of each rectangle
-         var rectangleDimensions = Point.fromLngLat(CONFINEMENT_WIDTH / SENSORS_COUNT_X, CONFINEMENT_HEIGHT / SENSORS_COUNT_Y);
+         Point rectangleDimensions = Point.fromLngLat(CONFINEMENT_WIDTH / SENSORS_COUNT_X, CONFINEMENT_HEIGHT / SENSORS_COUNT_Y);
         
-         // at the same time we also flatten the 2d data into a one-dimensional array of features
+         // we store the polygons in an arraylist to improve readability
+         // should more performance be required, a flattened 1d Array would be appropriate here
          var polygons = new ArrayList<Feature>(SENSORS_COUNT_X * SENSORS_COUNT_Y);
 
          for (var y = 0; y < SENSORS_COUNT_Y; y++) {
@@ -270,21 +277,21 @@ public class App{
 
                 // Calculate the rectangle's top left corner coordinate
                 var xOffset = rectangleDimensions.longitude() * x;
-                var yOffset = rectangleDimensions.latitude() * -y; // more negative latitude = more southern coordinate
+                var yOffset = rectangleDimensions.latitude() * -y; // more negative latitude = more southern point
 
-                var rectTopLeft = Point.fromLngLat(CONFINEMENT_TOP_LFT.longitude() + xOffset,
+                Point rectTopLeft = Point.fromLngLat(CONFINEMENT_TOP_LFT.longitude() + xOffset,
                                                     CONFINEMENT_TOP_LFT.latitude() + yOffset);
 
                 // Construct the polygon geometry and its corresponding feature from the 
                 // x and y offsets
-                var polygonGeometry = constructRectangle(rectTopLeft, 
+                Polygon polygonGeometry = constructRectangle(rectTopLeft, 
                                 rectangleDimensions.longitude(),
                                 rectangleDimensions.latitude());
 
-                var polygonFeature = Feature.fromGeometry(polygonGeometry);
+                Feature polygonFeature = Feature.fromGeometry(polygonGeometry);
 
                 // set the properties of the rectangle
-                var rgbString = colourMap.getColour(sensorReadings[y][x]);
+                String rgbString = colourMap.getColour(sensorReadings[y][x]);
                 polygonFeature.addStringProperty("rgb-string",rgbString);
                 polygonFeature.addStringProperty("fill", rgbString);
                 polygonFeature.addNumberProperty("fill-opacity", 0.75f);
@@ -308,10 +315,10 @@ public class App{
      */
     private static double findDistanceBetween(Point a, Point b){
         // euclidian distance calculation assuming the points lie on a plane
-        double diffLongitude = a.longitude() - b.longitude();
+        var diffLongitude = a.longitude() - b.longitude();
         double diffSqLongitude = Math.pow(diffLongitude,2d);
 
-        double diffLatitude = a.latitude() - b.latitude();
+        var diffLatitude = a.latitude() - b.latitude();
         double diffSqLattitude = Math.pow(diffLatitude,2d);
         
         return Math.sqrt( diffSqLongitude + diffSqLattitude);
