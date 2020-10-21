@@ -22,14 +22,20 @@ submitcw1:
 JARNAME_CW2="aqmaps-0.0.1-SNAPSHOT.jar"
 MVNROOT_CW2=./aqmaps
 MVNFLAGS_CW2=--f "${MVNROOT_CW2}/pom.xml"
+SERVER_JAR_DIR=./WebServer/WebServer
+SERVER_JAR=WebServerLite.jar
+SERVER_PORT=9898
+startserver:
+	echo "Running web server at http://localhost:${SERVER_PORT}";
+	@cd ${SERVER_JAR_DIR} && java -jar ${SERVER_JAR} . ${SERVER_PORT};
 buildcw2:
-	mvn clean package -Dmaven.test.skip=true ${MVNFLAGS_CW2} ;
+	mvn clean package -Dmaven.test.skip=true ${MVNFLAGS_CW2};
 runcw2: buildcw2
-	java -ea -jar $(MVNROOT_CW2)/target/$(JARNAME_CW2)
+	java -ea -jar $(MVNROOT_CW2)/target/$(JARNAME_CW2);
 testcw2:
 	mvn test ${MVNFLAGS_CW2};
 watchcw2:
-	while inotifywait -e close_write test.txt; do make runcw2" ; done
+	while inotifywait -e close_write test.txt; do make runcw2"; done
 submitcw2:
 	mvn clean ${MVNFLAGS_CW2};
 	rm -rf bin;
