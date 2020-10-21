@@ -2,17 +2,14 @@ package uk.ac.ed.inf.aqmaps.api;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import com.google.gson.Gson;
 import com.mapbox.geojson.FeatureCollection;
+import com.mapbox.geojson.Point;
 
 import org.junit.jupiter.api.Test;
-import org.junit.platform.commons.util.StringUtils;
 
-import uk.ac.ed.inf.aqmaps.client.Point;
 import uk.ac.ed.inf.aqmaps.client.Sensor;
 import uk.ac.ed.inf.aqmaps.client.W3WAddress;
 import uk.ac.ed.inf.aqmaps.client.W3WSquare;
@@ -24,22 +21,23 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class WebServerClientTest {
 
     @Test
-    public void testFetchSensorsForDate() throws IOException, InterruptedException {
+    public void testFetchSensorsForDateCorrectData() throws IOException, InterruptedException {
 
         // check a couple of the dates have the right data
         Map<String,Sensor> correctOutputs = Map.ofEntries(
-            entry("dent.shins.cycle", new Sensor("dent.shins.cycle",40.831715f,"179.56")),
-            entry("sentences.sings.modern",new Sensor("sentences.sings.modern",79.95532f,"182.81"))
+            entry("hooked.shine.third",new Sensor("hooked.shine.third",5.542588f,Float.NaN)),
+            entry("sports.topic.clocks",new Sensor("sports.topic.clocks",42.300785f,194.9f)),
+            entry("noted.friday.jams",new Sensor("noted.friday.jams",9.161681f,Float.NaN))
+
         );
 
-        LocalDate date = LocalDate.of(2020,1,1);
+        List<Sensor> sensors = WebServerClient.fetchSensorsForDate( LocalDate.of(2020,1,1));
 
-        List<Sensor> sensors = WebServerClient.fetchSensorsForDate(date);
         for (Sensor sensor : sensors) {
             if(correctOutputs.containsKey(sensor.getLocation())){
                 Sensor correctOutput = correctOutputs.get(sensor.getLocation());
-                assertEquals(correctOutput.getReading(), sensor.getReading());
-                assertEquals(correctOutput.getBattery(), sensor.getBattery(),0.000001f);
+                assertEquals(correctOutput,sensor);
+
             }
         }
 
@@ -51,10 +49,10 @@ public class WebServerClientTest {
         // check a couple of the addresses have correct data
         Map<String,W3WAddress> correctOutputs = Map.ofEntries(
             entry("rated.fired.crowds", new W3WAddress(  "GB", new W3WSquare(
-                new Point(-3.186416, 55.944642), 
-                new Point(-3.186368, 55.944669)), 
+                Point.fromLngLat(-3.186416, 55.944642), 
+                Point.fromLngLat(-3.186368, 55.944669)), 
                 "Edinburgh", 
-                new Point(-3.186392, 55.944656),
+                Point.fromLngLat(-3.186392, 55.944656),
                 "rated.fired.crowds", 
                 "en",
                 "https://w3w.co/rated.fired.crowds"))

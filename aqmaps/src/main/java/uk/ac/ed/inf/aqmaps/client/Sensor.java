@@ -1,17 +1,25 @@
 package uk.ac.ed.inf.aqmaps.client;
 
+import java.lang.reflect.Type;
 import java.util.Objects;
 
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.mapbox.geojson.Point;
+
 public class Sensor {
-    private String location;
-    private Float battery;
-    private String reading;
 
-
+    public static JsonDeserializer<Sensor> getDeserializer(){
+        return deserializer;
+    }
+    
     public Sensor() {
     }
 
-    public Sensor(String location, Float battery, String reading) {
+    public Sensor(String location, float battery, float reading) {
         this.location = location;
         this.battery = battery;
         this.reading = reading;
@@ -29,15 +37,15 @@ public class Sensor {
         return this.battery;
     }
 
-    public void setBattery(Float battery) {
+    public void setBattery(float battery) {
         this.battery = battery;
     }
 
-    public String getReading() {
+    public float getReading() {
         return this.reading;
     }
 
-    public void setReading(String reading) {
+    public void setReading(float reading) {
         this.reading = reading;
     }
 
@@ -46,12 +54,12 @@ public class Sensor {
         return this;
     }
 
-    public Sensor battery(Float battery) {
+    public Sensor battery(float battery) {
         this.battery = battery;
         return this;
     }
 
-    public Sensor reading(String reading) {
+    public Sensor reading(float reading) {
         this.reading = reading;
         return this;
     }
@@ -81,4 +89,33 @@ public class Sensor {
             "}";
     }
 
+
+    private static JsonDeserializer<Sensor> deserializer = new JsonDeserializer<Sensor>(){
+            
+        @Override
+        public Sensor deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException{
+            JsonObject jsonObject = json.getAsJsonObject();
+
+            var readingElement = jsonObject.get("reading");
+            float reading = 0f;
+            if(readingElement.getAsString().equals("null")
+                || readingElement.getAsString().equals("NaN")){
+                reading = Float.NaN;
+            } else {
+                reading = Float.parseFloat(readingElement.getAsString());
+            }
+
+            return new Sensor(
+                jsonObject.get("location").getAsString(),
+                jsonObject.get("battery").getAsFloat(),
+                reading);
+            
+  
+          
+        }
+    };
+
+    private String location;
+    private float battery;
+    private float reading;
 }

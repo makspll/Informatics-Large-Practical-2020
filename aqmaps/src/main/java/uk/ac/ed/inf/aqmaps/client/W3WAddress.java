@@ -1,16 +1,20 @@
 package uk.ac.ed.inf.aqmaps.client;
 
+import java.lang.reflect.Type;
 import java.util.Objects;
 
-public class W3WAddress {
-    private String country;
-    private W3WSquare square;
-    private String nearestPlace;
-    private Point coordinates;
-    private String words;
-    private String language;
-    private String map;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.mapbox.geojson.Point;
 
+public class W3WAddress {
+
+    public static JsonDeserializer<W3WAddress> getDeserializer(){
+        return deserializer;
+    }
 
     public W3WAddress() {
     }
@@ -144,6 +148,45 @@ public class W3WAddress {
             ", map='" + getMap() + "'" +
             "}";
     }
+
+    private String country;
+    private W3WSquare square;
+    private String nearestPlace;
+    private Point coordinates;
+    private String words;
+    private String language;
+    private String map;
+
+    private static JsonDeserializer<W3WAddress> deserializer = new JsonDeserializer<W3WAddress>(){
+            
+        @Override
+        public W3WAddress deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException{
+            JsonObject jsonObject = json.getAsJsonObject();
+            var square = jsonObject.getAsJsonObject("square");
+
+            var squareW3W = new W3WSquare(
+                Point.fromLngLat(
+                    square.getAsJsonObject("southwest").get("lng").getAsDouble(), 
+                    square.getAsJsonObject("southwest").get("lat").getAsDouble()),
+                Point.fromLngLat(
+                    square.getAsJsonObject("northeast").get("lng").getAsDouble(), 
+                    square.getAsJsonObject("northeast").get("lat").getAsDouble()));
+
+            var coordinates = Point.fromLngLat(
+                    jsonObject.getAsJsonObject("coordinates").get("lng").getAsDouble(),
+                    jsonObject.getAsJsonObject("coordinates").get("lat").getAsDouble());
+
+            return new W3WAddress(
+                jsonObject.get("country").getAsString(),
+                squareW3W,
+                jsonObject.get("nearestPlace").getAsString(),
+                coordinates,
+                jsonObject.get("words").getAsString(),
+                jsonObject.get("language").getAsString(),
+                jsonObject.get("map").getAsString()
+            );
+        }
+    };
 
 
 

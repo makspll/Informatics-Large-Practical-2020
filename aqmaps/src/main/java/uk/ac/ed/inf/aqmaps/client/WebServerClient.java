@@ -10,6 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.mapbox.geojson.FeatureCollection;
 
@@ -44,14 +48,21 @@ public class WebServerClient {
             throw new HTTPException(response.statusCode(),"Could not fetch sensor data from web server" + "," + requestURI.toString());
         }
 
+
         //// parse the json
+        // register custom deserializers
+        var gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(Sensor.class, Sensor.getDeserializer());
+        Gson gson = gsonBuilder.create();
 
         // capture type of list of sensors ussing annonymous inner class
         Type sensorListType = 
             new TypeToken<ArrayList<Sensor>>() {}.getType(); 
 
+
         ArrayList<Sensor> studentList =
-            new Gson().fromJson(response.body(), sensorListType);
+            gson.fromJson(response.body(), sensorListType);
+
 
         return studentList;
 
@@ -82,8 +93,13 @@ public class WebServerClient {
         }
 
         //// parse the json
+        // register custom deserializers
+        var gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(W3WAddress.class, W3WAddress.getDeserializer());
+        Gson gson = gsonBuilder.create();
+
         W3WAddress address =
-            new Gson().fromJson(response.body(), W3WAddress.class);
+            gson.fromJson(response.body(), W3WAddress.class);
 
         return address;
     }

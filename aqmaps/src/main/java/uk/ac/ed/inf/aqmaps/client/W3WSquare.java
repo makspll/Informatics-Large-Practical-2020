@@ -1,20 +1,23 @@
 package uk.ac.ed.inf.aqmaps.client;
 
+import java.lang.reflect.Type;
 import java.util.Objects;
 
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.mapbox.geojson.Point;
 
 public class W3WSquare {
-    private Point southwest;
-    private Point northeast;
-
 
     public W3WSquare() {
     }
 
-    public W3WSquare(Point southwest, Point northwest) {
+    public W3WSquare(Point southwest, Point northeast) {
         this.southwest = southwest;
-        this.northeast = northwest;
+        this.northeast = northeast;
     }
 
     public Point getSouthwest() {
@@ -66,5 +69,8 @@ public class W3WSquare {
             ", northwest='" + getNorthwest() + "'" +
             "}";
     }
+
+    private Point southwest;
+    private Point northeast;
 
 }
