@@ -10,16 +10,16 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.mapbox.geojson.Point;
 
-public class W3WAddress {
+public class W3WAddressData {
 
-    public static JsonDeserializer<W3WAddress> getDeserializer(){
+    public static JsonDeserializer<W3WAddressData> getDeserializer(){
         return deserializer;
     }
 
-    public W3WAddress() {
+    public W3WAddressData() {
     }
 
-    public W3WAddress(String country, W3WSquare square, String nearestPlace, Point coordinates, String words, String language, String map) {
+    public W3WAddressData(String country, W3WSquareData square, String nearestPlace, Point coordinates, String words, String language, String map) {
         this.country = country;
         this.square = square;
         this.nearestPlace = nearestPlace;
@@ -37,11 +37,11 @@ public class W3WAddress {
         this.country = country;
     }
 
-    public W3WSquare getSquare() {
+    public W3WSquareData getSquare() {
         return this.square;
     }
 
-    public void setSquare(W3WSquare square) {
+    public void setSquare(W3WSquareData square) {
         this.square = square;
     }
 
@@ -85,49 +85,15 @@ public class W3WAddress {
         this.map = map;
     }
 
-    public W3WAddress country(String country) {
-        this.country = country;
-        return this;
-    }
-
-    public W3WAddress square(W3WSquare square) {
-        this.square = square;
-        return this;
-    }
-
-    public W3WAddress nearestPlace(String nearestPlace) {
-        this.nearestPlace = nearestPlace;
-        return this;
-    }
-
-    public W3WAddress coordinates(Point coordinates) {
-        this.coordinates = coordinates;
-        return this;
-    }
-
-    public W3WAddress words(String words) {
-        this.words = words;
-        return this;
-    }
-
-    public W3WAddress language(String language) {
-        this.language = language;
-        return this;
-    }
-
-    public W3WAddress map(String map) {
-        this.map = map;
-        return this;
-    }
-
+    
     @Override
     public boolean equals(Object o) {
         if (o == this)
             return true;
-        if (!(o instanceof W3WAddress)) {
+        if (!(o instanceof W3WAddressData)) {
             return false;
         }
-        W3WAddress w3WAddress = (W3WAddress) o;
+        W3WAddressData w3WAddress = (W3WAddressData) o;
         return Objects.equals(country, w3WAddress.country) && Objects.equals(square, w3WAddress.square) && Objects.equals(nearestPlace, w3WAddress.nearestPlace) && Objects.equals(coordinates, w3WAddress.coordinates) && Objects.equals(words, w3WAddress.words) && Objects.equals(language, w3WAddress.language) && Objects.equals(map, w3WAddress.map);
     }
 
@@ -150,21 +116,21 @@ public class W3WAddress {
     }
 
     private String country;
-    private W3WSquare square;
+    private W3WSquareData square;
     private String nearestPlace;
     private Point coordinates;
     private String words;
     private String language;
     private String map;
 
-    private static JsonDeserializer<W3WAddress> deserializer = new JsonDeserializer<W3WAddress>(){
+    private static JsonDeserializer<W3WAddressData> deserializer = new JsonDeserializer<W3WAddressData>(){
             
         @Override
-        public W3WAddress deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException{
+        public W3WAddressData deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException{
             JsonObject jsonObject = json.getAsJsonObject();
             var square = jsonObject.getAsJsonObject("square");
 
-            var squareW3W = new W3WSquare(
+            var squareW3W = new W3WSquareData(
                 Point.fromLngLat(
                     square.getAsJsonObject("southwest").get("lng").getAsDouble(), 
                     square.getAsJsonObject("southwest").get("lat").getAsDouble()),
@@ -176,7 +142,7 @@ public class W3WAddress {
                     jsonObject.getAsJsonObject("coordinates").get("lng").getAsDouble(),
                     jsonObject.getAsJsonObject("coordinates").get("lat").getAsDouble());
 
-            return new W3WAddress(
+            return new W3WAddressData(
                 jsonObject.get("country").getAsString(),
                 squareW3W,
                 jsonObject.get("nearestPlace").getAsString(),

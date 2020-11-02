@@ -10,12 +10,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.mapbox.geojson.Point;
 
-public class W3WSquare {
+public class W3WSquareData {
 
-    public W3WSquare() {
+    public W3WSquareData() {
     }
 
-    public W3WSquare(Point southwest, Point northeast) {
+    public W3WSquareData(Point southwest, Point northeast) {
         this.southwest = southwest;
         this.northeast = northeast;
     }
@@ -36,12 +36,12 @@ public class W3WSquare {
         this.northeast = northwest;
     }
 
-    public W3WSquare southwest(Point southwest) {
+    public W3WSquareData southwest(Point southwest) {
         this.southwest = southwest;
         return this;
     }
 
-    public W3WSquare northwest(Point northwest) {
+    public W3WSquareData northwest(Point northwest) {
         this.northeast = northwest;
         return this;
     }
@@ -50,10 +50,10 @@ public class W3WSquare {
     public boolean equals(Object o) {
         if (o == this)
             return true;
-        if (!(o instanceof W3WSquare)) {
+        if (!(o instanceof W3WSquareData)) {
             return false;
         }
-        W3WSquare w3WSquare = (W3WSquare) o;
+        W3WSquareData w3WSquare = (W3WSquareData) o;
         return Objects.equals(southwest, w3WSquare.southwest) && Objects.equals(northeast, w3WSquare.northeast);
     }
 

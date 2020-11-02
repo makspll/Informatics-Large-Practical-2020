@@ -11,19 +11,19 @@ import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.mapbox.geojson.FeatureCollection;
 
 import java.lang.reflect.Type;
 
 
-public class WebServerClient {
+public class DroneWebServerClient implements ClientService{
 
+    public DroneWebServerClient(URI APIBaseURI){
+        this.APIBaseURI = APIBaseURI;
+    }
 
-    public static List<Sensor> fetchSensorsForDate(LocalDate date) throws IOException, InterruptedException {
+    public List<SensorData> fetchSensorsForDate(LocalDate date) throws IOException, InterruptedException {
 
         //// work out the relative api uri in the /maps/yyyy/mm/dd/air-quality-data.json format
         var requestURI = getFullAPIURI(
@@ -52,15 +52,15 @@ public class WebServerClient {
         //// parse the json
         // register custom deserializers
         var gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(Sensor.class, Sensor.getDeserializer());
+        gsonBuilder.registerTypeAdapter(SensorData.class, SensorData.getDeserializer());
         Gson gson = gsonBuilder.create();
 
         // capture type of list of sensors ussing annonymous inner class
         Type sensorListType = 
-            new TypeToken<ArrayList<Sensor>>() {}.getType(); 
+            new TypeToken<ArrayList<SensorData>>() {}.getType(); 
 
 
-        ArrayList<Sensor> studentList =
+        ArrayList<SensorData> studentList =
             gson.fromJson(response.body(), sensorListType);
 
 
@@ -68,8 +68,12 @@ public class WebServerClient {
 
     }
     
+    public W3WAddressData fetchW3WAddress(String wordAddress) throws IOException, InterruptedException {
+        String[] words = wordAddress.split("\\.");
+        return fetchW3WAddress(words[0],words[1],words[2]);
+    }
 
-    public static W3WAddress fetchW3WAddress(String w1, String w2, String w3) throws IOException, InterruptedException {
+    public W3WAddressData fetchW3WAddress(String w1, String w2, String w3) throws IOException, InterruptedException {
         //// work out the relative api uri in the /words/word1/word2/word3/details.json format
         var requestURI = getFullAPIURI(
             URI.create(
@@ -95,16 +99,16 @@ public class WebServerClient {
         //// parse the json
         // register custom deserializers
         var gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(W3WAddress.class, W3WAddress.getDeserializer());
+        gsonBuilder.registerTypeAdapter(W3WAddressData.class, W3WAddressData.getDeserializer());
         Gson gson = gsonBuilder.create();
 
-        W3WAddress address =
-            gson.fromJson(response.body(), W3WAddress.class);
+        W3WAddressData address =
+            gson.fromJson(response.body(), W3WAddressData.class);
 
         return address;
     }
 
-    public static FeatureCollection fetchBuildings() throws IOException, InterruptedException {
+    public FeatureCollection fetchBuildings() throws IOException, InterruptedException {
         //// work out the relative api uri in the /buildings/no-fly-zones.geojson format
         var requestURI = getFullAPIURI(
             URI.create("/buildings/no-fly-zones.geojson"));
@@ -129,8 +133,9 @@ public class WebServerClient {
         return buildings;
     }
 
-    private static final URI APIBaseURI = URI.create("http://localhost:9898");
-    private static final HttpClient client = HttpClient.newHttpClient();
+    private URI getFullAPIURI(URI relative){
+        return APIBaseURI.resolve(relative);
+    }
 
     private enum HttpStatusCodeRange {
         SUCCESS_RANGE, CLIENT_ERROR_RANGE, SERVER_ERROR_RANGE, UNKNOWN; 
@@ -149,10 +154,10 @@ public class WebServerClient {
         }
     }
 
-    private static URI getFullAPIURI(URI relative){
-        return APIBaseURI.resolve(relative);
-    }
 
+
+    private URI APIBaseURI;
+    private final HttpClient client = HttpClient.newHttpClient();
 
     
 }

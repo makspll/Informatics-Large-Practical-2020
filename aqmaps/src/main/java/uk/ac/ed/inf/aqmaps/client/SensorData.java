@@ -10,16 +10,16 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.mapbox.geojson.Point;
 
-public class Sensor {
+public class SensorData {
 
-    public static JsonDeserializer<Sensor> getDeserializer(){
+    public static JsonDeserializer<SensorData> getDeserializer(){
         return deserializer;
     }
     
-    public Sensor() {
+    public SensorData() {
     }
 
-    public Sensor(String location, float battery, float reading) {
+    public SensorData(String location, float battery, float reading) {
         this.location = location;
         this.battery = battery;
         this.reading = reading;
@@ -49,17 +49,17 @@ public class Sensor {
         this.reading = reading;
     }
 
-    public Sensor location(String location) {
+    public SensorData location(String location) {
         this.location = location;
         return this;
     }
 
-    public Sensor battery(float battery) {
+    public SensorData battery(float battery) {
         this.battery = battery;
         return this;
     }
 
-    public Sensor reading(float reading) {
+    public SensorData reading(float reading) {
         this.reading = reading;
         return this;
     }
@@ -68,10 +68,10 @@ public class Sensor {
     public boolean equals(Object o) {
         if (o == this)
             return true;
-        if (!(o instanceof Sensor)) {
+        if (!(o instanceof SensorData)) {
             return false;
         }
-        Sensor sensor = (Sensor) o;
+        SensorData sensor = (SensorData) o;
         return Objects.equals(location, sensor.location) && Objects.equals(battery, sensor.battery) && Objects.equals(reading, sensor.reading);
     }
 
@@ -90,10 +90,10 @@ public class Sensor {
     }
 
 
-    private static JsonDeserializer<Sensor> deserializer = new JsonDeserializer<Sensor>(){
+    private static JsonDeserializer<SensorData> deserializer = new JsonDeserializer<SensorData>(){
             
         @Override
-        public Sensor deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException{
+        public SensorData deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException{
             JsonObject jsonObject = json.getAsJsonObject();
 
             var readingElement = jsonObject.get("reading");
@@ -105,7 +105,7 @@ public class Sensor {
                 reading = Float.parseFloat(readingElement.getAsString());
             }
 
-            return new Sensor(
+            return new SensorData(
                 jsonObject.get("location").getAsString(),
                 jsonObject.get("battery").getAsFloat(),
                 reading);
