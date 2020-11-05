@@ -4,12 +4,21 @@ import java.util.Objects;
 
 import org.locationtech.jts.geom.Coordinate;
 
-
+/**
+ * represents a singular move made by the sensor data collector
+ * each move follows the pattern of: move->collect reading, 
+ * we cannot collect a reading in a move unless we have moved
+ */
 public class PathSegment {
 
-    public PathSegment() {
-    }
 
+    /**
+     * Creates a path segment from the start and end points, the direction of movement and the sensor read if any
+     * @param startPoint start coordinate 
+     * @param direction direction in degrees, from the eastern direction anti-clockwise
+     * @param endPoint end point 
+     * @param sensorRead the sensor read at the end point, or null
+     */
     public PathSegment(Coordinate startPoint, int direction, Coordinate endPoint, Sensor sensorRead) {
         this.startPoint = startPoint;
         this.direction = direction;
@@ -21,52 +30,16 @@ public class PathSegment {
         return this.startPoint;
     }
 
-    public void setStartPoint(Coordinate startPoint) {
-        this.startPoint = startPoint;
-    }
-
     public int getDirection() {
         return this.direction;
-    }
-
-    public void setDirection(int direction) {
-        this.direction = direction;
     }
 
     public Coordinate getEndPoint() {
         return this.endPoint;
     }
 
-    public void setEndPoint(Coordinate endPoint) {
-        this.endPoint = endPoint;
-    }
-
     public Sensor getSensorRead() {
         return this.sensorRead;
-    }
-
-    public void setSensorRead(Sensor sensorRead) {
-        this.sensorRead = sensorRead;
-    }
-
-    public PathSegment startPoint(Coordinate startPoint) {
-        this.startPoint = startPoint;
-        return this;
-    }
-
-    public PathSegment direction(int direction) {
-        this.direction = direction;
-        return this;
-    }
-
-    public PathSegment endPoint(Coordinate endPoint) {
-        this.endPoint = endPoint;
-        return this;
-    }
-
-    public PathSegment sensorRead(Sensor sensorRead) {
-        this.sensorRead = sensorRead;
-        return this;
     }
 
     @Override
@@ -88,9 +61,15 @@ public class PathSegment {
     @Override
     public String toString() {
         return "{" +
-            " startPoint='" + getStartPoint() + "'" +
+            " startPoint='" 
+                + "("+(float)getStartPoint().getX()
+                +","+(float)getStartPoint().getY()+")" 
+            + "'" +
             ", direction='" + getDirection() + "'" +
-            ", endPoint='" + getEndPoint() + "'" +
+            ", endPoint='" 
+                + "("+(float)getEndPoint().getX()
+                +","+(float)getEndPoint().getY()+")" 
+            + "'" +
             ", sensorRead='" + getSensorRead() + "'" +
             "}";
     }

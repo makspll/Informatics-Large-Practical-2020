@@ -1,4 +1,4 @@
-package uk.ac.ed.inf.aqmaps.visualisation;
+package uk.ac.ed.inf.aqmaps.unitTests.visualisation;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -8,15 +8,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 
-import com.mapbox.geojson.Feature;
-import com.mapbox.geojson.FeatureCollection;
-import com.mapbox.geojson.Point;
-
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
@@ -24,6 +17,11 @@ import org.mockito.Mock;
 
 import uk.ac.ed.inf.aqmaps.simulation.PathSegment;
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
+import uk.ac.ed.inf.aqmaps.visualisation.AQMapGenerator;
+import uk.ac.ed.inf.aqmaps.visualisation.AttributeMap;
+import uk.ac.ed.inf.aqmaps.visualisation.MarkerSymbol;
+import uk.ac.ed.inf.aqmaps.visualisation.SensorReadingColourMap;
+import uk.ac.ed.inf.aqmaps.visualisation.SensorReadingMarkerSymbolMap;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;

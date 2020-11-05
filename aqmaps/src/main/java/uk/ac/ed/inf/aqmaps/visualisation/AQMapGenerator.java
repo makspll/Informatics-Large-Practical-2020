@@ -105,7 +105,10 @@ public class AQMapGenerator implements SensorCollectionVisualiser {
         feature.addStringProperty("location", sensor.getW3WLocation());
         feature.addStringProperty("rgb-string", colour);
         feature.addStringProperty("marker-color", colour);
-        feature.addStringProperty("marker-symbol", symbol.toString());
+
+        // no symbol means we do not add a symbol property
+        if(symbol != MarkerSymbol.NO_SYMBOL)
+            feature.addStringProperty("marker-symbol", symbol.toString());
 
         return feature;
     }

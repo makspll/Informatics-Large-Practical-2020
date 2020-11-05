@@ -1,4 +1,4 @@
-package uk.ac.ed.inf.aqmaps.output;
+package uk.ac.ed.inf.aqmaps.visualisation;
 
 import java.io.IOException;
 import java.io.OutputStream;

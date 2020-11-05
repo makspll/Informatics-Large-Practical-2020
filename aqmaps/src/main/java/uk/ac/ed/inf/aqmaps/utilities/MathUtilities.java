@@ -9,7 +9,7 @@ public class MathUtilities {
      * @return
      */
     public static double angleFromEast(Vector2D a){
-        double angle = Math.toDegrees(Math.atan2(a.getX(), a.getY()));
+        double angle = -Math.toDegrees(Math.atan2(a.getX(), a.getY())) + 90;
 
         // convert the  -180 to -0 to
         if (angle < 0.0) {
@@ -30,7 +30,7 @@ public class MathUtilities {
         double x = Math.cos(angle);
         double y = Math.sin(angle);
 
-        return new Vector2D(x, y);
+        return new Vector2D(x, y).normalize();
     }
 
 }

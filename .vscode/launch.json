@@ -8,6 +8,13 @@
             "type": "java",
             "name": "CodeLens (Launch) - App",
             "request": "launch",
+            "mainClass": "uk.ac.ed.inf.aqmaps.App",
+            "projectName": "aqmaps"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - App",
+            "request": "launch",
             "mainClass": "uk.ac.ed.inf.App",
             "projectName": "heatmap"
         },

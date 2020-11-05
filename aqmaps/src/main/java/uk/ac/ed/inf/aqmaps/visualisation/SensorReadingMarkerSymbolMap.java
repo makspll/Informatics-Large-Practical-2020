@@ -18,7 +18,7 @@ public class SensorReadingMarkerSymbolMap implements AttributeMap<Float,MarkerSy
         // each bucket contains (max - min) / no.of. markerSymbols
 
         Float bucketSize = (max - min) / markerSymbols.length;
-        int bucketNumber = Math.round(value / bucketSize);
+        int bucketNumber = (int)Math.floor(value / bucketSize);
 
         return markerSymbols[bucketNumber];
     }

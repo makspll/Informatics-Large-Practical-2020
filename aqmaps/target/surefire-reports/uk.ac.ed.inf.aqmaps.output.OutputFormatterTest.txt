@@ -1,7 +1,0 @@
--------------------------------------------------------------------------------
-Test set: uk.ac.ed.inf.aqmaps.output.OutputFormatterTest
--------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.091 s <<< FAILURE! - in uk.ac.ed.inf.aqmaps.output.OutputFormatterTest
-testWritePath  Time elapsed: 0.013 s  <<< ERROR!
-java.lang.NoSuchMethodError: org.mockito.Mockito.mockitoSession()Lorg/mockito/session/MockitoSessionBuilder;
-

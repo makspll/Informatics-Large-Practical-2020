@@ -6,6 +6,7 @@ public interface Sensor {
     public float getReading();
     public Coordinate getCoordinates();
     public boolean hasBeenRead();
+    public void setHaveBeenRead(boolean read);
     public float getBatteryLevel();
     public String getW3WLocation();
 }

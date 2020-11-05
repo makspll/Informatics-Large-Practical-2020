@@ -1,21 +1,26 @@
 package uk.ac.ed.inf.aqmaps.simulation;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Queue;
+import java.util.Set;
 
 import org.locationtech.jts.geom.Coordinate;
 
+import uk.ac.ed.inf.aqmaps.simulation.planning.CollectionOrderPlanner;
+import uk.ac.ed.inf.aqmaps.simulation.planning.PathPlanner;
+
 public class Drone implements SensorDataCollector {
 
-    public Drone(FlightPlanner fp, RoutePlanner rp){
+    public Drone(PathPlanner fp, CollectionOrderPlanner rp){
         flightPlanner = fp;
         routePlanner = rp;
     }
 
     @Override
     public Queue<PathSegment> planCollection(Coordinate startCoordinate,
-        List<Sensor> sensors,
-        List<Obstacle> obstacles) {
+        Set<Sensor> sensors,
+        Collection<Obstacle> obstacles) {
         
         //// first we identify which sensor we are the closest to
         //// at the start coordinate
@@ -36,42 +41,24 @@ public class Drone implements SensorDataCollector {
         }
 
         //// then plan the high-level route
-        Queue<Sensor> route = routePlanner.planRoute(startSensor, sensors);
+        Queue<Sensor> route = routePlanner.planRoute(startSensor,sensors,obstacles);
 
         //// plan the detailed flight path along the route
-        Queue<PathSegment> flightPath = flightPlanner.planFlight(startCoordinate, 
+        Queue<PathSegment> flightPath = flightPlanner.planPath(startCoordinate, 
                                             route, 
                                             obstacles);
 
+        for (PathSegment pathSegment : flightPath) {
+            Sensor read = pathSegment.getSensorRead();
+            if(read != null)
+                read.setHaveBeenRead(true);
+        }
 
         return flightPath;
     }
 
 
-    private FlightPlanner flightPlanner;
-    private RoutePlanner routePlanner;
-    
-    // private List<Coordinate> currentPath = new ArrayList<Coordinate>();
-    // private Coordinate currentPosition = null;
-    // private Sensor currentGoal = null;
-
-    // private double MOVE_LENGTH = 0.0003d;
-    // private int MAX_MOVES = 150;
-    // private double READING_RANGE = 0.0002d;
-
-    // private void fly(int direction){
-    //     // the direction is a multiple of 10 between 0 and 350 inclusive
-    //     assert direction <= 350 && direction >= 0 && direction % 10 == 0;
-        
-    //     // we translate the current position coordinate by 
-    //     // the vector heading in the given direciton
-    //     Vector2D heading = MathUtilities.getHeadingVector(direction);
-    //     currentPosition = heading.multiply(MOVE_LENGTH).translate(currentPosition);
-    // }
-
-    // private int clampDirection(double direction){
-    //     return ((int)Math.round(direction / 10) * 10) % 350;
-    // }
-
+    private PathPlanner flightPlanner;
+    private CollectionOrderPlanner routePlanner;
 
 }

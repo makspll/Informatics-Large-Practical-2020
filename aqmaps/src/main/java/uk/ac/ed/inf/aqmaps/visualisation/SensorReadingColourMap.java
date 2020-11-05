@@ -11,14 +11,14 @@ public class SensorReadingColourMap implements AttributeMap<Float,String>{
 
     @Override
 	public String getFor(Float value) {
-        if (value >= max || value < min)   
+        if (value >= max || value < min)
             throw new IndexOutOfBoundsException("Value was outside of bounds");
-
+       
         // we simply have to find which colour bucket the value falls into,
         // each bucket contains (max - min) / no.of. colours
 
-        Float bucketSize = (max - min) / colours.length;
-        int bucketNumber = Math.round(value / bucketSize);
+        Float bucketSize = (max - min) / (float)colours.length;
+        int bucketNumber = (int)Math.floor(value / bucketSize);
 
         return colours[bucketNumber];
     }

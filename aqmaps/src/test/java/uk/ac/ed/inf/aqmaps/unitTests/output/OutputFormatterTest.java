@@ -1,4 +1,4 @@
-package uk.ac.ed.inf.aqmaps.output;
+package uk.ac.ed.inf.aqmaps.unitTests.output;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -7,7 +7,6 @@ import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -18,10 +17,12 @@ import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.Point;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.locationtech.jts.geom.Coordinate;
 
 import uk.ac.ed.inf.aqmaps.simulation.PathSegment;
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
+import uk.ac.ed.inf.aqmaps.visualisation.OutputFormatter;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,8 +45,8 @@ public class OutputFormatterTest {
 
     static String testPathOutput; 
 
-    @BeforeAll
-    public static void setup(){
+    @BeforeEach
+    public void setup(){
         dummyStream = new ByteArrayOutputStream();
 
     }
