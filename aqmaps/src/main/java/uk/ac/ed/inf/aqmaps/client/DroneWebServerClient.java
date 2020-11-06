@@ -19,8 +19,9 @@ import java.lang.reflect.Type;
 
 public class DroneWebServerClient implements ClientService{
 
-    public DroneWebServerClient(URI APIBaseURI){
+    public DroneWebServerClient(HttpClient client,URI APIBaseURI){
         this.APIBaseURI = APIBaseURI;
+        this.client = client;
     }
 
     public List<SensorData> fetchSensorsForDate(LocalDate date) throws IOException, InterruptedException {
@@ -70,6 +71,7 @@ public class DroneWebServerClient implements ClientService{
     
     public W3WAddressData fetchW3WAddress(String wordAddress) throws IOException, InterruptedException {
         String[] words = wordAddress.split("\\.");
+        assert words.length == 3;
         return fetchW3WAddress(words[0],words[1],words[2]);
     }
 
@@ -157,7 +159,7 @@ public class DroneWebServerClient implements ClientService{
 
 
     private URI APIBaseURI;
-    private final HttpClient client = HttpClient.newHttpClient();
+    private final HttpClient client;
 
     
 }

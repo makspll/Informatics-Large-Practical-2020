@@ -11,16 +11,16 @@ import org.locationtech.jts.geom.LinearRing;
 
 public class ConversionUtilities {
     
-    public static Coordinate PointToCoordinate(Point p){
+    public static Coordinate MapboxPointToJTSCoordinate(Point p){
         return new Coordinate(p.longitude(),p.latitude());
     }
 
         
-    public static Point CoordinateToPoint(Coordinate p){
+    public static Point JTSCoordinateToMapboxPoint(Coordinate p){
         return Point.fromLngLat(p.getX(),p.getY());
     }
 
-    public static Polygon PolygonToPolygon(com.mapbox.geojson.Polygon p){
+    public static Polygon MapboxPolygonToJTSPolygon(com.mapbox.geojson.Polygon p){
 
         var rings = p.coordinates();
         LinearRing shell = null;
@@ -36,7 +36,7 @@ public class ConversionUtilities {
             Coordinate[] coordinates = new Coordinate[currRing.size()];
 
             for(int j = 0; j < currRing.size(); j++){
-                coordinates[j] = PointToCoordinate(currRing.get(j));
+                coordinates[j] = MapboxPointToJTSCoordinate(currRing.get(j));
             }
 
             LinearRing convertedRing = geometryFactory.createLinearRing(coordinates);
@@ -53,4 +53,6 @@ public class ConversionUtilities {
 
     public final static GeometryFactory geometryFactory = new GeometryFactory(
                                                             new PrecisionModel(PrecisionModel.FLOATING));
+
+
 }

@@ -33,7 +33,7 @@ public class Building implements Obstacle {
                                 new Coordinate[]{
                                     pathSegment.getStartPoint(),
                                     pathSegment.getEndPoint()});
-            if (ls.intersects(shape)){
+            if (ls.touches(shape) || ls.crosses(shape)){
                 return true;
             }
         }

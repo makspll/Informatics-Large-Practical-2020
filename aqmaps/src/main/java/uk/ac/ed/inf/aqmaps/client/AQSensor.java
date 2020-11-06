@@ -11,7 +11,7 @@ public class AQSensor implements Sensor {
 
     public AQSensor(SensorData sensorData, W3WAddressData addressData){
         reading = sensorData.getReading();
-        coordinates = ConversionUtilities.PointToCoordinate(addressData.getCoordinates());
+        coordinates = ConversionUtilities.MapboxPointToJTSCoordinate(addressData.getCoordinates());
         hasBeenRead = false;
         batteryLevel = sensorData.getBattery();
         W3WLocation = addressData.getWords();

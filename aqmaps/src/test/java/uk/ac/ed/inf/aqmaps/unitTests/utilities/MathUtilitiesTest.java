@@ -32,7 +32,5 @@ public class MathUtilitiesTest {
         assertVectorEquals(new Vector2D(Math.cos(Math.toRadians(45)), -Math.cos(Math.toRadians(45))), MathUtilities.getHeadingVector(315), epsilon);
         assertVectorEquals(new Vector2D(Math.cos(Math.toRadians(45)), Math.cos(Math.toRadians(45))), MathUtilities.getHeadingVector(45), epsilon);
         assertVectorEquals(new Vector2D(-Math.cos(Math.toRadians(45)), Math.cos(Math.toRadians(45))), MathUtilities.getHeadingVector(135), epsilon);
-
-
     }
 }

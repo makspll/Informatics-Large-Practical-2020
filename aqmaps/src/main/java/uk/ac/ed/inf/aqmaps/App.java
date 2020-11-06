@@ -3,6 +3,7 @@ package uk.ac.ed.inf.aqmaps;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.net.http.HttpClient;
 import java.text.NumberFormat;
 import java.time.DateTimeException;
 import java.time.LocalDate;
@@ -110,7 +111,7 @@ public class App {
         
         URI hostResolvedAPIURI = URI.create(API_BASE_URI_STRING + String.format(":%s",portNumber));
     
-        var clientService = new DroneWebServerClient(hostResolvedAPIURI);
+        var clientService = new DroneWebServerClient(HttpClient.newHttpClient(),hostResolvedAPIURI);
 
         //// load the necessary data
 
@@ -143,7 +144,7 @@ public class App {
             for (Feature featurePolygon : buildingCollection.features()) {
                 com.mapbox.geojson.Polygon polygon = (com.mapbox.geojson.Polygon)featurePolygon.geometry();
 
-                Polygon jtsPolygon = ConversionUtilities.PolygonToPolygon(polygon);
+                Polygon jtsPolygon = ConversionUtilities.MapboxPolygonToJTSPolygon(polygon);
 
                 Obstacle building = new Building(jtsPolygon);
                 obstacles.add(building);
