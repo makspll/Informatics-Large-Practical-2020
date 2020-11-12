@@ -57,8 +57,11 @@ public class GreedyCollectionOrderPlanner extends BaseRingCollectionOrderPlanner
             unvisitedSensors.remove(closestSensor);
         }
 
+        // we then loop back
+        route.add(startSensor);
+
         // sanity check
-        assert route.size() == otherSensors.size() + 1;
+        assert route.size() == otherSensors.size() + 2;
 
         return route;
     }

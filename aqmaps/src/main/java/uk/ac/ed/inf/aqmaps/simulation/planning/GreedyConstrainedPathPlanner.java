@@ -23,12 +23,14 @@ public class GreedyConstrainedPathPlanner extends BaseConstrainedPathPlanner {
     @Override
     public Queue<PathSegment> planPath(Coordinate startCoordinate, Queue<Sensor> route, Collection<Obstacle> obstacles) {
 
+        Queue<Sensor> routeCopy = new LinkedList<Sensor>(route);
+
         // keep track of where we last moved, pick 
         // shortest way to target while avoiding buildings (by going around their corners)
         // incrementally add to the path queue
         Queue<PathSegment> path = new LinkedList<PathSegment>();
         var currentPosition = startCoordinate;
-        Sensor currSensorTarget = route.poll();
+        Sensor currSensorTarget = routeCopy.poll();
         
         // consume the route one sensor at a time
         while(currSensorTarget != null 
@@ -72,7 +74,7 @@ public class GreedyConstrainedPathPlanner extends BaseConstrainedPathPlanner {
 
             //// if we reached the sensor change the target
             if(haveReachedSensor)
-                currSensorTarget = route.poll();
+                currSensorTarget = routeCopy.poll();
         }
         
         // sanity check

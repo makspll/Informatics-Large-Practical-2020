@@ -1,5 +1,8 @@
 package uk.ac.ed.inf.aqmaps.simulation.planning;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.math.Vector2D;
 
@@ -37,6 +40,23 @@ public abstract class BaseConstrainedPathPlanner implements PathPlanner {
 
     protected boolean canReadSensorFrom(Sensor sensor, Coordinate coordinates){
         return coordinates.distance(sensor.getCoordinates()) < READING_RANGE;
+    }
+
+    protected List<Integer> getValidDirectionsBetween(int lowAngle, int highAngle){
+        
+        var output = new ArrayList<Integer>();
+        int currAngle = getClosestValidAngle(lowAngle);
+        
+        if(currAngle >= lowAngle){
+            output.add(currAngle);
+        }
+
+        while(currAngle <= highAngle){
+            currAngle = getClosestValidAngle(currAngle + ANGLE_INCREMENT);
+            output.add(currAngle);
+        }
+        
+        return output;
     }
 
 

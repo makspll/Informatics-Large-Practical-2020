@@ -5,9 +5,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -15,10 +17,11 @@ import org.locationtech.jts.geom.Coordinate;
 
 import uk.ac.ed.inf.aqmaps.simulation.Obstacle;
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
+import uk.ac.ed.inf.aqmaps.simulation.planning.CollectionOrderPlanner;
 import uk.ac.ed.inf.aqmaps.simulation.planning.GreedyCollectionOrderPlanner;
 
-public class GreedyCollectionOrderPlannerTest {
-    private static GreedyCollectionOrderPlanner planner = new GreedyCollectionOrderPlanner();
+public class GreedyCollectionOrderPlannerTest extends CollectionOrderPlannerTest {
+    private static GreedyCollectionOrderPlanner testPlanner = new GreedyCollectionOrderPlanner();
 
     private static Sensor mockSensor1 = mock(Sensor.class);
     private static Sensor mockSensor2 = mock(Sensor.class);
@@ -26,29 +29,31 @@ public class GreedyCollectionOrderPlannerTest {
     private static Sensor mockSensor4 = mock(Sensor.class);
 
 
-    @BeforeAll
-    public static void setup(){
+    @Override
+    protected Sensor setupStartSensor() {
         when(mockSensor1.getCoordinates()).thenReturn(new Coordinate(0, 0));
+        when(mockSensor1.toString()).thenReturn("Sensor 1");
+
+        return mockSensor1;
+    }
+
+    @Override
+    protected Set<Sensor> setupOtherSensors() {
         when(mockSensor2.getCoordinates()).thenReturn(new Coordinate(1, 1));
         when(mockSensor3.getCoordinates()).thenReturn(new Coordinate(1, -2));
         when(mockSensor4.getCoordinates()).thenReturn(new Coordinate(5, 1));
 
-        when(mockSensor1.toString()).thenReturn("1");
-        when(mockSensor2.toString()).thenReturn("2");
-        when(mockSensor3.toString()).thenReturn("3");
-        when(mockSensor4.toString()).thenReturn("4");
+        when(mockSensor2.toString()).thenReturn("Sensor 2");
+        when(mockSensor3.toString()).thenReturn("Sensor 3");
+        when(mockSensor4.toString()).thenReturn("Sensor 4");        
+        
+        return new HashSet<Sensor>(Arrays.asList(mockSensor2, mockSensor3, mockSensor4));
     }
 
-
-    @Test
-    public void planRouteTest(){
-        Queue<Sensor> route = planner.planRoute(mockSensor1, 
-            new HashSet<Sensor>(Arrays.asList(mockSensor2,mockSensor3,mockSensor4)), 
-            new LinkedList<Obstacle>());
-
-        assertEquals(new LinkedList<Sensor>(Arrays.asList(
-            mockSensor1,mockSensor2,mockSensor3,mockSensor4
-        )), route);
+    @Override
+    protected CollectionOrderPlanner setupTestInstance() {
+        return testPlanner;
     }
+
     
 }

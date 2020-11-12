@@ -1,5 +1,6 @@
 package uk.ac.ed.inf.aqmaps.utilities;
 
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.math.Vector2D;
 
 public class MathUtilities {
@@ -33,4 +34,20 @@ public class MathUtilities {
         return new Vector2D(x, y).normalize();
     }
 
+    public static boolean thresholdEquals(double a, double b, double epsilon){
+        return Math.abs(a - b) < epsilon;
+    }
+    public static boolean thresholdEquals(double a, double b){
+        return Math.abs(a - b) < epsilon;
+    }
+
+
+    public static boolean thresholdEquals(Coordinate a, Coordinate b, double epsilon){
+        return Math.abs(a.distance(b)) < epsilon;
+    }
+    public static boolean thresholdEquals(Coordinate a, Coordinate b){
+        return Math.abs(a.distance(b)) < epsilon;
+    }
+
+    public static double epsilon = 0.000001;
 }

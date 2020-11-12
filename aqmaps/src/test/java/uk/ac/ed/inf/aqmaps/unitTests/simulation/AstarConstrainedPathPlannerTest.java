@@ -1,40 +1,33 @@
 package uk.ac.ed.inf.aqmaps.unitTests.simulation;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static uk.ac.ed.inf.aqmaps.testUtilities.TestUtilities.assertPointsConsecutive;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Polygon;
 
 import uk.ac.ed.inf.aqmaps.simulation.Building;
 import uk.ac.ed.inf.aqmaps.simulation.Obstacle;
-import uk.ac.ed.inf.aqmaps.simulation.PathSegment;
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
+import uk.ac.ed.inf.aqmaps.simulation.planning.AstarConstrainedPathPlanner;
 import uk.ac.ed.inf.aqmaps.simulation.planning.BaseConstrainedPathPlanner;
-import uk.ac.ed.inf.aqmaps.simulation.planning.GreedyConstrainedPathPlanner;
 import uk.ac.ed.inf.aqmaps.testUtilities.TestUtilities;
 
-public class GreedyConstrainedPathPlannerTest extends ConstrainedPathPlannerTest {
+public class AstarConstrainedPathPlannerTest extends ConstrainedPathPlannerTest {
 
     private double moveLength = 0.1d;
     private double readingRange = 0.1d;
 
-    private int maxMoves = 50;
+    private int maxMoves = 150;
     private int minAngle = 0;
     private int maxAngle = 360;
     private int angleIncrement = 10;
 
-    GreedyConstrainedPathPlanner testPlanner;
+    AstarConstrainedPathPlanner testPlanner;
 
     private static Sensor mockSensor1;
     private static Sensor mockSensor2;
@@ -87,7 +80,7 @@ public class GreedyConstrainedPathPlannerTest extends ConstrainedPathPlannerTest
 
     @Override
     protected BaseConstrainedPathPlanner setupTestInstance() {
-        return new GreedyConstrainedPathPlanner(moveLength, readingRange, maxMoves, minAngle, maxAngle, angleIncrement);
+        return new AstarConstrainedPathPlanner(moveLength, readingRange, maxMoves, minAngle, maxAngle, angleIncrement);
     }
 
     @Override
@@ -119,4 +112,5 @@ public class GreedyConstrainedPathPlannerTest extends ConstrainedPathPlannerTest
     protected int getTestInstanceMaxMoves() {
         return maxMoves;
     }
+    
 }

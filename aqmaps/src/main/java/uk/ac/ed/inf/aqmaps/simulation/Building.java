@@ -25,17 +25,14 @@ public class Building implements Obstacle {
     @Override
     public boolean intersectsPath(Queue<PathSegment> path) {
 
-    
         for (PathSegment pathSegment : path) {
         
-            LineString ls = geometryFactory
-                            .createLineString(
-                                new Coordinate[]{
-                                    pathSegment.getStartPoint(),
-                                    pathSegment.getEndPoint()});
-            if (ls.touches(shape) || ls.crosses(shape)){
+            boolean intersection = intersectsPath(
+                pathSegment.getStartPoint(), 
+                pathSegment.getEndPoint());
+
+            if(intersection)
                 return true;
-            }
         }
         
         return false;
@@ -43,4 +40,13 @@ public class Building implements Obstacle {
 
     private final Polygon shape;
     private final GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING));
+
+    @Override
+    public boolean intersectsPath(Coordinate a, Coordinate b) {
+        LineString ls = geometryFactory
+            .createLineString(
+                new Coordinate[]{a,b});
+
+        return ls.touches(shape) || ls.crosses(shape);
+    }      
 }

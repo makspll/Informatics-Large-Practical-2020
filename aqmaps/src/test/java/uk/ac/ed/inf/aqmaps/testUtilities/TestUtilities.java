@@ -7,19 +7,26 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Queue;
 
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.math.Vector2D;
 
 import uk.ac.ed.inf.aqmaps.simulation.PathSegment;
 
 public class TestUtilities {
+    public static GeometryFactory gf = new GeometryFactory();
     
     public static void assertPathGoesThroughInOrder(Queue<PathSegment> path,double epsilon,Coordinate ...coordinates){
+
+        if(coordinates.length == 0)
+            return;
 
         int currCoordinateIdx = 0;
         int pathSegmentsLeft = path.size();
         PathSegment lastSegment = null;
         boolean foundAll = false;
+        
         for (PathSegment pathSegment : path) {
+
             lastSegment = pathSegment;
             
             Coordinate currCoordinate = coordinates[currCoordinateIdx];
@@ -28,11 +35,12 @@ public class TestUtilities {
             if(distance <= epsilon)
                 currCoordinateIdx += 1;
 
-            
             if(currCoordinateIdx == coordinates.length) {
                 foundAll = true;
                 break;
             }  
+
+
 
         }
         if(!foundAll 
@@ -85,6 +93,24 @@ public class TestUtilities {
             p.getDirection(),"direction of the path segment is incorrect");
     }
 
+    public static void assertDirectionValid(int minAngle,int maxAngle,int angleIncrement,PathSegment p){
+        Vector2D vector = new Vector2D(p.getStartPoint(), p.getEndPoint());
+        double angle = Math.toDegrees(vector.angle()) ;
+        
+        if(angle < 0){
+            angle += 360;
+        }
+
+        int angleRounded = ((int)Math.round(angle) % maxAngle);
+        int distance = Math.abs(angleRounded - p.getDirection());
+
+        assertTrue(
+            distance <= angleIncrement,
+            "direction of the path segment is incorrect");
+
+    }
+
+
     public static void assertMoveLengthsEqual(double length,double epsilon,PathSegment... p){
         int idx = 0;
         for (PathSegment pathSegment : p) {
@@ -97,6 +123,15 @@ public class TestUtilities {
         for (PathSegment pathSegment : p) {
             assertDoesNotThrow(()->{
                 assertDirectionValid(pathSegment);
+            },"Direction at idx: " + i++ + " has invalid direction");
+        }
+    }
+
+    public static void assertDirectionsValid(int minAngle,int maxAngle,int angleIncrement,PathSegment... p){
+        int i = 0;
+        for (PathSegment pathSegment : p) {
+            assertDoesNotThrow(()->{
+                assertDirectionValid(minAngle,maxAngle,angleIncrement,pathSegment);
             },"Direction at idx: " + i++ + " has invalid direction");
         }
     }
