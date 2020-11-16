@@ -1,6 +1,7 @@
 package uk.ac.ed.inf.aqmaps.simulation.planning;
 
 import java.util.Collection;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -15,55 +16,128 @@ import uk.ac.ed.inf.aqmaps.simulation.Sensor;
  * Plans a collection of sensor data in a greedy order and in a way that form a loop, 
  * i.e. by picking the closest sensor at each step.
  */
-public class GreedyCollectionOrderPlanner extends BaseRingCollectionOrderPlanner {
+public class GreedyCollectionOrderPlanner extends LoopingCollectionOrderPlanner {
 
-    /**
-     * Generates a looping collection order over the sensors in a greedy manner.
-     * @param startSensor the sensor which starts and ends the collection
-     * @param otherSensors all the other sensors, this set must not include the start sensor
-     * @param obstacles obstacles present on the map, these are taken into account when estimating path lengths
-     */
     @Override
-    public Queue<Sensor> planRoute(Sensor startSensor, Set<Sensor> otherSensors, Collection<Obstacle> obstacles) {
+    public Deque<Sensor> planRoute(Sensor startSensor, Set<Sensor> otherSensors, Collection<Obstacle> obstacles) {
 
-        var unvisitedSensors = new HashSet<Sensor>(otherSensors);
+        assert !otherSensors.contains(startSensor);
 
-        Queue<Sensor> route = new LinkedList<Sensor>();
-        
-        Sensor currentSensor = startSensor;
-        route.add(currentSensor);
+        // we produce an ordering on the sensors and compute a distance matrix using 
+        // biggest avoidance distance
+        // last sensor in the list is the starting sensor
+        Sensor[] sensorList = otherSensors.toArray(new Sensor[otherSensors.size() + 1]);
+        int currSensorIdx = sensorList.length - 1;
+        sensorList[currSensorIdx] = startSensor;
 
-        // we simply pick the closest sensor to the one we are currently at
-        // untill we run out of sensors
-        for(int i = 0 ; i < otherSensors.size();i++){
+        double[][] distanceMatrix = computeEuclidianDistanceMatrix(sensorList, obstacles);
+        int[] routeIdxs = new int[sensorList.length + 1];
 
-            // find closest sensor to the current sensor
+        var visitedSensorIdxs = new HashSet<Integer>();
+
+        visitedSensorIdxs.add(currSensorIdx);
+
+        int currentRouteIdx = 1;
+
+        // we always start and end on the starting sensor
+        routeIdxs[0] = currSensorIdx;
+        routeIdxs[routeIdxs.length - 1] = currSensorIdx;
+
+        while(currentRouteIdx < sensorList.length-1){
+
+            // we find the sensor which is closest to the current sensor at each step
             double smallestDistance = Double.MAX_VALUE;
-            Sensor closestSensor = null;
+            int closestSensorIdx = -1;
 
-            for (Sensor otherSensor : unvisitedSensors) {
-                double distance = otherSensor.getCoordinates()
-                                    .distance(currentSensor.getCoordinates());
+            for(int i = 0; i < sensorList.length; i++){
+                if(visitedSensorIdxs.contains(i) || i == currSensorIdx)
+                    continue;
+                else{
+                    double distance = distanceMatrix[currSensorIdx][i];
 
-                if( distance < smallestDistance ){
-                    smallestDistance = distance;
-                    closestSensor = otherSensor;
+                    if(distance < smallestDistance){
+                        smallestDistance = distance;
+                        closestSensorIdx = i;
+                    }
                 }
             }
 
-            // pick the closest sensor as the next move
-            route.add(closestSensor);
-            currentSensor = closestSensor;
-            unvisitedSensors.remove(closestSensor);
+            visitedSensorIdxs.add(closestSensorIdx);
+            routeIdxs[currentRouteIdx] = closestSensorIdx;
+
+            currentRouteIdx += 1;
+            currSensorIdx = closestSensorIdx;
         }
 
-        // we then loop back
-        route.add(startSensor);
+        // perform 2-opt optimisation
+        double bestDistance = totalDistance(routeIdxs, distanceMatrix);
+        double epsilon = 0.0000000000000001d;
+        double improvement = epsilon;
 
-        // sanity check
-        assert route.size() == otherSensors.size() + 2;
+        int noSwappedNodes = routeIdxs.length-1;
+
+        int iterations = 0;
+        while(improvement >= epsilon){
+            improvement = 0;
+            outerloop:
+            for(int i = 1; i <= noSwappedNodes -1;i++ ){
+                for (int k = i+1; k < noSwappedNodes; k++) {
+                    var newRoute = opt2Swap(routeIdxs, i, k);
+                    double newDistance = totalDistance(newRoute, distanceMatrix);
+                    iterations += 1;
+
+                    if(newDistance < bestDistance){
+                        routeIdxs = newRoute;
+                        improvement = bestDistance - newDistance;
+                        bestDistance = newDistance;
+                        break outerloop;
+                    }
+                }
+            }
+        }
+
+        // produce proper route
+        var route = new LinkedList<Sensor>();
+
+        for (int i = 0; i < routeIdxs.length; i++) {
+            route.addFirst(sensorList[routeIdxs[i]]);
+        }
 
         return route;
     }
+
+
+    private int[] opt2Swap(int[] route,int i,int k){
+
+        int[] swapped = new int[route.length];
+
+        for(int j = 0; j <= i-1; j++){
+            swapped[j] = route[j];
+        }
+
+        for(int j = i; j <= k; j++){
+            swapped[j] = route[k-j +i]; 
+        }
+
+        for(int j = k+1; j < route.length;j++){
+            swapped[j] = route[j];
+        }
+
+        return swapped;
+    }
+
+    private double totalDistance(int[] route, double[][] distanceMatrix){
+        
+        double distance = 0;
+        for (int i = 0; i < route.length - 1; i++) {
+            int curr = route[i];
+            int next = route[i+1];
+            distance += distanceMatrix[curr][next];
+        }
+
+        return distance;
+    }
+
+
     
 }

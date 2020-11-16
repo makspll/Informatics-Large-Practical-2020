@@ -13,7 +13,7 @@ import com.mapbox.geojson.Polygon;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 
-import uk.ac.ed.inf.aqmaps.utilities.ConversionUtilities;
+import uk.ac.ed.inf.aqmaps.utilities.GeometryUtilities;
 
 public class ConversionUtilitiesTest {
     @Test
@@ -22,8 +22,8 @@ public class ConversionUtilitiesTest {
         var original = new Coordinate(1,1);
 
         assertEquals(original,
-            ConversionUtilities.MapboxPointToJTSCoordinate(
-                ConversionUtilities.JTSCoordinateToMapboxPoint(
+            GeometryUtilities.MapboxPointToJTSCoordinate(
+                GeometryUtilities.JTSCoordinateToMapboxPoint(
                     original)));
     }
 
@@ -49,7 +49,7 @@ public class ConversionUtilitiesTest {
         ));
         Polygon p = Polygon.fromLngLats(coordinates);
 
-        var otherP = ConversionUtilities.MapboxPolygonToJTSPolygon(p);
+        var otherP = GeometryUtilities.MapboxPolygonToJTSPolygon(p);
 
         assertEquals(1 - 0.01, otherP.getArea(),"the area of converted polygon is not correct");
 

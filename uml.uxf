@@ -1,15 +1,15 @@
-<diagram program="umletino" version="14.4.0-SNAPSHOT"><zoom_level>10</zoom_level><help_text>Space for diagram notes</help_text><element><id>UMLClass</id><coordinates><x>553</x><y>195</y><w>160</w><h>20</h></coordinates><panel_attributes>DroneWebServerClient
+<diagram program="umletino" version="14.4.0-SNAPSHOT"><zoom_level>10</zoom_level><help_text>Space for diagram notes</help_text><element><id>UMLClass</id><coordinates><x>470</x><y>195</y><w>160</w><h>20</h></coordinates><panel_attributes>DroneWebServerClient
 group=3
 
 
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>253</x><y>115</y><w>130</w><h>90</h></coordinates><panel_attributes>SensorData
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>170</x><y>115</y><w>130</w><h>90</h></coordinates><panel_attributes>SensorData
 --
 -location:String
 -battery:float
 -reading:float
 
 
-group=3</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>93</x><y>35</y><w>150</w><h>140</h></coordinates><panel_attributes>W3WAddressData
+group=3</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>10</x><y>35</y><w>150</w><h>140</h></coordinates><panel_attributes>W3WAddressData
 --
 -country:String
 -square:W3WSquare
@@ -20,24 +20,24 @@ group=3</panel_attributes><additional_attributes></additional_attributes></eleme
 -map:String
 
 
-group=3</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>93</x><y>185</y><w>130</w><h>60</h></coordinates><panel_attributes>W3WSquareData
+group=3</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>10</x><y>185</y><w>130</w><h>60</h></coordinates><panel_attributes>W3WSquareData
 --
 -southwest:Coordinates
 -northwest:Coordinates
 
-group=3</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>253</x><y>35</y><w>100</w><h>60</h></coordinates><panel_attributes>CoordinatesData
+group=3</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>170</x><y>35</y><w>100</w><h>60</h></coordinates><panel_attributes>CoordinatesData
 --
 -lng:Double
 -lat:Double
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>83</x><y>0</y><w>750</w><h>370</h></coordinates><panel_attributes>Client
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>0</x><y>0</y><w>750</w><h>370</h></coordinates><panel_attributes>Client
 --
 bg=orange
-group=3</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>83</x><y>410</y><w>1250</w><h>620</h></coordinates><panel_attributes>simulation
+group=3</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>0</x><y>410</y><w>1390</w><h>620</h></coordinates><panel_attributes>simulation
 --
 bg=yellow
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>93</x><y>820</y><w>130</w><h>40</h></coordinates><panel_attributes>OptimalConstrainedPathPlanner
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>210</x><y>720</y><w>130</w><h>40</h></coordinates><panel_attributes>OptimalConstrainedPathPlanner
 style=autoresize
-style=wordwrap</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>813</x><y>450</y><w>160</w><h>110</h></coordinates><panel_attributes>PathSegment
+style=wordwrap</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1210</x><y>760</y><w>160</w><h>110</h></coordinates><panel_attributes>PathSegment
 --
 -startPoint:Coordinate
 -direction:int
@@ -46,63 +46,92 @@ style=wordwrap</panel_attributes><additional_attributes></additional_attributes>
 
 
 
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>843</x><y>0</y><w>830</w><h>390</h></coordinates><panel_attributes>visualisation
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>760</x><y>0</y><w>830</w><h>390</h></coordinates><panel_attributes>visualisation
 --
-bg=green</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>883</x><y>80</y><w>200</w><h>30</h></coordinates><panel_attributes>ReadingColourMap
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLInterface</id><coordinates><x>453</x><y>240</y><w>360</w><h>120</h></coordinates><panel_attributes>ClientService
+bg=green</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>800</x><y>80</y><w>200</w><h>30</h></coordinates><panel_attributes>ReadingColourMap
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLInterface</id><coordinates><x>370</x><y>240</y><w>360</w><h>120</h></coordinates><panel_attributes>ClientService
 --
 +fetchSensorsForDate(date:Date):List&lt;SensorData&gt;
 +fetchW3WAddress(w1:String,w2:String,w3:String):W3WAddress
 +fetchBuildings():FeatureCollection
-group=3</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>623</x><y>208</y><w>30</w><h>70</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>10;50;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1263</x><y>110</y><w>250</w><h>20</h></coordinates><panel_attributes>AQMapGenerator
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>883</x><y>138</y><w>200</w><h>30</h></coordinates><panel_attributes>ReadingMarkerSymbolMap</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLInterface</id><coordinates><x>1113</x><y>98</y><w>120</w><h>90</h></coordinates><panel_attributes>AttributeMap&lt;T,C&gt;
+group=3</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>540</x><y>208</y><w>30</w><h>70</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>10;50;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1180</x><y>110</y><w>250</w><h>20</h></coordinates><panel_attributes>AQMapGenerator
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>800</x><y>138</y><w>200</w><h>30</h></coordinates><panel_attributes>ReadingMarkerSymbolMap</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLInterface</id><coordinates><x>1030</x><y>98</y><w>120</w><h>90</h></coordinates><panel_attributes>AttributeMap&lt;T,C&gt;
 --
-+getFor(val:T):C</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1073</x><y>88</y><w>110</w><h>50</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>90;30;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>1173</x><y>108</y><w>110</w><h>40</h></coordinates><panel_attributes>lt=&lt;-</panel_attributes><additional_attributes>10;10;90;12</additional_attributes></element><element><id>Relation</id><coordinates><x>303</x><y>700</y><w>310</w><h>80</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>290;60;290;10;16;10</additional_attributes></element><element><id>UMLInterface</id><coordinates><x>429</x><y>880</y><w>280</w><h>120</h></coordinates><panel_attributes>CollectionOrderPlanner
++getFor(val:T):C</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>990</x><y>88</y><w>110</w><h>50</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>90;30;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>1090</x><y>108</y><w>110</w><h>40</h></coordinates><panel_attributes>lt=&lt;-</panel_attributes><additional_attributes>10;10;90;12</additional_attributes></element><element><id>Relation</id><coordinates><x>620</x><y>590</y><w>100</w><h>110</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>80;90;80;50;16;10</additional_attributes></element><element><id>UMLInterface</id><coordinates><x>376</x><y>810</y><w>280</w><h>120</h></coordinates><panel_attributes>CollectionOrderPlanner
 --
 + planRoute(startSensor: Sensor,
 Set&lt;Sensor&gt;,
-obstacles:Collection&lt;Obstacle&gt;):Queue&lt;Sensor&gt;</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>109</x><y>970</y><w>170</w><h>30</h></coordinates><panel_attributes>GreedyRingCollectionPlanner</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>369</x><y>890</y><w>210</w><h>30</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>190;10;10;10</additional_attributes></element><element><id>UMLInterface</id><coordinates><x>1149</x><y>160</y><w>480</w><h>100</h></coordinates><panel_attributes>SensorCollectionVisualiser
+obstacles:Collection&lt;Obstacle&gt;):Queue&lt;Sensor&gt;</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>96</x><y>890</y><w>170</w><h>30</h></coordinates><panel_attributes>GreedyRingCollectionPlanner</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>256</x><y>820</y><w>270</w><h>40</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>250;10;10;20</additional_attributes></element><element><id>UMLInterface</id><coordinates><x>1066</x><y>160</y><w>480</w><h>100</h></coordinates><panel_attributes>SensorCollectionVisualiser
 --
 +plotMap(path:Queue&lt;PathSegment&gt;,sensors:Collection&lt;Sensor&gt;): FeatureCollection
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1383</x><y>120</y><w>30</w><h>70</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>10;50;10;10</additional_attributes></element><element><id>UMLInterface</id><coordinates><x>159</x><y>450</y><w>180</w><h>150</h></coordinates><panel_attributes>Sensor
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1300</x><y>120</y><w>30</w><h>70</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>10;50;10;10</additional_attributes></element><element><id>UMLInterface</id><coordinates><x>6</x><y>450</y><w>180</w><h>150</h></coordinates><panel_attributes>Sensor
 --
 +getReading():float
 +getCoordinates():Coordinate
 +hasBeenRead(): boolean
 +getBatteryLevel():float
-+getW3WLocation:String</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>599</x><y>460</y><w>160</w><h>20</h></coordinates><panel_attributes>Building
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1069</x><y>470</y><w>170</w><h>70</h></coordinates><panel_attributes>Drone
++getW3WLocation:String</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>876</x><y>450</y><w>160</w><h>20</h></coordinates><panel_attributes>Building
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1186</x><y>470</y><w>170</w><h>70</h></coordinates><panel_attributes>Drone
 --
 -pathPlanner:PathPlanner
 -routePlanner:RoutePlanner
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1073</x><y>110</y><w>110</w><h>60</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>90;10;10;40</additional_attributes></element><element><id>UMLClass</id><coordinates><x>99</x><y>280</y><w>280</w><h>70</h></coordinates><panel_attributes>AQSensor
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>990</x><y>110</y><w>110</w><h>60</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>90;10;10;40</additional_attributes></element><element><id>UMLClass</id><coordinates><x>16</x><y>280</y><w>280</w><h>70</h></coordinates><panel_attributes>AQSensor
 --
 +AQSensor(s:SensorData,w:W3WAddressData)
 
 
-group=3</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLInterface</id><coordinates><x>529</x><y>540</y><w>300</w><h>100</h></coordinates><panel_attributes>Obstacle
+group=3</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLInterface</id><coordinates><x>776</x><y>500</y><w>300</w><h>130</h></coordinates><panel_attributes>Obstacle
 --
 +getShape: Polygon
-+intersectsPath(path:Queue&lt;PathSegment&gt;):boolean</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>669</x><y>470</y><w>30</w><h>100</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>10;80;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>242</x><y>341</y><w>30</w><h>140</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>10;120;10;100;10;10</additional_attributes></element><element><id>UMLInterface</id><coordinates><x>433</x><y>750</y><w>320</w><h>120</h></coordinates><panel_attributes>PathPlanner
++intersectsPath(path:Queue&lt;PathSegment&gt;):boolean
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>916</x><y>460</y><w>60</w><h>70</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>10;50;40;10</additional_attributes></element><element><id>Relation</id><coordinates><x>89</x><y>341</y><w>100</w><h>140</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>10;120;80;100;80;10</additional_attributes></element><element><id>UMLInterface</id><coordinates><x>540</x><y>670</y><w>320</w><h>120</h></coordinates><panel_attributes>PathPlanner
 --
 +planFlight(startPoint: Coordinate,
 route: Queue&lt;Sensor&gt;,
-obstacles: Collection&lt;Obstacle&gt;): Queue&lt;PathSegment&gt;</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1223</x><y>280</y><w>350</w><h>100</h></coordinates><panel_attributes>OutputFormatter
+obstacles: Collection&lt;Obstacle&gt;): Queue&lt;PathSegment&gt;</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1140</x><y>280</y><w>350</w><h>100</h></coordinates><panel_attributes>OutputFormatter
 --
 _+writePath(flightPath:Queue&lt;PathSegment&gt;,filename:Stream)_
 _+writeReadingsMap(f:FeatureCollection,filename:Stream)_
-group=4</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>149</x><y>750</y><w>90</w><h>90</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>70;10;10;70</additional_attributes></element><element><id>UMLInterface</id><coordinates><x>999</x><y>610</y><w>320</w><h>120</h></coordinates><panel_attributes>SensorDataCollector
+group=4</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>266</x><y>640</y><w>90</w><h>100</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>70;10;10;80</additional_attributes></element><element><id>UMLInterface</id><coordinates><x>1066</x><y>620</y><w>320</w><h>120</h></coordinates><panel_attributes>SensorDataCollector
 --
 +planCollection(startPosition:Coordinate,
 sensors:Set&lt;Sensor&gt;,
-obstacles:Collection&lt;Obstacle&gt;):Queue&lt;PathSegment&gt;</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1149</x><y>530</y><w>30</w><h>110</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>10;90;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>153</x><y>640</y><w>170</w><h>120</h></coordinates><panel_attributes>/BaseConstrainedPathPlanner/
+obstacles:Collection&lt;Obstacle&gt;):Queue&lt;PathSegment&gt;</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1216</x><y>530</y><w>80</w><h>120</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>10;100;60;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>270</x><y>580</y><w>370</w><h>70</h></coordinates><panel_attributes>/BaseConstrainedPathPlanner/
 --
-#MOVE_LENGTH:double
 #READING_RANGE:double
 #MAX_MOVES:int
-#MIN_ANGLE:int
-#MAX_ANGLE:int
-#ANGLE_INCREMENT:int</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>243</x><y>820</y><w>150</w><h>40</h></coordinates><panel_attributes>GreedyConstrainedPathPlanner
+#graph:Graph&lt;SensorTreeSearchNode&gt;</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>360</x><y>720</y><w>150</w><h>40</h></coordinates><panel_attributes>GreedyConstrainedPathPlanner
 
 style=autoresize
-style=wordwrap</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>253</x><y>750</y><w>90</w><h>90</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>16;10;70;70</additional_attributes></element><element><id>UMLClass</id><coordinates><x>191</x><y>890</y><w>190</w><h>30</h></coordinates><panel_attributes>/BaseRingCollectionOrderPlanner/</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>181</x><y>913</y><w>130</w><h>80</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>106;10;10;60</additional_attributes></element></diagram>
+style=wordwrap</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>370</x><y>640</y><w>90</w><h>100</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>16;10;70;80</additional_attributes></element><element><id>UMLClass</id><coordinates><x>78</x><y>830</y><w>190</w><h>30</h></coordinates><panel_attributes>/BaseRingCollectionOrderPlanner/</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>158</x><y>853</y><w>40</w><h>60</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>16;10;20;40</additional_attributes></element><element><id>UMLPackage</id><coordinates><x>0</x><y>1090</y><w>1250</w><h>420</h></coordinates><panel_attributes>Pathfinding
+--
+bg=orange</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLInterface</id><coordinates><x>990</x><y>1280</y><w>220</w><h>90</h></coordinates><panel_attributes>Heuristic&lt;A: SpacialTreeSearchNode&gt;
+--
++heuristic(a:A,b:A)</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLInterface</id><coordinates><x>620</x><y>1360</y><w>380</w><h>90</h></coordinates><panel_attributes>Graph&lt;N: SpatialTreeSearchNode&gt;
+--
++ getNeighbouringNodes(node:N, goal:N, h: Heuristic&lt;N&gt;): List&lt;N&gt;</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>9</x><y>1130</y><w>300</w><h>130</h></coordinates><panel_attributes>SpatialTreeSearchNode&lt;N:SpatialTreeSearchNode&gt;
+--
+# heuristic: double
+# cost: double
+# N: parentNode
+# directionFromParent: int
+# location: Coordinate
+# goalReached: N
+# tieBreaker : Comparator&lt;N&gt;
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>289</x><y>1260</y><w>350</w><h>130</h></coordinates><panel_attributes>template=N: SpatialTreeSearchNode
+/TreePathfindingAlgorithm&lt;N&gt;/
+--
+/+findPath(g:Graph&lt;N&gt; ,goal: N, start: N, goalThreshold: double,  output: Queue&lt;N&gt;)/
+
++findPath(g:Graph&lt;N&gt; ,goals: Queue&lt;N&gt;, start: N, goalThreshold: double): Queue&lt;N&gt;
+
+style=wordwrap</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>380</x><y>1430</y><w>110</w><h>30</h></coordinates><panel_attributes>AstarTreeSearch</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>410</x><y>1386</y><w>40</w><h>60</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>16;10;20;40</additional_attributes></element><element><id>UMLClass</id><coordinates><x>880</x><y>930</y><w>190</w><h>90</h></coordinates><panel_attributes>ManyAngleDiscreteStepGraph
+--
+- MIN_ANGLE:int
+- MAX_ANGLE:int
+- ANGLE_INCREMENT:int
+- MOVE_LENGTH:double
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>800</x><y>1007</y><w>190</w><h>390</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>16;370;10;150;170;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1100</x><y>990</y><w>140</w><h>30</h></coordinates><panel_attributes>StraightLineDistance</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1100</x><y>1004</y><w>80</w><h>310</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>16;290;60;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>599</x><y>950</y><w>200</w><h>50</h></coordinates><panel_attributes>SensorTreeSearchNode
+--
+- sensorInReadingRange: Sensor</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>299</x><y>986</y><w>400</w><h>220</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>16;200;380;200;300;10</additional_attributes></element></diagram>

@@ -27,3 +27,5 @@ hs_err_pid*
 heatmap/target
 aqmaps/target
 /WebServer
+/output
+/outputAnalyser

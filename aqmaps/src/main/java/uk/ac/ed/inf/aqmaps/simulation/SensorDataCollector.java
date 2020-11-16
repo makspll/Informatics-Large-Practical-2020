@@ -7,8 +7,10 @@ import java.util.Set;
 
 import org.locationtech.jts.geom.Coordinate;
 
+import uk.ac.ed.inf.aqmaps.simulation.planning.DiscreteStepAndAngleGraph;
+
 public interface SensorDataCollector {
     public Queue<PathSegment> planCollection(Coordinate startPosition,
         Set<Sensor> sensors,
-        Collection<Obstacle> obstacles);
+        DiscreteStepAndAngleGraph graph);
 }

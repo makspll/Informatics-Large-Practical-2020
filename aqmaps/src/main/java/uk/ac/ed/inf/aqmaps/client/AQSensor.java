@@ -5,13 +5,13 @@ import java.util.Objects;
 import org.locationtech.jts.geom.Coordinate;
 
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
-import uk.ac.ed.inf.aqmaps.utilities.ConversionUtilities;
+import uk.ac.ed.inf.aqmaps.utilities.GeometryUtilities;
 
-public class AQSensor implements Sensor {
+public class AQSensor implements Sensor{
 
     public AQSensor(SensorData sensorData, W3WAddressData addressData){
         reading = sensorData.getReading();
-        coordinates = ConversionUtilities.MapboxPointToJTSCoordinate(addressData.getCoordinates());
+        coordinates = GeometryUtilities.MapboxPointToJTSCoordinate(addressData.getCoordinates());
         hasBeenRead = false;
         batteryLevel = sensorData.getBattery();
         W3WLocation = addressData.getWords();
@@ -76,6 +76,12 @@ public class AQSensor implements Sensor {
     private boolean hasBeenRead;
     private float batteryLevel;
     private String W3WLocation;
+
+    @Override
+    public Coordinate getPosition() {
+        return getCoordinates();
+    }
+
 
 
 

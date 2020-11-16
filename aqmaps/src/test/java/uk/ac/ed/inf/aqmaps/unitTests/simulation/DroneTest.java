@@ -33,56 +33,56 @@ import uk.ac.ed.inf.aqmaps.simulation.planning.PathPlanner;
 
 public class DroneTest {
     
-    @Test
-    public void planCollectionTest(){
+    // @Test
+    // public void planCollectionTest(){
 
-        //// prepare test data
-        PathPlanner fp = mock(PathPlanner.class);
-        CollectionOrderPlanner rp = mock(CollectionOrderPlanner.class);
+    //     //// prepare test data
+    //     PathPlanner fp = mock(PathPlanner.class);
+    //     CollectionOrderPlanner rp = mock(CollectionOrderPlanner.class);
 
-        Coordinate startCoordinate = new Coordinate();
-        Sensor startSensor = mock(Sensor.class);
-        Obstacle obstacle = mock(Obstacle.class);
+    //     Coordinate startCoordinate = new Coordinate();
+    //     Sensor startSensor = mock(Sensor.class);
+    //     Obstacle obstacle = mock(Obstacle.class);
 
-        Set<Sensor> sensors = new HashSet<Sensor>(
-                                Arrays.asList(startSensor));
+    //     Set<Sensor> sensors = new HashSet<Sensor>(
+    //                             Arrays.asList(startSensor));
 
-        List<Obstacle> obstacles = new ArrayList<Obstacle>(
-                                    Arrays.asList(obstacle));
+    //     List<Obstacle> obstacles = new ArrayList<Obstacle>(
+    //                                 Arrays.asList(obstacle));
 
-        when(startSensor.getCoordinates()).thenReturn(new Coordinate());
+    //     when(startSensor.getCoordinates()).thenReturn(new Coordinate());
         
-        when(rp.planRoute(ArgumentMatchers.any(), ArgumentMatchers.any(),ArgumentMatchers.any())).thenReturn(
-            new LinkedList<Sensor>(
-                Arrays.asList(
-                    startSensor
-            )));
+    //     when(rp.planRoute(ArgumentMatchers.any(), ArgumentMatchers.any(),ArgumentMatchers.any())).thenReturn(
+    //         new LinkedList<Sensor>(
+    //             Arrays.asList(
+    //                 startSensor
+    //         )));
 
-        PathSegment outputPath = new PathSegment(new Coordinate(), 0, new Coordinate(), startSensor);
+    //     PathSegment outputPath = new PathSegment(new Coordinate(), 0, new Coordinate(), startSensor);
 
-        when(fp.planPath(ArgumentMatchers.any(),
-            ArgumentMatchers.any(), 
-            ArgumentMatchers.any())).thenReturn(new LinkedList<PathSegment>(Arrays.asList(
-                outputPath
-            )));
+    //     when(fp.planPath(ArgumentMatchers.any(),
+    //         ArgumentMatchers.any(), 
+    //         ArgumentMatchers.any())).thenReturn(new LinkedList<PathSegment>(Arrays.asList(
+    //             outputPath
+    //         )));
 
         
-        Drone drone = new Drone(fp,rp);
+    //     Drone drone = new Drone(fp,rp);
         
-        //// perform basic checks
+    //     //// perform basic checks
 
-        // no exceptions thrown 
-        assertDoesNotThrow(()->{
-            drone.planCollection(startCoordinate, sensors, obstacles);
-        });
+    //     // no exceptions thrown 
+    //     assertDoesNotThrow(()->{
+    //         drone.planCollection(startCoordinate, sensors, obstacles);
+    //     });
 
-        var output = drone.planCollection(startCoordinate, sensors, obstacles);
+    //     var output = drone.planCollection(startCoordinate, sensors, obstacles);
         
-        // output path is of correct length
-        assertEquals(1, output.size());
+    //     // output path is of correct length
+    //     assertEquals(1, output.size());
 
-        // check the output path is correct
-        assertEquals(outputPath, output.peek());
+    //     // check the output path is correct
+    //     assertEquals(outputPath, output.peek());
 
-    }
+    // }
 }

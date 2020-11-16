@@ -1,6 +1,7 @@
 package uk.ac.ed.inf.aqmaps.simulation;
 
 import java.util.Collection;
+import java.util.Deque;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
@@ -8,6 +9,7 @@ import java.util.Set;
 import org.locationtech.jts.geom.Coordinate;
 
 import uk.ac.ed.inf.aqmaps.simulation.planning.CollectionOrderPlanner;
+import uk.ac.ed.inf.aqmaps.simulation.planning.DiscreteStepAndAngleGraph;
 import uk.ac.ed.inf.aqmaps.simulation.planning.PathPlanner;
 
 public class Drone implements SensorDataCollector {
@@ -20,7 +22,7 @@ public class Drone implements SensorDataCollector {
     @Override
     public Queue<PathSegment> planCollection(Coordinate startCoordinate,
         Set<Sensor> sensors,
-        Collection<Obstacle> obstacles) {
+        DiscreteStepAndAngleGraph graph) {
         
         //// first we identify which sensor we are the closest to
         //// at the start coordinate
@@ -41,18 +43,24 @@ public class Drone implements SensorDataCollector {
         }
 
         //// then plan the high-level route
-        Queue<Sensor> route = routePlanner.planRoute(startSensor,sensors,obstacles);
+        // the other sensors set must not contain the start sensor
+        // but we don't want to modify the data structure, so we put it back at the end
+        sensors.remove(startSensor);
+
+        Deque<Sensor> route = routePlanner.planRoute(startSensor,sensors,graph.getObstacles());
 
         //// plan the detailed flight path along the route
-        Queue<PathSegment> flightPath = flightPlanner.planPath(startCoordinate, 
+        Deque<PathSegment> flightPath = flightPlanner.planPath(startCoordinate, 
                                             route, 
-                                            obstacles);
+                                            graph);
 
         for (PathSegment pathSegment : flightPath) {
             Sensor read = pathSegment.getSensorRead();
             if(read != null)
                 read.setHaveBeenRead(true);
         }
+
+        sensors.add(startSensor);
 
         return flightPath;
     }

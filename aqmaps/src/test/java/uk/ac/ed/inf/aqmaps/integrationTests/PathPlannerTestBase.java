@@ -1,44 +1,47 @@
-package uk.ac.ed.inf.aqmaps.unitTests.simulation;
+package uk.ac.ed.inf.aqmaps.integrationTests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Queue;
+import java.util.Deque;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.locationtech.jts.geom.Coordinate;
 
 import uk.ac.ed.inf.aqmaps.simulation.Obstacle;
 import uk.ac.ed.inf.aqmaps.simulation.PathSegment;
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
-import uk.ac.ed.inf.aqmaps.simulation.planning.BaseConstrainedPathPlanner;
+import uk.ac.ed.inf.aqmaps.simulation.planning.ConstrainedPathPlanner;
+import uk.ac.ed.inf.aqmaps.simulation.planning.DiscreteStepAndAngleGraph;
 import uk.ac.ed.inf.aqmaps.testUtilities.TestUtilities;
 
-public abstract class ConstrainedPathPlannerTest {
-    private BaseConstrainedPathPlanner planner;
+
+public abstract class PathPlannerTestBase {
+    private ConstrainedPathPlanner planner;
 
     private Coordinate startCoordinate;
-    private Queue<Sensor> route;
-    private Collection<Obstacle> obstacles; 
+    private Deque<Sensor> route;
+    private DiscreteStepAndAngleGraph graph;
     
     @BeforeEach
     public void setup(){
         startCoordinate = setupStartCoordinate();
         route = setupRoute();
-        obstacles = setupObstacles();
+        graph = setupGraph();
 
         planner = setupTestInstance();
     }
 
     protected abstract Coordinate setupStartCoordinate();
-    protected abstract Queue<Sensor> setupRoute();
-    protected abstract Collection<Obstacle> setupObstacles();
+    protected abstract Deque<Sensor> setupRoute();
+    protected abstract DiscreteStepAndAngleGraph setupGraph();
 
-    protected abstract BaseConstrainedPathPlanner setupTestInstance();
+    protected abstract ConstrainedPathPlanner setupTestInstance();
     protected abstract double getTestInstanceMoveLength();
     protected abstract double getTestInstanceReadingRange();
     protected abstract int getTestInstanceMaxAngle();
@@ -47,8 +50,9 @@ public abstract class ConstrainedPathPlannerTest {
     protected abstract int getTestInstanceMaxMoves();
 
     @Test 
+    @Timeout(value = 10, unit=TimeUnit.SECONDS) 
     public void directionsAreValidTest(){
-        var output = planner.planPath(startCoordinate, route, obstacles);
+        var output = planner.planPath(startCoordinate, route, graph);
 
         TestUtilities.assertDirectionsValid(getTestInstanceMinAngle(),
             getTestInstanceMaxAngle(),
@@ -58,33 +62,36 @@ public abstract class ConstrainedPathPlannerTest {
     }
 
     @Test 
+    @Timeout(value = 10, unit=TimeUnit.SECONDS) 
     public void moveLenghtsAreValidTest(){
-        var output = planner.planPath(startCoordinate, route, obstacles);
+        var output = planner.planPath(startCoordinate, route, graph);
 
         TestUtilities.assertMoveLengthsEqual(
             getTestInstanceMoveLength(),
-            0.000000001d, 
+            TestUtilities.epsilon, 
             output.toArray(new PathSegment[output.size()]));
 
     }
 
     @Test
+    @Timeout(value = 10, unit=TimeUnit.SECONDS) 
     public void pathConsecutiveTest(){
-        var output = planner.planPath(startCoordinate, route, obstacles);
+        var output = planner.planPath(startCoordinate, route, graph);
 
         TestUtilities.assertPointsConsecutive(output);
     }
 
     public void routeIsNotConsumedTest(){
         int oldSize = route.size();
-        var output = planner.planPath(startCoordinate, route, obstacles);
+        var output = planner.planPath(startCoordinate, route, graph);
 
         assertEquals(oldSize, route.size());
     }
 
     @Test
+    @Timeout(value = 10, unit=TimeUnit.SECONDS) 
     public void pathFollowsRouteTest(){
-        var output = planner.planPath(startCoordinate, route, obstacles);
+        var output = planner.planPath(startCoordinate, route, graph);
 
         ArrayList<Sensor> visitedSensors = new ArrayList<Sensor>();
         for (PathSegment pathSegment : output) {
@@ -105,8 +112,9 @@ public abstract class ConstrainedPathPlannerTest {
     }
 
     @Test
+    @Timeout(value = 10, unit=TimeUnit.SECONDS) 
     public void pathReachesAtLeastOneSensor(){
-        var output = planner.planPath(startCoordinate, route, obstacles);
+        var output = planner.planPath(startCoordinate, route, graph);
 
         for (PathSegment pathSegment : output) {
             if(pathSegment.getSensorRead() != null){
@@ -118,28 +126,35 @@ public abstract class ConstrainedPathPlannerTest {
     }
 
     @Test
+    @Timeout(value = 10, unit=TimeUnit.SECONDS) 
     public void pathIsUnderMaxMovesTest(){
-        var output = planner.planPath(startCoordinate, route, obstacles);
+        var output = planner.planPath(startCoordinate, route, graph);
 
         assertTrue(output.size() <= getTestInstanceMaxMoves());
     }
 
     @Test
+    @Timeout(value = 10, unit=TimeUnit.SECONDS) 
     public void pathDoesntCrossObstaclesTest(){
-        var output = planner.planPath(startCoordinate, route, obstacles);
+        var output = planner.planPath(startCoordinate, route, graph);
 
         int idx =0;
-        for (Obstacle o : obstacles) {
+        for (Obstacle o : graph.getObstacles()) {
             assertFalse(o.intersectsPath(output),"path crosses obstacle at index: " + idx);
             idx += 1;
         }
     }
 
     @Test
+    @Timeout(value = 10, unit=TimeUnit.SECONDS) 
     public void sensorsInRangeTest(){
-        var output = planner.planPath(startCoordinate, route, obstacles);
+        var output = planner.planPath(startCoordinate, route, graph);
 
         for (PathSegment pathSegment : output) {
+            
+            if(pathSegment.getSensorRead() == null)
+                break;
+
             double distance = pathSegment.getSensorRead().getCoordinates().distance(
                 pathSegment.getEndPoint()
             );

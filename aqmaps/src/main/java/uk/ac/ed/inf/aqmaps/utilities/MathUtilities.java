@@ -20,6 +20,10 @@ public class MathUtilities {
         return angle;
     }
 
+    public static double oppositeAngleFromEast(double angle){
+        return (angle + 180) % 360;
+    }
+
     /**
      * gets unit vector in the direction of angle
      * @param angle double between 0 and 360 representing angle from the eastern direction anticlockwise (phase angle in range (0,pi))

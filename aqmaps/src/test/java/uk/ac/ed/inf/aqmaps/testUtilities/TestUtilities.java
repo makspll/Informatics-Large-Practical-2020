@@ -8,13 +8,21 @@ import java.util.Queue;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.math.Vector2D;
 
 import uk.ac.ed.inf.aqmaps.simulation.PathSegment;
 
 public class TestUtilities {
-    public static GeometryFactory gf = new GeometryFactory();
-    
+
+    public static PrecisionModel precisionModel = new PrecisionModel(PrecisionModel.FLOATING_SINGLE);
+    public static GeometryFactory gf = new GeometryFactory(precisionModel);
+
+     /**
+     * 7 digit precision epsilon
+     */
+    public static double epsilon = 0.00000001d;
+
     public static void assertPathGoesThroughInOrder(Queue<PathSegment> path,double epsilon,Coordinate ...coordinates){
 
         if(coordinates.length == 0)
@@ -65,7 +73,7 @@ public class TestUtilities {
                 assertCoordinateEquals(
                     previousEnd, 
                     currentStart, 
-                    0.00000001d);
+                    epsilon);
             }
             previousSegment = pathSegment;
         }
@@ -101,7 +109,7 @@ public class TestUtilities {
             angle += 360;
         }
 
-        int angleRounded = ((int)Math.round(angle) % maxAngle);
+        int angleRounded = ((int)Math.round(angle) % (maxAngle+1));
         int distance = Math.abs(angleRounded - p.getDirection());
 
         assertTrue(
@@ -135,5 +143,6 @@ public class TestUtilities {
             },"Direction at idx: " + i++ + " has invalid direction");
         }
     }
+
 
 }

@@ -9,7 +9,7 @@ import org.locationtech.jts.geom.LinearRing;
 
 
 
-public class ConversionUtilities {
+public class GeometryUtilities {
     
     public static Coordinate MapboxPointToJTSCoordinate(Point p){
         return new Coordinate(p.longitude(),p.latitude());
@@ -51,8 +51,8 @@ public class ConversionUtilities {
     }
 
 
-    public final static GeometryFactory geometryFactory = new GeometryFactory(
-                                                            new PrecisionModel(PrecisionModel.FLOATING));
+    public final static PrecisionModel precisionModel = new PrecisionModel(PrecisionModel.FLOATING_SINGLE);
+    public final static GeometryFactory geometryFactory = new GeometryFactory(precisionModel);
 
 
 }

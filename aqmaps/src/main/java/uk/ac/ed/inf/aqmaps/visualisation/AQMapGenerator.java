@@ -12,7 +12,7 @@ import com.mapbox.geojson.Point;
 
 import uk.ac.ed.inf.aqmaps.simulation.PathSegment;
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
-import uk.ac.ed.inf.aqmaps.utilities.ConversionUtilities;
+import uk.ac.ed.inf.aqmaps.utilities.GeometryUtilities;
 
 public class AQMapGenerator implements SensorCollectionVisualiser {
 
@@ -49,7 +49,7 @@ public class AQMapGenerator implements SensorCollectionVisualiser {
 
             // add each segment's start point
             flightPathPoints.add(
-                ConversionUtilities.JTSCoordinateToMapboxPoint(
+                GeometryUtilities.JTSCoordinateToMapboxPoint(
                     segment.getStartPoint()));
 
             // segment count counts how many segments are left
@@ -59,7 +59,7 @@ public class AQMapGenerator implements SensorCollectionVisualiser {
             // collect the last segment's end point
             if(segmentCount == 0)
                 flightPathPoints.add(
-                    ConversionUtilities.JTSCoordinateToMapboxPoint(
+                    GeometryUtilities.JTSCoordinateToMapboxPoint(
                         segment.getEndPoint()));
         }
 
@@ -84,7 +84,7 @@ public class AQMapGenerator implements SensorCollectionVisualiser {
     private Feature createMarker(Sensor sensor) throws IOException, InterruptedException {
 
         Feature feature = Feature.fromGeometry(
-                            ConversionUtilities.JTSCoordinateToMapboxPoint(
+                            GeometryUtilities.JTSCoordinateToMapboxPoint(
                                 sensor.getCoordinates()));
 
         String colour = null;
