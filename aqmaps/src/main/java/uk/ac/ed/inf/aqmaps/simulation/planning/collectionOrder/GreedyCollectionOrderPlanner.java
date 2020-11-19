@@ -1,23 +1,16 @@
 package uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder;
 
 import java.util.Collection;
-import java.util.Deque;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-import java.util.Set;
-
-import uk.ac.ed.inf.aqmaps.simulation.Obstacle;
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
 import uk.ac.ed.inf.aqmaps.simulation.planning.DistanceMatrix;
+import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.optimisers.CollectionOrderOptimiser;
 
 /**
  * Plans a collection of sensor data in a greedy order and in a way that forms a loop, 
  * i.e. by picking the closest sensor at each step.
  */
-public class GreedyCollectionOrderPlanner extends CollectionOrderPlanner {
+public class GreedyCollectionOrderPlanner extends BaseCollectionOrderPlanner {
 
 
     public GreedyCollectionOrderPlanner(Collection<CollectionOrderOptimiser> optimiser, DistanceMatrix distMat) {

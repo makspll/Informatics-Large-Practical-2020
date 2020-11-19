@@ -1,4 +1,4 @@
-package uk.ac.ed.inf.aqmaps.pathfinding;
+package uk.ac.ed.inf.aqmaps.pathfinding.goals;
 
 import org.locationtech.jts.geom.Coordinate;
 

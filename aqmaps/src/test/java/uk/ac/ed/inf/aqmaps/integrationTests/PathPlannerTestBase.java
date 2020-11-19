@@ -13,20 +13,20 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.locationtech.jts.geom.Coordinate;
 
-import uk.ac.ed.inf.aqmaps.simulation.Obstacle;
+import uk.ac.ed.inf.aqmaps.pathfinding.Obstacle;
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
-import uk.ac.ed.inf.aqmaps.simulation.planning.DiscreteStepAndAngleGraph;
-import uk.ac.ed.inf.aqmaps.simulation.planning.path.ConstrainedPathPlanner;
+import uk.ac.ed.inf.aqmaps.simulation.planning.ConstrainedTreeGraph;
+import uk.ac.ed.inf.aqmaps.simulation.planning.path.BasePathPlanner;
 import uk.ac.ed.inf.aqmaps.simulation.planning.path.PathSegment;
 import uk.ac.ed.inf.aqmaps.testUtilities.TestUtilities;
 
 
 public abstract class PathPlannerTestBase {
-    private ConstrainedPathPlanner planner;
+    private BasePathPlanner planner;
 
     private Coordinate startCoordinate;
     private Deque<Sensor> route;
-    private DiscreteStepAndAngleGraph graph;
+    private ConstrainedTreeGraph graph;
     
     @BeforeEach
     public void setup(){
@@ -39,9 +39,9 @@ public abstract class PathPlannerTestBase {
 
     protected abstract Coordinate setupStartCoordinate();
     protected abstract Deque<Sensor> setupRoute();
-    protected abstract DiscreteStepAndAngleGraph setupGraph();
+    protected abstract ConstrainedTreeGraph setupGraph();
 
-    protected abstract ConstrainedPathPlanner setupTestInstance();
+    protected abstract BasePathPlanner setupTestInstance();
     protected abstract double getTestInstanceMoveLength();
     protected abstract double getTestInstanceReadingRange();
     protected abstract int getTestInstanceMaxAngle();

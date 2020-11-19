@@ -13,14 +13,14 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 
-import uk.ac.ed.inf.aqmaps.pathfinding.SpatialTreeSearchNode;
-import uk.ac.ed.inf.aqmaps.simulation.Obstacle;
-import uk.ac.ed.inf.aqmaps.simulation.planning.DiscreteStepAndAngleGraph;
+import uk.ac.ed.inf.aqmaps.pathfinding.Obstacle;
+import uk.ac.ed.inf.aqmaps.simulation.DirectedSearchNode;
+import uk.ac.ed.inf.aqmaps.simulation.planning.ConstrainedTreeGraph;
 import uk.ac.ed.inf.aqmaps.testUtilities.TestUtilities;
 
 public class DiscreteStepAndAngleGraphTest {
 
-    private static DiscreteStepAndAngleGraph testGraph;
+    private static ConstrainedTreeGraph testGraph;
     private static Collection<Obstacle> obstacles = new ArrayList<Obstacle>();
     private static Obstacle obstacle;
 
@@ -37,7 +37,7 @@ public class DiscreteStepAndAngleGraphTest {
         obstacles.add(obstacle);
 
 
-        testGraph = new DiscreteStepAndAngleGraph(MIN_ANGLE, MAX_ANGLE, 10, 1, obstacles);
+        testGraph = new ConstrainedTreeGraph(MIN_ANGLE, MAX_ANGLE, 10, 1, obstacles);
     }
 
     @Test
@@ -78,7 +78,7 @@ public class DiscreteStepAndAngleGraphTest {
         when(obstacle.intersectsPath(any(Coordinate.class),any(Coordinate.class)))
             .thenReturn(false);
 
-        var output = testGraph.getNeighbouringNodes(new SpatialTreeSearchNode(new Coordinate(0,0), null, 0, 0));
+        var output = testGraph.getNeighbouringNodes(new DirectedSearchNode(new Coordinate(0,0), null, 0, 0));
         assertEquals(36, output.size());
     }
 
@@ -89,7 +89,7 @@ public class DiscreteStepAndAngleGraphTest {
         when(obstacle.intersectsPath(any(Coordinate.class),any(Coordinate.class)))
             .thenReturn(true);
 
-        var output = testGraph.getNeighbouringNodes(new SpatialTreeSearchNode(new Coordinate(0,0), null, 0, 0));
+        var output = testGraph.getNeighbouringNodes(new DirectedSearchNode(new Coordinate(0,0), null, 0, 0));
         assertEquals(0, output.size());
     }
     

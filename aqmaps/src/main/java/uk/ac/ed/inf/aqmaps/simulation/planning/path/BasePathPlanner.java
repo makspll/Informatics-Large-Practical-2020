@@ -6,21 +6,21 @@ import java.util.LinkedList;
 
 import org.locationtech.jts.geom.Coordinate;
 
-import uk.ac.ed.inf.aqmaps.pathfinding.PathfindingGoal;
-import uk.ac.ed.inf.aqmaps.pathfinding.PointGoal;
-import uk.ac.ed.inf.aqmaps.pathfinding.SpatialTreeSearchNode;
-import uk.ac.ed.inf.aqmaps.pathfinding.TreePathfindingAlgorithm;
+import uk.ac.ed.inf.aqmaps.pathfinding.PathfindingAlgorithm;
+import uk.ac.ed.inf.aqmaps.pathfinding.goals.PathfindingGoal;
+import uk.ac.ed.inf.aqmaps.pathfinding.goals.PointGoal;
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
-import uk.ac.ed.inf.aqmaps.simulation.planning.DiscreteStepAndAngleGraph;
+import uk.ac.ed.inf.aqmaps.simulation.DirectedSearchNode;
+import uk.ac.ed.inf.aqmaps.simulation.planning.ConstrainedTreeGraph;
 import uk.ac.ed.inf.aqmaps.utilities.MathUtilities;
 
 /**
  * Base class for planners with a limited number of maximum moves and a
  * minimum reading range.
  */
-public class ConstrainedPathPlanner implements PathPlanner {
+public class BasePathPlanner implements PathPlanner {
 
-    public ConstrainedPathPlanner(double readingRange, int maxMoves, TreePathfindingAlgorithm algorithm) {
+    public BasePathPlanner(double readingRange, int maxMoves, PathfindingAlgorithm<DirectedSearchNode> algorithm) {
         this.READING_RANGE = readingRange;
         this.MAX_MOVES = maxMoves;
         this.ALGORITHM = algorithm;
@@ -35,14 +35,14 @@ public class ConstrainedPathPlanner implements PathPlanner {
      */
     @Override
     public Deque<PathSegment> planPath(Coordinate startCoordinate, Deque<Sensor> route,
-            DiscreteStepAndAngleGraph graph,
+            ConstrainedTreeGraph graph,
             boolean formLoop) {
         
 
         // create start node
         // the parent and direction values can be anything as 
         // they won't ever be used in construction of the path segments
-        var startNode = new SpatialTreeSearchNode(startCoordinate,
+        var startNode = new DirectedSearchNode(startCoordinate,
             null,
             -1,
             0);
@@ -86,10 +86,10 @@ public class ConstrainedPathPlanner implements PathPlanner {
      * @param graph the graph which defines the transitions between nodes
      * @return the path segments connecting the path points given
      */
-    protected Deque<PathSegment> pathPointsToSegmentsStrategy(Deque<SpatialTreeSearchNode> pathPoints,
+    protected Deque<PathSegment> pathPointsToSegmentsStrategy(Deque<DirectedSearchNode> pathPoints,
         Deque<PathfindingGoal> goalsRoute,
         Deque<Sensor> sensorRoute,
-        DiscreteStepAndAngleGraph graph
+        ConstrainedTreeGraph graph
         ){
 
         assert pathPoints.size() > 1;
@@ -198,6 +198,7 @@ public class ConstrainedPathPlanner implements PathPlanner {
         return output;
     }
 
+    
     /**
      * Resolves multiple goals reached at a node into multiple segments which reach the goals at their endpoints 
      * @param node
@@ -206,8 +207,8 @@ public class ConstrainedPathPlanner implements PathPlanner {
      * @param goalStartIdx the index of the goal at which to start resolving
      */
     private void resolveProxySegments(
-        SpatialTreeSearchNode node,
-        DiscreteStepAndAngleGraph graph,
+        DirectedSearchNode node,
+        ConstrainedTreeGraph graph,
         Deque<PathfindingGoal> goalsRoute,
         Deque<Sensor> sensorRoute,
         Deque<PathSegment> output
@@ -279,6 +280,6 @@ public class ConstrainedPathPlanner implements PathPlanner {
 
     protected final double READING_RANGE;
     protected final int MAX_MOVES;
-    protected final TreePathfindingAlgorithm ALGORITHM;
+    protected final PathfindingAlgorithm<DirectedSearchNode> ALGORITHM;
 
 }

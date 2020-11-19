@@ -9,15 +9,15 @@ import java.util.Set;
 import org.locationtech.jts.geom.Coordinate;
 
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
-import uk.ac.ed.inf.aqmaps.simulation.planning.DiscreteStepAndAngleGraph;
-import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.CollectionOrderPlanner;
+import uk.ac.ed.inf.aqmaps.simulation.planning.ConstrainedTreeGraph;
+import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.BaseCollectionOrderPlanner;
 import uk.ac.ed.inf.aqmaps.simulation.planning.path.PathPlanner;
 import uk.ac.ed.inf.aqmaps.simulation.planning.path.PathSegment;
 
 
 public class Drone implements SensorDataCollector {
 
-    public Drone(PathPlanner fp, CollectionOrderPlanner rp){
+    public Drone(PathPlanner fp, BaseCollectionOrderPlanner rp){
         flightPlanner = fp;
         routePlanner = rp;
     }
@@ -25,7 +25,7 @@ public class Drone implements SensorDataCollector {
     @Override
     public Queue<PathSegment> planCollection(Coordinate startCoordinate,
         Set<Sensor> sensors,
-        DiscreteStepAndAngleGraph graph,
+        ConstrainedTreeGraph graph,
         boolean formLoop) {
         
         //// first we identify which sensor we are the closest to
@@ -78,6 +78,6 @@ public class Drone implements SensorDataCollector {
 
 
     private PathPlanner flightPlanner;
-    private CollectionOrderPlanner routePlanner;
+    private BaseCollectionOrderPlanner routePlanner;
 
 }

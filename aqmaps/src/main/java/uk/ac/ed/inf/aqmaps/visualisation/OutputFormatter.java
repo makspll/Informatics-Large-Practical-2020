@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Queue;
-import java.util.stream.Stream;
 
 import com.mapbox.geojson.FeatureCollection;
 
@@ -13,8 +12,17 @@ import org.locationtech.jts.geom.Coordinate;
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
 import uk.ac.ed.inf.aqmaps.simulation.planning.path.PathSegment;
 
+/**
+ * The output formatter formats and writes the given flight path and visualisation to a file
+ */
 public class OutputFormatter {
 
+    /**
+     * Write flight path to given file
+     * @param flightPath 
+     * @param file
+     * @throws IOException
+     */
     public static void writePath(Queue<PathSegment> flightPath, OutputStream file) throws IOException{
 
         // open writer to the output stream
@@ -57,6 +65,12 @@ public class OutputFormatter {
         // resources will be disposed off automatically via try block
     }
 
+    /**
+     * Write geojson readings visualisation to the given file
+     * @param readingsMap
+     * @param file
+     * @throws IOException
+     */
     public static void writeReadingsMap(FeatureCollection readingsMap,OutputStream file) throws IOException{
         
         // open writer to the output stream

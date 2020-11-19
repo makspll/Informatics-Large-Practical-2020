@@ -1,5 +1,8 @@
 package uk.ac.ed.inf.aqmaps.visualisation;
 
+/**
+ * Available symbols for use with geojson
+ */
 public enum MarkerSymbol {
     LIGHTHOUSE{
         public String toString(){

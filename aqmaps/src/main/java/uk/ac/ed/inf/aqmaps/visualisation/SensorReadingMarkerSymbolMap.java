@@ -1,14 +1,27 @@
 package uk.ac.ed.inf.aqmaps.visualisation;
 
 
+/**
+ * The mapping of sensor reading values to marker symbols for visualisation purposes
+ */
 public class SensorReadingMarkerSymbolMap implements AttributeMap<Float,MarkerSymbol>{
 
+    /**
+     * Create new reading to marker symbol mapping with the given minimum and maximum reading values and marker symbols
+     * @param minValue
+     * @param maxValue
+     * @param symbols
+     */
     public SensorReadingMarkerSymbolMap(Float minValue,Float maxValue,MarkerSymbol... symbols){
         this.min = minValue;
         this.max = maxValue;
         this.markerSymbols = symbols;
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
 	public MarkerSymbol getFor(Float value) {
         if (value >= max || value < min)   
@@ -23,7 +36,18 @@ public class SensorReadingMarkerSymbolMap implements AttributeMap<Float,MarkerSy
         return markerSymbols[bucketNumber];
     }
 
+    /**
+     * Minimum sensor reading
+     */
     private Float min;
+
+    /**
+     * Maximum sensor reading
+     */
     private Float max;
+
+    /**
+     * List of marker symbol buckets
+     */
     private MarkerSymbol[] markerSymbols;
 }

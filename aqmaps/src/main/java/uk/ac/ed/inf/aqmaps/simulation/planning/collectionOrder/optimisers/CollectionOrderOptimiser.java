@@ -1,8 +1,6 @@
-package uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder;
+package uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.optimisers;
 
-import java.util.Deque;
 
-import uk.ac.ed.inf.aqmaps.simulation.Sensor;
 import uk.ac.ed.inf.aqmaps.simulation.planning.DistanceMatrix;
 
 /**

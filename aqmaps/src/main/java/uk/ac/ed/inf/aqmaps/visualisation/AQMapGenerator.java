@@ -3,6 +3,7 @@ package uk.ac.ed.inf.aqmaps.visualisation;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.Queue;
 
 import com.mapbox.geojson.Feature;
@@ -14,6 +15,9 @@ import uk.ac.ed.inf.aqmaps.simulation.Sensor;
 import uk.ac.ed.inf.aqmaps.simulation.planning.path.PathSegment;
 import uk.ac.ed.inf.aqmaps.utilities.GeometryUtilities;
 
+/**
+ * 
+ */
 public class AQMapGenerator implements SensorCollectionVisualiser {
 
     public AQMapGenerator(AttributeMap<Float, String> colourMap, AttributeMap<Float, MarkerSymbol> symbolMap) {
@@ -33,7 +37,7 @@ public class AQMapGenerator implements SensorCollectionVisualiser {
     }
 
     @Override
-    public FeatureCollection plotMap(Queue<PathSegment> flightPath, Collection<Sensor> sensorsToBeVisited) 
+    public FeatureCollection plotMap(Deque<PathSegment> flightPath, Collection<Sensor> sensorsToBeVisited) 
         throws IOException, InterruptedException  {
         
         var mapFeatures = new ArrayList<Feature>();

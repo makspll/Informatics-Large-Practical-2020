@@ -9,13 +9,21 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.math.Vector2D;
 
-import uk.ac.ed.inf.aqmaps.simulation.Obstacle;
+import uk.ac.ed.inf.aqmaps.pathfinding.Obstacle;
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
 import uk.ac.ed.inf.aqmaps.utilities.BVHNode;
 import uk.ac.ed.inf.aqmaps.utilities.GeometryUtilities;
 
+/**
+ * Distance matrix using the greatest avoidance distance as the distance metric. This distance is calculated by forming a minimum bounding circle around all obstacles
+ * between any two sensors and calculating the length of the path which "wraps" around the circle (approximated as a triangle)
+ */
 public class GreatestAvoidanceDistanceMatrix extends DistanceMatrix {
 
+    /**
+     * initialize blank distance matrix with the given obstacles
+     * @param obstacles
+     */
     public GreatestAvoidanceDistanceMatrix(Collection<Obstacle> obstacles){
         this.obstacles = obstacles;
         this.obstacleBVHTree = new BVHNode<Obstacle>(obstacles);

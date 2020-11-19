@@ -1,19 +1,15 @@
 package uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder;
 
 import java.util.Collection;
-import java.util.Deque;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Set;
-
-import uk.ac.ed.inf.aqmaps.simulation.Obstacle;
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
 import uk.ac.ed.inf.aqmaps.simulation.planning.DistanceMatrix;
+import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.optimisers.CollectionOrderOptimiser;
 
 /**
  * Collection order planner which employs the nearest insertion method to try and pick the best route.
  */
-public class NearestInsertionCollectionOrderPlanner extends CollectionOrderPlanner {
+public class NearestInsertionCollectionOrderPlanner extends BaseCollectionOrderPlanner {
 
     public NearestInsertionCollectionOrderPlanner(Collection<CollectionOrderOptimiser> optimisers,
             DistanceMatrix distMat) {

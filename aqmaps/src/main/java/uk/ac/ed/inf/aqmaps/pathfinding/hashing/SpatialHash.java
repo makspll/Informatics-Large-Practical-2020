@@ -1,4 +1,4 @@
-package uk.ac.ed.inf.aqmaps.pathfinding;
+package uk.ac.ed.inf.aqmaps.pathfinding.hashing;
 
 import org.locationtech.jts.geom.Coordinate;
 
@@ -11,7 +11,7 @@ public interface SpatialHash {
     /**
      * Returns a hash for the given coordinate. A good hash will be equal for points which are near each other
      * according to some metric, and different for ones that are not.
-     * @param a
+     * @param a the coordinate to hash
      * @return
      */
     public int getHash(Coordinate a);

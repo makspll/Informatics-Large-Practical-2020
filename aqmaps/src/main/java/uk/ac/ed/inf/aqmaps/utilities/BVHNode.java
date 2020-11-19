@@ -9,8 +9,17 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 
 
+/**
+ * Bounding Volume Hierarchy Node. This class forms a tree of AABB (Axis aligned bounding boxes) for internal nodes
+ * and of any shapes at the leaf nodes. Allows for quick broad phase collision checks between objects. Will never return a false negative but might return
+ * false positives. I.e. this structure only tells you which objects are possibly colliding (whose AABB's intersect).
+*/
 public class BVHNode<T extends Shape>{
 
+    /**
+     * Construct a new bvh hierarchy with the given shapes at the leaf nodes
+     * @param shapes
+     */
     public BVHNode(Collection<T> shapes){
         
         var envelopeShapePairs = new ArrayList<EnvelopeShapePair>(shapes.size());
@@ -74,9 +83,11 @@ public class BVHNode<T extends Shape>{
         }
     }
 
-
-
-
+    /**
+     * Forms an envelope around all the given shape envelope pairs
+     * @param shapeEnvelopePairs
+     * @return
+     */
     private Envelope getContainingEnvelope(List<EnvelopeShapePair> shapeEnvelopePairs){
         var shapes = new Geometry[shapeEnvelopePairs.size()]; 
 
@@ -182,9 +193,23 @@ public class BVHNode<T extends Shape>{
         }
     }
 
+    /**
+     * the AABB of this node, envelops all the children nodes and leaf nodes under this node
+     */
     private Envelope AABB;
+
+    /**
+     * The left child node
+     */
     private BVHNode<T> leftChild;
+
+    /**
+     * The right child node
+     */
     private BVHNode<T> rightChild;
 
+    /**
+     * The shape contained in this node if it is a leaf node
+     */
     private T contents = null;
 }

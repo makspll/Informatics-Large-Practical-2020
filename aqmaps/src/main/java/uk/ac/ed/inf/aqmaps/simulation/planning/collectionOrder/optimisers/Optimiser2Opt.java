@@ -1,6 +1,5 @@
-package uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder;
+package uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.optimisers;
 
-import uk.ac.ed.inf.aqmaps.simulation.Sensor;
 import uk.ac.ed.inf.aqmaps.simulation.planning.DistanceMatrix;
 
 public class Optimiser2Opt implements CollectionOrderOptimiser {

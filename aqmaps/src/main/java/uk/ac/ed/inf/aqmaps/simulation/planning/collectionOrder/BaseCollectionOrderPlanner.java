@@ -4,32 +4,23 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
 import java.util.Set;
-
-import org.locationtech.jts.algorithm.MinimumBoundingCircle;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.math.Vector2D;
-
-import uk.ac.ed.inf.aqmaps.simulation.Obstacle;
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
 import uk.ac.ed.inf.aqmaps.simulation.planning.DistanceMatrix;
-import uk.ac.ed.inf.aqmaps.utilities.GeometryUtilities;
+import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.optimisers.CollectionOrderOptimiser;
 
 /**
  * Collection order planners generate good traversal orders between the given set of sensors,
  * where "good" criteria are defined by each implementation of the collection planner.
  */
-public abstract class CollectionOrderPlanner {
+public abstract class BaseCollectionOrderPlanner {
 
     /**
      * Creates a collection order planner with the given opimisers and distance matrix method
      * @param optimisers the optimisers to apply in order to the draft route, can be null 
      * @param distMat the distance matrix to use in calculating distances between sensors
      */
-    public CollectionOrderPlanner(Collection<CollectionOrderOptimiser> optimisers, DistanceMatrix distMat){
+    public BaseCollectionOrderPlanner(Collection<CollectionOrderOptimiser> optimisers, DistanceMatrix distMat){
         this.OPTIMISERS = optimisers == null ? new ArrayList<CollectionOrderOptimiser>() : optimisers;
         this.DISTANCE_MATRIX = distMat;
     }

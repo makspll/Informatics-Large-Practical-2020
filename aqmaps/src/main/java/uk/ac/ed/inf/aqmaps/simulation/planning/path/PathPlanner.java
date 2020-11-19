@@ -5,7 +5,7 @@ import java.util.Deque;
 import org.locationtech.jts.geom.Coordinate;
 
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
-import uk.ac.ed.inf.aqmaps.simulation.planning.DiscreteStepAndAngleGraph;
+import uk.ac.ed.inf.aqmaps.simulation.planning.ConstrainedTreeGraph;
 
 /**
  * Path planners create a detailed path between given route points which takes a sensor data collector 
@@ -24,7 +24,7 @@ public interface PathPlanner {
      */
     public Deque<PathSegment> planPath(Coordinate startCoordinate,
         Deque<Sensor> route,
-        DiscreteStepAndAngleGraph graph,
+        ConstrainedTreeGraph graph,
         boolean formLoop);
 
 }

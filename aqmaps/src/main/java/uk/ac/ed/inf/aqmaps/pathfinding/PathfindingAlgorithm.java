@@ -5,8 +5,10 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Stack;
 
+import uk.ac.ed.inf.aqmaps.pathfinding.goals.PathfindingGoal;
 
-public abstract class TreePathfindingAlgorithm{
+
+public abstract class PathfindingAlgorithm<T extends SearchNode<T>>{
     
     /**
      * Finds a path from the start to the goal node and outputs the result into the provided deque. Modifies the goal node's location to accomodate for the goal threshold
@@ -17,11 +19,11 @@ public abstract class TreePathfindingAlgorithm{
      * @param output the Deque into which the final path will be deposited. The last node will always be the goal node provided. If the threshold is non-zero, 
      * the goal node's location will be changed in order to accomodate for the real path traversed.
      */
-    public abstract  void findPath(Graph g,
+    public abstract  void findPath(SearchTree<T> g,
         PathfindingGoal goal,
-        SpatialTreeSearchNode start,
+        T start,
         double goalThreshold,
-        Deque<SpatialTreeSearchNode> output);
+        Deque<T> output);
 
 
     /**
@@ -33,11 +35,11 @@ public abstract class TreePathfindingAlgorithm{
      * @return Deque with the final path. The route nodes will be part of the route and the last route node will be at the end. If the threshold is non-zero, 
      * the goal node's locations will be changed in order to accomodate for the real path traversed.
      */
-    public  Deque<SpatialTreeSearchNode> findPath(Graph g, Deque<PathfindingGoal> route, SpatialTreeSearchNode start, double goalThreshold) {
+    public  Deque<T> findPath(SearchTree<T> g, Deque<PathfindingGoal> route, T start, double goalThreshold) {
 
         // we perform smaller searches between the sequential start and end goals
         var startNode = start;
-        var finalPath = new LinkedList<SpatialTreeSearchNode>();
+        var finalPath = new LinkedList<T>();
 
 
         for (var goalNode : route) {
@@ -65,7 +67,7 @@ public abstract class TreePathfindingAlgorithm{
      * @param goal
      * @return
      */
-    protected  boolean isAtGoal(double threshold, SpatialTreeSearchNode node, PathfindingGoal goal){
+    protected  boolean isAtGoal(double threshold, T node, PathfindingGoal goal){
         return node.getLocation().distance(goal.getPosition()) <= threshold;
     }
     
@@ -74,12 +76,12 @@ public abstract class TreePathfindingAlgorithm{
      * @param node the node to which to reconstruct the path
      * @param out the queue to deposit the output into
      */
-    protected  void reconstructPathUpToIncluding(SpatialTreeSearchNode node, Queue<SpatialTreeSearchNode> out,SpatialTreeSearchNode limitNode){
+    protected  void reconstructPathUpToIncluding(T node, Queue<T> out,T limitNode){
         
         // follow the chain of child-parent relationships
         // deposit them in the stack in effect reversing the order
-        Stack<SpatialTreeSearchNode> nodeStack = new Stack<SpatialTreeSearchNode>();
-        SpatialTreeSearchNode currNode = node;
+        Stack<T> nodeStack = new Stack<T>();
+        T currNode = node;
 
         while(currNode != null){
             nodeStack.push(currNode);
@@ -87,7 +89,7 @@ public abstract class TreePathfindingAlgorithm{
             if(currNode == limitNode)
                 break;
 
-            currNode = currNode.getParentNode();
+            currNode = (T)currNode.getParentNode();
         }
 
         while(!nodeStack.isEmpty()){

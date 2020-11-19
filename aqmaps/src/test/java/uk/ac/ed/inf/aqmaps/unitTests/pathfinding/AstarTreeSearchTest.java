@@ -19,12 +19,12 @@ import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.math.Vector2D;
 
 import uk.ac.ed.inf.aqmaps.pathfinding.AstarTreeSearch;
-import uk.ac.ed.inf.aqmaps.pathfinding.Graph;
-import uk.ac.ed.inf.aqmaps.pathfinding.PathfindingGoal;
-import uk.ac.ed.inf.aqmaps.pathfinding.PointGoal;
-import uk.ac.ed.inf.aqmaps.pathfinding.ScaledGridSnappingHash;
-import uk.ac.ed.inf.aqmaps.pathfinding.SpatialTreeSearchNode;
-import uk.ac.ed.inf.aqmaps.pathfinding.StraightLineDistance;
+import uk.ac.ed.inf.aqmaps.pathfinding.SearchTree;
+import uk.ac.ed.inf.aqmaps.pathfinding.goals.PathfindingGoal;
+import uk.ac.ed.inf.aqmaps.pathfinding.goals.PointGoal;
+import uk.ac.ed.inf.aqmaps.pathfinding.hashing.GridSnappingSpatialHash;
+import uk.ac.ed.inf.aqmaps.pathfinding.heuristics.StraightLineDistance;
+import uk.ac.ed.inf.aqmaps.simulation.DirectedSearchNode;
 
 public class AstarTreeSearchTest {
 
@@ -46,14 +46,14 @@ public class AstarTreeSearchTest {
             })
         ));
 
-        Graph g = new GridGraph(obstacles);
+        SearchTree g = new GridGraph(obstacles);
 
-        var testSearch = new AstarTreeSearch(new StraightLineDistance(),new ScaledGridSnappingHash(1/75d, new Coordinate()));
+        var testSearch = new AstarTreeSearch(new StraightLineDistance(),new GridSnappingSpatialHash(1/75d, new Coordinate()));
 
         Coordinate startCoordinate = new Coordinate(0.5,-0.5);
         Coordinate endCoordinate = new Coordinate(3.5,-0.5);
 
-        var startNode = new SpatialTreeSearchNode(startCoordinate, 
+        var startNode = new DirectedSearchNode(startCoordinate, 
             null,
             -1,
             startCoordinate.distance(endCoordinate),
@@ -61,7 +61,7 @@ public class AstarTreeSearchTest {
 
         var endNode = new PointGoal(endCoordinate);
 
-        var output = new LinkedList<SpatialTreeSearchNode>();
+        var output = new LinkedList<DirectedSearchNode>();
 
         testSearch.findPath(g, endNode, startNode, 0.0000001d,output);
 
@@ -98,14 +98,14 @@ public class AstarTreeSearchTest {
             })
         ));
 
-        Graph g = new GridGraph(obstacles);
+        SearchTree g = new GridGraph(obstacles);
 
-        var testSearch = new AstarTreeSearch(new StraightLineDistance(),new ScaledGridSnappingHash(1/75d, new Coordinate()));
+        var testSearch = new AstarTreeSearch(new StraightLineDistance(),new GridSnappingSpatialHash(1/75d, new Coordinate()));
 
         Coordinate startCoordinate = new Coordinate(0.5,0.5);
         Coordinate endCoordinate = new Coordinate(5.5,5.5);
 
-        var startNode = new SpatialTreeSearchNode(startCoordinate, 
+        var startNode = new DirectedSearchNode(startCoordinate, 
             null,
             -1,
             startCoordinate.distance(endCoordinate),
@@ -113,7 +113,7 @@ public class AstarTreeSearchTest {
 
         var endNode = new PointGoal(endCoordinate);
 
-        var output = new LinkedList<SpatialTreeSearchNode>();
+        var output = new LinkedList<DirectedSearchNode>();
 
         testSearch.findPath(g, endNode, startNode, 0.0000001d,output);
 
@@ -151,9 +151,9 @@ public class AstarTreeSearchTest {
             })
         ));
 
-        Graph g = new GridGraph(obstacles);
+        SearchTree g = new GridGraph(obstacles);
 
-        var testSearch = new AstarTreeSearch(new StraightLineDistance(),new ScaledGridSnappingHash(1/75d, new Coordinate()));
+        var testSearch = new AstarTreeSearch(new StraightLineDistance(),new GridSnappingSpatialHash(1/75d, new Coordinate()));
 
         Coordinate startCoordinate = new Coordinate(0.5,0.5);
         Coordinate middleCoordinate = new Coordinate(1.5,-0.5);
@@ -161,7 +161,7 @@ public class AstarTreeSearchTest {
 
         Coordinate endCoordinate = new Coordinate(5.5,5.5);
 
-        var startNode = new SpatialTreeSearchNode(startCoordinate, 
+        var startNode = new DirectedSearchNode(startCoordinate, 
             null,
             -1,
             startCoordinate.distance(endCoordinate),
@@ -182,8 +182,8 @@ public class AstarTreeSearchTest {
 
         assertEquals(13,output.size());
         assertEquals(startNode,output.peek());
-        SpatialTreeSearchNode lastNode = null;
-        for (SpatialTreeSearchNode n : output) {
+        DirectedSearchNode lastNode = null;
+        for (DirectedSearchNode n : output) {
             lastNode = n;
         }
         assertEquals(endNode.getPosition(),lastNode.getLocation());
@@ -197,15 +197,15 @@ public class AstarTreeSearchTest {
  
         ));
 
-        Graph g = new GridGraph(obstacles);
+        SearchTree g = new GridGraph(obstacles);
 
-        var testSearch = new AstarTreeSearch(new StraightLineDistance(),new ScaledGridSnappingHash(1/75d, new Coordinate()));
+        var testSearch = new AstarTreeSearch(new StraightLineDistance(),new GridSnappingSpatialHash(1/75d, new Coordinate()));
 
         Coordinate startCoordinate = new Coordinate(0,0);
         Coordinate middleCoordinate = new Coordinate(0,0.5);
         Coordinate endCoordinate = new Coordinate(0,-0.5);
 
-        var startNode = new SpatialTreeSearchNode(startCoordinate, 
+        var startNode = new DirectedSearchNode(startCoordinate, 
             null,
             -1,
             startCoordinate.distance(endCoordinate),
@@ -227,7 +227,7 @@ public class AstarTreeSearchTest {
 
     private static GeometryFactory gf = new GeometryFactory();
 
-    private class GridGraph implements Graph{
+    private class GridGraph implements SearchTree{
 
         private Collection<Polygon> obstacles;
         
@@ -236,9 +236,9 @@ public class AstarTreeSearchTest {
         }
 
         @Override
-        public List<SpatialTreeSearchNode> getNeighbouringNodes(SpatialTreeSearchNode node) {
+        public List<DirectedSearchNode> getNeighbouringNodes(DirectedSearchNode node) {
 
-            List<SpatialTreeSearchNode> output = new ArrayList<SpatialTreeSearchNode>();
+            List<DirectedSearchNode> output = new ArrayList<DirectedSearchNode>();
 
             var gridDirections = new Vector2D[]{
                 new Vector2D(1,0),
@@ -272,7 +272,7 @@ public class AstarTreeSearchTest {
                 if(intersectsObstacle)
                     continue;
 
-                output.add(new SpatialTreeSearchNode(
+                output.add(new DirectedSearchNode(
                     b, 
                     node, 
                     directionInts[idx],

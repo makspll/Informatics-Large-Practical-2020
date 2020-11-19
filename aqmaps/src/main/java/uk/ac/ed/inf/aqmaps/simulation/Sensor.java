@@ -2,7 +2,7 @@ package uk.ac.ed.inf.aqmaps.simulation;
 
 import org.locationtech.jts.geom.Coordinate;
 
-import uk.ac.ed.inf.aqmaps.pathfinding.PathfindingGoal;
+import uk.ac.ed.inf.aqmaps.pathfinding.goals.PathfindingGoal;
 
 public interface Sensor extends PathfindingGoal {
     public float getReading();

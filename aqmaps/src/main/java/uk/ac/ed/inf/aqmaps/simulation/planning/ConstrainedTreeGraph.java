@@ -4,22 +4,20 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.locationtech.jts.awt.PointShapeFactory.Square;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.math.Vector2D;
 
-import uk.ac.ed.inf.aqmaps.pathfinding.Graph;
-import uk.ac.ed.inf.aqmaps.pathfinding.SpatialTreeSearchNode;
-import uk.ac.ed.inf.aqmaps.simulation.Obstacle;
+import uk.ac.ed.inf.aqmaps.pathfinding.SearchTree;
+import uk.ac.ed.inf.aqmaps.simulation.DirectedSearchNode;
+import uk.ac.ed.inf.aqmaps.pathfinding.Obstacle;
 import uk.ac.ed.inf.aqmaps.utilities.BVHNode;
 import uk.ac.ed.inf.aqmaps.utilities.GeometryUtilities;
 import uk.ac.ed.inf.aqmaps.utilities.MathUtilities;
 
-public class DiscreteStepAndAngleGraph implements Graph {
+public class ConstrainedTreeGraph implements SearchTree<DirectedSearchNode> {
 
     /**
      * The angle system needs to allow for each possible angle to have a "complement angle" which takes
@@ -32,7 +30,7 @@ public class DiscreteStepAndAngleGraph implements Graph {
      * @param obstacles
      * @param boundary the polygon bounds of the world. Can be null
      */
-    public DiscreteStepAndAngleGraph(int minAngle, int maxAngle, int angleIncrement, double moveLength, Collection<Obstacle> obstacles, Polygon boundary) {
+    public ConstrainedTreeGraph(int minAngle, int maxAngle, int angleIncrement, double moveLength, Collection<Obstacle> obstacles, Polygon boundary) {
        this(minAngle, maxAngle, angleIncrement, moveLength, obstacles);
        this.boundary = boundary;
     }
@@ -47,7 +45,7 @@ public class DiscreteStepAndAngleGraph implements Graph {
      * @param moveLength
      * @param obstacles
      */
-    public DiscreteStepAndAngleGraph(int minAngle, int maxAngle, int angleIncrement, double moveLength, Collection<Obstacle> obstacles) {
+    public ConstrainedTreeGraph(int minAngle, int maxAngle, int angleIncrement, double moveLength, Collection<Obstacle> obstacles) {
         assert 180 % angleIncrement == 0 && maxAngle - minAngle >= 360 - angleIncrement;
 
         this.MIN_ANGLE = minAngle;
@@ -87,7 +85,7 @@ public class DiscreteStepAndAngleGraph implements Graph {
     }
 
     @Override
-    public  List<SpatialTreeSearchNode> getNeighbouringNodes(SpatialTreeSearchNode node) {
+    public  List<DirectedSearchNode> getNeighbouringNodes(DirectedSearchNode node) {
 
         // to get the neighbouring nodes, we HAVE to check collisions 
         // with obstacles around the map
@@ -118,10 +116,10 @@ public class DiscreteStepAndAngleGraph implements Graph {
      * @param obstaclesIncluded
      * @return
      */
-    private List<SpatialTreeSearchNode> findNeighboursUsingObstacles(SpatialTreeSearchNode node,
+    private List<DirectedSearchNode> findNeighboursUsingObstacles(DirectedSearchNode node,
         Collection<Obstacle> obstaclesIncluded ){
 
-        var output = new ArrayList<SpatialTreeSearchNode>();
+        var output = new ArrayList<DirectedSearchNode>();
 
         Coordinate currentPoint = node.getLocation();
         for (Integer dir : allDirections) {
@@ -148,7 +146,7 @@ public class DiscreteStepAndAngleGraph implements Graph {
             if(intersectsObstacle)
                 continue;
 
-            var newNode = new SpatialTreeSearchNode(neighbourCoordinate,
+            var newNode = new DirectedSearchNode(neighbourCoordinate,
                 node,
                 dir,
                 node.getCost() + MOVE_LENGTH);

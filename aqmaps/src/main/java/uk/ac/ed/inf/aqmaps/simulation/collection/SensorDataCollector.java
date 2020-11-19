@@ -8,7 +8,7 @@ import java.util.Set;
 import org.locationtech.jts.geom.Coordinate;
 
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
-import uk.ac.ed.inf.aqmaps.simulation.planning.DiscreteStepAndAngleGraph;
+import uk.ac.ed.inf.aqmaps.simulation.planning.ConstrainedTreeGraph;
 import uk.ac.ed.inf.aqmaps.simulation.planning.path.PathSegment;
 
 /**
@@ -28,6 +28,6 @@ public interface SensorDataCollector {
      */
     public Queue<PathSegment> planCollection(Coordinate startPosition,
         Set<Sensor> sensors,
-        DiscreteStepAndAngleGraph graph,
+        ConstrainedTreeGraph graph,
         boolean formLoop);
 }

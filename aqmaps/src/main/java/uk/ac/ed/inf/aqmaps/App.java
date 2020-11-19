@@ -29,28 +29,28 @@ import uk.ac.ed.inf.aqmaps.client.DroneWebServerClient;
 import uk.ac.ed.inf.aqmaps.client.SensorData;
 import uk.ac.ed.inf.aqmaps.client.W3WAddressData;
 import uk.ac.ed.inf.aqmaps.pathfinding.AstarTreeSearch;
-import uk.ac.ed.inf.aqmaps.pathfinding.GreatestAvoidanceDistance;
-import uk.ac.ed.inf.aqmaps.pathfinding.Heuristic;
-import uk.ac.ed.inf.aqmaps.pathfinding.ScaledGridSnappingHash;
-import uk.ac.ed.inf.aqmaps.pathfinding.StraightLineDistance;
-import uk.ac.ed.inf.aqmaps.pathfinding.TreePathfindingAlgorithm;
+import uk.ac.ed.inf.aqmaps.pathfinding.Obstacle;
+import uk.ac.ed.inf.aqmaps.pathfinding.PathfindingAlgorithm;
+import uk.ac.ed.inf.aqmaps.pathfinding.hashing.GridSnappingSpatialHash;
+import uk.ac.ed.inf.aqmaps.pathfinding.heuristics.GreatestAvoidanceDistance;
+import uk.ac.ed.inf.aqmaps.pathfinding.heuristics.PathfindingHeuristic;
+import uk.ac.ed.inf.aqmaps.pathfinding.heuristics.StraightLineDistance;
 import uk.ac.ed.inf.aqmaps.simulation.Building;
-import uk.ac.ed.inf.aqmaps.simulation.Obstacle;
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
 import uk.ac.ed.inf.aqmaps.simulation.SensorDataCollectorFactory;
 import uk.ac.ed.inf.aqmaps.simulation.SensorDataCollectorFactory.CollectionOrderPlannerType;
 import uk.ac.ed.inf.aqmaps.simulation.SensorDataCollectorFactory.DistanceMatrixType;
 import uk.ac.ed.inf.aqmaps.simulation.SensorDataCollectorFactory.PathfindingHeuristicType;
 import uk.ac.ed.inf.aqmaps.simulation.collection.Drone;
-import uk.ac.ed.inf.aqmaps.simulation.planning.DiscreteStepAndAngleGraph;
+import uk.ac.ed.inf.aqmaps.simulation.planning.ConstrainedTreeGraph;
 import uk.ac.ed.inf.aqmaps.simulation.planning.DistanceMatrix;
 import uk.ac.ed.inf.aqmaps.simulation.planning.GreatestAvoidanceDistanceMatrix;
-import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.CollectionOrderOptimiser;
-import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.CollectionOrderPlanner;
+import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.BaseCollectionOrderPlanner;
 import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.GreedyCollectionOrderPlanner;
 import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.NearestInsertionCollectionOrderPlanner;
-import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.Optimiser2Opt;
-import uk.ac.ed.inf.aqmaps.simulation.planning.path.ConstrainedPathPlanner;
+import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.optimisers.CollectionOrderOptimiser;
+import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.optimisers.Optimiser2Opt;
+import uk.ac.ed.inf.aqmaps.simulation.planning.path.BasePathPlanner;
 import uk.ac.ed.inf.aqmaps.simulation.planning.path.PathSegment;
 import uk.ac.ed.inf.aqmaps.utilities.GeometryUtilities;
 import uk.ac.ed.inf.aqmaps.visualisation.AQMapGenerator;
@@ -214,7 +214,7 @@ public class App {
 
         //// initialize collector
 
-        DiscreteStepAndAngleGraph graph = new DiscreteStepAndAngleGraph(EASTERN_ANGLE,
+        ConstrainedTreeGraph graph = new ConstrainedTreeGraph(EASTERN_ANGLE,
             MAXIMUM_ANGLE,
             DISCRETE_ANGLE_STEP_SIZE,
             DISCRETE_POSITION_STEP_SIZE,

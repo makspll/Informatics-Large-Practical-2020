@@ -13,13 +13,13 @@ import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 
 import uk.ac.ed.inf.aqmaps.pathfinding.AstarTreeSearch;
-import uk.ac.ed.inf.aqmaps.pathfinding.ScaledGridSnappingHash;
-import uk.ac.ed.inf.aqmaps.pathfinding.StraightLineDistance;
+import uk.ac.ed.inf.aqmaps.pathfinding.Obstacle;
+import uk.ac.ed.inf.aqmaps.pathfinding.hashing.GridSnappingSpatialHash;
+import uk.ac.ed.inf.aqmaps.pathfinding.heuristics.StraightLineDistance;
 import uk.ac.ed.inf.aqmaps.simulation.Building;
-import uk.ac.ed.inf.aqmaps.simulation.Obstacle;
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
-import uk.ac.ed.inf.aqmaps.simulation.planning.DiscreteStepAndAngleGraph;
-import uk.ac.ed.inf.aqmaps.simulation.planning.path.ConstrainedPathPlanner;
+import uk.ac.ed.inf.aqmaps.simulation.planning.ConstrainedTreeGraph;
+import uk.ac.ed.inf.aqmaps.simulation.planning.path.BasePathPlanner;
 import uk.ac.ed.inf.aqmaps.testUtilities.TestUtilities;
 
 public class AstarConstrainedPathPlannerIT extends PathPlannerTestBase {
@@ -34,7 +34,7 @@ public class AstarConstrainedPathPlannerIT extends PathPlannerTestBase {
     private int maxAngle = 350;
     private int angleIncrement = 10;
 
-    ConstrainedPathPlanner testPlanner;
+    BasePathPlanner testPlanner;
 
     private static Sensor mockSensor1;
     private static Sensor mockSensor2;
@@ -71,7 +71,7 @@ public class AstarConstrainedPathPlannerIT extends PathPlannerTestBase {
     }
 
     @Override
-    protected DiscreteStepAndAngleGraph setupGraph() {
+    protected ConstrainedTreeGraph setupGraph() {
         var obstacles = new LinkedList<Obstacle>(
             Arrays.asList(
                 new Building(
@@ -93,7 +93,7 @@ public class AstarConstrainedPathPlannerIT extends PathPlannerTestBase {
             )
         );
 
-        return new DiscreteStepAndAngleGraph(minAngle, maxAngle, angleIncrement, moveLength, obstacles,
+        return new ConstrainedTreeGraph(minAngle, maxAngle, angleIncrement, moveLength, obstacles,
             TestUtilities.gf.createPolygon(
                 new Coordinate[]{
                     new Coordinate(-1,-1),
@@ -106,8 +106,8 @@ public class AstarConstrainedPathPlannerIT extends PathPlannerTestBase {
     }
 
     @Override
-    protected ConstrainedPathPlanner setupTestInstance() {
-        return new ConstrainedPathPlanner(readingRange, maxMoves, new AstarTreeSearch(new StraightLineDistance(1.1), new ScaledGridSnappingHash(moveLength/75d, new Coordinate())));
+    protected BasePathPlanner setupTestInstance() {
+        return new BasePathPlanner(readingRange, maxMoves, new AstarTreeSearch(new StraightLineDistance(1.1), new GridSnappingSpatialHash(moveLength/75d, new Coordinate())));
     }
 
     @Override

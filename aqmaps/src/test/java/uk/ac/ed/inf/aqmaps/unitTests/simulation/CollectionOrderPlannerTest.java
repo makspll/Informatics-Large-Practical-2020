@@ -15,14 +15,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 
-import uk.ac.ed.inf.aqmaps.simulation.Obstacle;
+import uk.ac.ed.inf.aqmaps.pathfinding.Obstacle;
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
-import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.CollectionOrderPlanner;
+import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.BaseCollectionOrderPlanner;
 import uk.ac.ed.inf.aqmaps.testUtilities.TestUtilities;
 
 public abstract class CollectionOrderPlannerTest {
     
-    private CollectionOrderPlanner planner;
+    private BaseCollectionOrderPlanner planner;
 
     private static Set<Sensor> mockSensors;
     private static Sensor startSensor;
@@ -43,7 +43,7 @@ public abstract class CollectionOrderPlannerTest {
 
     protected abstract Sensor setupStartSensor();
     protected abstract Set<Sensor> setupOtherSensors();
-    protected abstract CollectionOrderPlanner setupTestInstance();
+    protected abstract BaseCollectionOrderPlanner setupTestInstance();
 
 
     @Test

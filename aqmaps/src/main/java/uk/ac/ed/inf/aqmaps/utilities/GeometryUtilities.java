@@ -8,18 +8,35 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LinearRing;
 
 
-
+/**
+ * A collection of utility geometry methods 
+ */
 public class GeometryUtilities {
     
+    /**
+     * Convert a mapbox point to a jts coordinate
+     * @param p
+     * @return
+     */
     public static Coordinate MapboxPointToJTSCoordinate(Point p){
         return new Coordinate(p.longitude(),p.latitude());
     }
 
-        
+    
+    /**
+     * Convert a jts cooridnate to a mapbox point
+     * @param p
+     * @return
+     */
     public static Point JTSCoordinateToMapboxPoint(Coordinate p){
         return Point.fromLngLat(p.getX(),p.getY());
     }
 
+    /**
+     * Convert mapbox polygon to jts polygon
+     * @param p
+     * @return
+     */
     public static Polygon MapboxPolygonToJTSPolygon(com.mapbox.geojson.Polygon p){
 
         var rings = p.coordinates();
@@ -50,8 +67,14 @@ public class GeometryUtilities {
         return geometryFactory.createPolygon(shell,holes);
     }
 
-
+    /**
+     * The general precision model to use in geometry generation
+     */
     public final static PrecisionModel precisionModel = new PrecisionModel(PrecisionModel.FLOATING_SINGLE);
+
+    /**
+     * The geometry factory to use in generating jts geometries
+     */
     public final static GeometryFactory geometryFactory = new GeometryFactory(precisionModel);
 
 

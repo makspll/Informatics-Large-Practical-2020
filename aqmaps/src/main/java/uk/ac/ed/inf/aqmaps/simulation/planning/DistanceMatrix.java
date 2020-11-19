@@ -1,16 +1,19 @@
 package uk.ac.ed.inf.aqmaps.simulation.planning;
 
-import java.util.List;
-
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
 
 /**
- * class which stores distance information between sensors
+ * Class which stores distance information between sensors
  */
 public abstract class DistanceMatrix {
     
     /**
-     * calculates the distances between the given sensors
+     * Creates new blank distance matrix
+     */
+    public DistanceMatrix(){}
+
+    /**
+     * Fills in the distance matrix with distance data for the given sensors
      * @param sensors the list of sensors
      */
     public void setupDistanceMatrix(Sensor[] sensors){

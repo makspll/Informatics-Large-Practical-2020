@@ -7,8 +7,9 @@ import java.util.List;
 
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
 import uk.ac.ed.inf.aqmaps.simulation.planning.DistanceMatrix;
+import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.optimisers.CollectionOrderOptimiser;
 
-public class ChristofidesCollectionOrderPlanner extends CollectionOrderPlanner {
+public class ChristofidesCollectionOrderPlanner extends BaseCollectionOrderPlanner {
 
     public ChristofidesCollectionOrderPlanner(Collection<CollectionOrderOptimiser> optimisers, DistanceMatrix distMat) {
         super(optimisers, distMat);

@@ -1,85 +1,47 @@
 package uk.ac.ed.inf.aqmaps.pathfinding;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Deque;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Objects;
 
 import org.locationtech.jts.geom.Coordinate;
 
-/**
- * A data structure representing a tree search node for 
- * spatial pathfinding problems with limited angles.
- */
-public class SpatialTreeSearchNode{
+import uk.ac.ed.inf.aqmaps.pathfinding.goals.PathfindingGoal;
 
-
+public abstract class SearchNode<T extends SearchNode<T>> {
     /**
      * Creates a new spatial tree search node which is fully specified apart from
      * the heuristic value
-     * @param location
-     * @param parent
-     * @param directionFromParent
-     * @param cost
+     * @param location the location of the new node
+     * @param parent the parent of the given node (if null the node is considered to be the starting node)
+     * @param cost the cost of reaching this node from the start of the search
      */
-    public SpatialTreeSearchNode(Coordinate location,
-        SpatialTreeSearchNode parent,
-        int directionFromParent,
+    public SearchNode(Coordinate location,
+        T parent,
         double cost){
             this.location = location;
             this.parentNode = parent;
-            this.directionFromParent = directionFromParent;
             this.cost = cost;
         }
 
     /**
-     * Creates fully specified tree search node
+     * Creates fully specified search node
      * @param location
      * @param parent
-     * @param directionFromParent
      * @param heuristic
      * @param cost
      */
-    public SpatialTreeSearchNode(Coordinate location,
-        SpatialTreeSearchNode parent, 
-        int directionFromParent, 
+    public SearchNode(Coordinate location,
+        T parent, 
         double heuristic, 
         double cost
         ){
 
         this.location = location;
         this.parentNode = parent;
-        this.directionFromParent = directionFromParent;
         this.heuristic = heuristic;
         this.cost = cost;
     }
-
-    public double getHeuristic() {
-        return this.heuristic;
-    }
-
-    public Coordinate getLocation() {
-        return this.location;
-    }
-
-    public void setHeuristic(double heuristic) {
-        this.heuristic = heuristic;
-    }
-
-    public double getCost() {
-        return this.cost;
-    }
-
-    public SpatialTreeSearchNode getParentNode() {
-        return this.parentNode;
-    }
-
-    public int getDirectionFromParent() {
-        return this.directionFromParent;
-    }
-
 
     public Deque<PathfindingGoal> getGoalsReached() {
         return this.goalsReached;
@@ -101,6 +63,26 @@ public class SpatialTreeSearchNode{
         this.goalsReached.remove(goalReached);
     }
 
+    public double getHeuristic() {
+        return this.heuristic;
+    }
+
+    public Coordinate getLocation() {
+        return this.location;
+    }
+
+    public void setHeuristic(double heuristic) {
+        this.heuristic = heuristic;
+    }
+
+    public double getCost() {
+        return this.cost;
+    }
+
+    public T getParentNode() {
+        return this.parentNode;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(location);
@@ -114,10 +96,9 @@ public class SpatialTreeSearchNode{
             "}";
     }
 
-    private double heuristic = -1;
-    private double cost = -1;
-    private SpatialTreeSearchNode parentNode = null;
-    private int directionFromParent = -1;
-    private Coordinate location;
-    private Deque<PathfindingGoal> goalsReached = new LinkedList<PathfindingGoal>();
+    protected double heuristic = -1;
+    protected double cost = -1;
+    protected T parentNode = null;
+    protected Coordinate location;
+    protected Deque<PathfindingGoal> goalsReached = new LinkedList<PathfindingGoal>();
 }

@@ -12,7 +12,7 @@ import org.locationtech.jts.geom.Coordinate;
 
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
 import uk.ac.ed.inf.aqmaps.simulation.planning.EuclidianDistanceMatrix;
-import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.CollectionOrderPlanner;
+import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.BaseCollectionOrderPlanner;
 import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.GreedyCollectionOrderPlanner;
 
 public class GreedyCollectionOrderPlannerTest extends CollectionOrderPlannerTest {
@@ -47,7 +47,7 @@ public class GreedyCollectionOrderPlannerTest extends CollectionOrderPlannerTest
     }
 
     @Override
-    protected CollectionOrderPlanner setupTestInstance() {
+    protected BaseCollectionOrderPlanner setupTestInstance() {
         return testPlanner;
     }
 
