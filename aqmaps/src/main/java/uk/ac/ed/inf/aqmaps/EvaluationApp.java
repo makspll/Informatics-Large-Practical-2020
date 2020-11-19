@@ -1,24 +1,25 @@
 package uk.ac.ed.inf.aqmaps;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
-import java.text.NumberFormat;
-import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
+import com.mapbox.geojson.Point;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Polygon;
@@ -30,19 +31,31 @@ import uk.ac.ed.inf.aqmaps.client.DroneWebServerClient;
 import uk.ac.ed.inf.aqmaps.client.SensorData;
 import uk.ac.ed.inf.aqmaps.client.W3WAddressData;
 import uk.ac.ed.inf.aqmaps.pathfinding.AstarTreeSearch;
+import uk.ac.ed.inf.aqmaps.pathfinding.GreatestAvoidanceDistance;
 import uk.ac.ed.inf.aqmaps.pathfinding.Heuristic;
+import uk.ac.ed.inf.aqmaps.pathfinding.ScaledGridSnappingHash;
+import uk.ac.ed.inf.aqmaps.pathfinding.SpatialHash;
 import uk.ac.ed.inf.aqmaps.pathfinding.StraightLineDistance;
 import uk.ac.ed.inf.aqmaps.pathfinding.TreePathfindingAlgorithm;
 import uk.ac.ed.inf.aqmaps.simulation.Building;
-import uk.ac.ed.inf.aqmaps.simulation.Drone;
 import uk.ac.ed.inf.aqmaps.simulation.Obstacle;
-import uk.ac.ed.inf.aqmaps.simulation.PathSegment;
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
-import uk.ac.ed.inf.aqmaps.simulation.planning.CollectionOrderPlanner;
-import uk.ac.ed.inf.aqmaps.simulation.planning.ConstrainedPathPlanner;
+import uk.ac.ed.inf.aqmaps.simulation.SensorDataCollectorFactory;
+import uk.ac.ed.inf.aqmaps.simulation.SensorDataCollectorFactory.CollectionOrderPlannerType;
+import uk.ac.ed.inf.aqmaps.simulation.SensorDataCollectorFactory.DistanceMatrixType;
+import uk.ac.ed.inf.aqmaps.simulation.SensorDataCollectorFactory.PathfindingHeuristicType;
+import uk.ac.ed.inf.aqmaps.simulation.collection.Drone;
 import uk.ac.ed.inf.aqmaps.simulation.planning.DiscreteStepAndAngleGraph;
-import uk.ac.ed.inf.aqmaps.simulation.planning.GreedyCollectionOrderPlanner;
-import uk.ac.ed.inf.aqmaps.simulation.planning.PathPlanner;
+import uk.ac.ed.inf.aqmaps.simulation.planning.DistanceMatrix;
+import uk.ac.ed.inf.aqmaps.simulation.planning.EuclidianDistanceMatrix;
+import uk.ac.ed.inf.aqmaps.simulation.planning.GreatestAvoidanceDistanceMatrix;
+import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.CollectionOrderOptimiser;
+import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.CollectionOrderPlanner;
+import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.GreedyCollectionOrderPlanner;
+import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.NearestInsertionCollectionOrderPlanner;
+import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.Optimiser2Opt;
+import uk.ac.ed.inf.aqmaps.simulation.planning.path.ConstrainedPathPlanner;
+import uk.ac.ed.inf.aqmaps.simulation.planning.path.PathSegment;
 import uk.ac.ed.inf.aqmaps.utilities.GeometryUtilities;
 import uk.ac.ed.inf.aqmaps.visualisation.AQMapGenerator;
 import uk.ac.ed.inf.aqmaps.visualisation.AttributeMap;
@@ -57,8 +70,7 @@ import uk.ac.ed.inf.aqmaps.visualisation.SensorReadingMarkerSymbolMap;
  */
 public class EvaluationApp {
 
-
-    private static Coordinate parseStartCoordinateArg(String x, String y){
+    private static Coordinate parseStartCoordinateArg(String x, String y) {
         // start position of collection
         double startLatitude = 0;
         double startLongitude = 0;
@@ -67,49 +79,46 @@ public class EvaluationApp {
             startLatitude = Double.parseDouble(x);
             startLongitude = Double.parseDouble(y);
 
-        } catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             terminateProgramWithError(ErrorCode.INVALID_ARGUMENT,
-                "one of longitude or latitude arguments is not a valid floating point number");
+                    "one of longitude or latitude arguments is not a valid floating point number");
         }
 
-        return new Coordinate(startLongitude,startLatitude);
+        return new Coordinate(startLongitude, startLatitude);
     }
 
-    private static int parseRandomSeedArg(String seed){
+    private static int parseRandomSeedArg(String seed) {
         int randomSeed = 0;
 
         try {
             randomSeed = Integer.parseInt(seed);
         } catch (NumberFormatException e) {
-            terminateProgramWithError(ErrorCode.INVALID_ARGUMENT,
-                "the random seed argument is not a valid integer");        
+            terminateProgramWithError(ErrorCode.INVALID_ARGUMENT, "the random seed argument is not a valid integer");
         }
 
         return randomSeed;
     }
 
-    private static int parsePortNoArg(String port){
+    private static int parsePortNoArg(String port) {
         int portNumber = 80;
 
         try {
             portNumber = Integer.parseInt(port);
         } catch (NumberFormatException e) {
-            terminateProgramWithError(ErrorCode.INVALID_ARGUMENT,
-                "the host number argument is not a valid integer");         
+            terminateProgramWithError(ErrorCode.INVALID_ARGUMENT, "the host number argument is not a valid integer");
         }
 
         return portNumber;
     }
 
-    private static Set<Sensor> convertSensorData(ClientService clientService,List<SensorData> sensorDataList)
+    private static Set<Sensor> convertSensorData(ClientService clientService, List<SensorData> sensorDataList)
             throws IOException, InterruptedException {
         Set<Sensor> sensors = new HashSet<>();
 
         for (SensorData sensorData : sensorDataList) {
-            
+
             // fetch sensor address data for this sensor
-            W3WAddressData addressData = clientService.fetchW3WAddress(
-                                            sensorData.getLocation());
+            W3WAddressData addressData = clientService.fetchW3WAddress(sensorData.getLocation());
 
             // create the sensor and add it to the set
             AQSensor sensor = new AQSensor(sensorData, addressData);
@@ -119,7 +128,7 @@ public class EvaluationApp {
         return sensors;
     }
 
-    private static Collection<Obstacle> convertBuildingData(FeatureCollection buildingData){
+    private static Collection<Obstacle> convertBuildingData(FeatureCollection buildingData) {
 
         // convert geojson buildings to obstacles
         Collection<Obstacle> obstacles = new ArrayList<Obstacle>();
@@ -127,7 +136,7 @@ public class EvaluationApp {
         try {
 
             for (Feature featurePolygon : buildingData.features()) {
-                com.mapbox.geojson.Polygon polygon = (com.mapbox.geojson.Polygon)featurePolygon.geometry();
+                com.mapbox.geojson.Polygon polygon = (com.mapbox.geojson.Polygon) featurePolygon.geometry();
 
                 Polygon jtsPolygon = GeometryUtilities.MapboxPolygonToJTSPolygon(polygon);
 
@@ -138,19 +147,18 @@ public class EvaluationApp {
         } catch (ClassCastException e) {
 
             terminateProgramWithError(ErrorCode.INVALID_CLIENT_DATA,
-            "The building feature collection received from the client"
-            +" contains something other than a list of polygon features.");
+                    "The building feature collection received from the client"
+                            + " contains something other than a list of polygon features.");
 
         }
 
         return obstacles;
     }
 
-    public static void main(String[] args) throws Exception
-    {
+    public static void main(String[] args) throws Exception {
         //// first check the program is run correctly
         // if not terminate
-        if(args.length != NO_OF_ARGS)
+        if (args.length != NO_OF_ARGS)
             terminateProgramWithError(ErrorCode.BAD_USAGE, "");
 
         //// parse the arguments
@@ -160,124 +168,166 @@ public class EvaluationApp {
         int portNumber = parsePortNoArg(args[3]);
 
         //// initialize the client service
-        
-        URI hostResolvedAPIURI = URI.create(
-            API_BASE_URI_STRING + String.format(":%s",portNumber));
 
-        var clientService = new DroneWebServerClient(
-            HttpClient.newHttpClient(),
-            hostResolvedAPIURI);
+        URI hostResolvedAPIURI = URI.create(API_BASE_URI_STRING + String.format(":%s", portNumber));
+
+        var clientService = new DroneWebServerClient(HttpClient.newHttpClient(), hostResolvedAPIURI);
 
         //// load the necessary data
 
         LocalDate startDate = LocalDate.of(2020, 1, 1);
-        LocalDate endDate = LocalDate.of(2020,12,31);
+        LocalDate endDate = LocalDate.of(2020, 12, 31);
         String folderName = "output";
 
         List<Long> executionTimes = new ArrayList<Long>();
         List<LocalDate> dates = new ArrayList<LocalDate>();
         long startTime = 0;
         long endTime = 0;
-        
-        for(LocalDate collectionDate = startDate; 
-            collectionDate.isBefore(endDate) || collectionDate.isEqual(endDate); collectionDate=collectionDate.plusDays(1)){
+        var FeatureCombined = new ArrayList<FeatureCollection>();
 
-                startTime = System.nanoTime();
+        FeatureCollection buildingCollection = clientService.fetchBuildings();
 
-                List<SensorData> sensorDataList = clientService.fetchSensorsForDate(collectionDate);
-                FeatureCollection buildingCollection = clientService.fetchBuildings();
-        
-                //// convert data to classes accepted by the simulation module
-        
-                // convert each sensor data element to a sensor class
-                // this means we have to retrieve the W3W address information for each
-        
-                Set<Sensor> sensors = convertSensorData(clientService, sensorDataList);
-        
-                // convert geojson buildings to obstacles
-                Collection<Obstacle> obstacles = convertBuildingData(buildingCollection);
-        
-                //// initialize sensor data collector
-                
-                // select default collection modules
-                var sensorDataCollector = new Drone(
-                                            PATH_PLANNER,
-                                            COLLECTION_ORDER_PLANNER);
-        
-                //// run simulation 
-        
-                // prepare graph
-                
-                DiscreteStepAndAngleGraph graph = new DiscreteStepAndAngleGraph(EASTERN_ANGLE,
-                    MAXIMUM_ANGLE,
-                    DISCRETE_ANGLE_STEP_SIZE,
-                    DISCRETE_POSITION_STEP_SIZE,
-                    obstacles);
-        
-                Queue<PathSegment> path = sensorDataCollector.planCollection(
-                    startCoordinate,
-                    sensors, 
-                    graph);
-        
-                //// produce visualisation
-        
-                var visualiser = new AQMapGenerator(markerColourMap, markerSymbols);
-        
-                FeatureCollection map = visualiser.plotMap(path, sensors);
-                
-                //// write everything 
-                
+        for (LocalDate collectionDate = startDate; collectionDate.isBefore(endDate)
+                || collectionDate.isEqual(endDate); collectionDate = collectionDate.plusDays(1)) {
+
+            startTime = System.nanoTime();
+
+            System.out.println("fetching data...");
+
+            List<SensorData> sensorDataList = clientService.fetchSensorsForDate(collectionDate);
+
+            //// convert data to classes accepted by the simulation module
+
+            // convert each sensor data element to a sensor class
+            // this means we have to retrieve the W3W address information for each
+
+            Set<Sensor> sensors = convertSensorData(clientService, sensorDataList);
+
+            // convert geojson buildings to obstacles
+            Collection<Obstacle> obstacles = convertBuildingData(buildingCollection);
+
+            System.out.println("computing distance matrix...");
+
+            //// initialize sensor data collector and collection planner
+
+            System.out.println("computing graph...");
+
+            DiscreteStepAndAngleGraph graph = new DiscreteStepAndAngleGraph(EASTERN_ANGLE,
+                MAXIMUM_ANGLE,
+                DISCRETE_ANGLE_STEP_SIZE,
+                DISCRETE_POSITION_STEP_SIZE,
+                obstacles,
+                boundary);
+
+            var collector = SensorDataCollectorFactory.createCollector(graph,
+                READING_RANGE, MAXIMUM_MOVES_NO, 
+                PathfindingHeuristicType.STRAIGHT_LINE,
+                CollectionOrderPlannerType.NEAREST_INSERTION,
+                DistanceMatrixType.EUCLIDIAN);
+
+            //// run simulation
+
+            // prepare graph
 
 
-                File directory = new File("output");
-                if (! directory.exists()){
-                    directory.mkdir();
+            System.out.println("planning collection...");
 
-                }
+            Queue<PathSegment> path = collector.planCollection(startCoordinate, sensors, graph, true);
 
-                String readingFile = 
-                String.format("%s/readings-%01d-%01d-%04d.geojson",
-                    folderName,
-                    collectionDate.getDayOfMonth(),
-                    collectionDate.getMonth().getValue(),
-                    collectionDate.getYear());
-                
-                String flightpathFile = String.format("%s/flightpath-%01d-%01d-%04d.txt",
-                    folderName,
-                    collectionDate.getDayOfMonth(),
-                    collectionDate.getMonth().getValue(),
-                    collectionDate.getYear());
+            //// produce visualisation
 
-                OutputFormatter.writeReadingsMap(map, new FileOutputStream(readingFile));
-        
-                OutputFormatter.writePath(path, new FileOutputStream(flightpathFile));
+            System.out.println("generating output...");
 
-                endTime = System.nanoTime();
+            var visualiser = new AQMapGenerator(markerColourMap, markerSymbols);
 
-                executionTimes.add(endTime - startTime);
-                dates.add(collectionDate);
+            FeatureCollection map = visualiser.plotMap(path, sensors);
+
+            //// write everything
+
+            File directory = new File("output");
+            if (!directory.exists()) {
+                directory.mkdir();
+
+            }
+
+            String readingFile = String.format("%s/readings-%01d-%01d-%04d.geojson", folderName,
+                    collectionDate.getDayOfMonth(), collectionDate.getMonth().getValue(), collectionDate.getYear());
+
+            String flightpathFile = String.format("%s/flightpath-%01d-%01d-%04d.txt", folderName,
+                    collectionDate.getDayOfMonth(), collectionDate.getMonth().getValue(), collectionDate.getYear());
+
+            OutputFormatter.writeReadingsMap(map, new FileOutputStream(readingFile));
+
+            OutputFormatter.writePath(path, new FileOutputStream(flightpathFile));
+
+            FeatureCombined.add(map);
+
+            endTime = System.nanoTime();
+
+            executionTimes.add(endTime - startTime);
+            dates.add(collectionDate);
         }
-
 
         var fileWriter = new FileWriter("output/execution_times.txt");
         fileWriter.write("date,execution_time(ms)\n");
 
-        for(int i = 0 ; i < dates.size();i++){
+        for (int i = 0; i < dates.size(); i++) {
             var date = dates.get(i);
             var time = executionTimes.get(i);
 
-            fileWriter.write(String.format("%01d-%01d-%04d,%f\n",
-                date.getDayOfMonth(),
-                date.getMonthValue(),
-                date.getYear(),
-                time * 0.000001
-                ));
+            fileWriter.write(String.format("%01d-%01d-%04d,%f\n", date.getDayOfMonth(), date.getMonthValue(),
+                    date.getYear(), time * 0.000001));
         }
+
+        var features = new ArrayList<Feature>();
+        for (FeatureCollection feature : FeatureCombined) {
+            features.add(feature.features().get(0));
+        }
+
+        features.addAll(buildingCollection.features());
+
+        OutputFormatter.writeReadingsMap(FeatureCollection.fromFeatures(features),
+                new FileOutputStream("output/combined-flightpath.geojson"));
+
         fileWriter.flush();
         fileWriter.close();
-      
+
     }
 
+    private static void spatialHashSample(SpatialHash h, Polygon boundary)
+            throws FileNotFoundException, IOException {
+        double stepSize = 0.00001d;
+
+        var envelope = boundary.getEnvelopeInternal();
+
+        var features = new ArrayList<Feature>();
+
+        for (double y = envelope.getMinY(); y < envelope.getMaxY(); y += stepSize) {
+            for (double x = envelope.getMinX(); x < envelope.getMaxX(); x += stepSize) {
+                
+                var botLeft = Point.fromLngLat(x,y);
+                var topLeft = Point.fromLngLat(x,y+stepSize);
+                var topRight = Point.fromLngLat(x+stepSize,y+stepSize);
+                var botRight = Point.fromLngLat(x+stepSize,y);
+
+                List<List<Point>> pointsListList = new ArrayList<List<Point>>(
+                    Arrays.asList(
+                        new ArrayList<Point>(
+                            Arrays.asList(
+                                botLeft,topLeft,topRight,botRight,botLeft
+                            ))));
+
+                var poly = com.mapbox.geojson.Polygon.fromLngLats(pointsListList);
+
+                var feature = Feature.fromGeometry(poly);
+                feature.addStringProperty("hash","" + h.getHash(new Coordinate(x,y)));
+                features.add(feature);
+            }
+        }
+
+        OutputFormatter.writeReadingsMap(FeatureCollection.fromFeatures(features), new FileOutputStream("output/spatial-hash.geojson"));
+
+    }
 
     private static void terminateProgramWithError(ErrorCode error,String message){
         switch(error){
@@ -309,15 +359,22 @@ public class EvaluationApp {
     private static final int DISCRETE_ANGLE_STEP_SIZE = 10;
     private static final double DISCRETE_POSITION_STEP_SIZE = 0.0003d;
 
-    private static final CollectionOrderPlanner COLLECTION_ORDER_PLANNER = new GreedyCollectionOrderPlanner();
 
+    /**
+     * the confinement area of the sensor collector
+     */
+    private static final Polygon boundary = GeometryUtilities.geometryFactory.createPolygon(
+        new Coordinate[]{
+            new Coordinate(-3.192473d, 55.946233d),
+            new Coordinate(-3.184319d, 55.946233d),
+            new Coordinate(-3.184319d, 55.942617d),
+            new Coordinate(-3.192473d, 55.942617d),
+            new Coordinate(-3.192473d, 55.946233d)
+        }
+    );
 
     private static final PrecisionModel PRECISION_MODEL = new PrecisionModel(PrecisionModel.FLOATING_SINGLE);
-    private static final Heuristic PATHFINDING_HEURISTIC = new StraightLineDistance(1.3);
-    private static final TreePathfindingAlgorithm PATHFINDING_ALGORITHM = new AstarTreeSearch(PATHFINDING_HEURISTIC);
 
-    private static final PathPlanner PATH_PLANNER = new ConstrainedPathPlanner(READING_RANGE, MAXIMUM_MOVES_NO, PATHFINDING_ALGORITHM);
-    
     private static final AttributeMap<Float,String> markerColourMap = new SensorReadingColourMap(
         0f,
         256f,

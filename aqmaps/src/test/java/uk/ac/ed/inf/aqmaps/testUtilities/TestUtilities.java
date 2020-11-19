@@ -11,7 +11,8 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.math.Vector2D;
 
-import uk.ac.ed.inf.aqmaps.simulation.PathSegment;
+import uk.ac.ed.inf.aqmaps.simulation.planning.path.PathSegment;
+
 
 public class TestUtilities {
 

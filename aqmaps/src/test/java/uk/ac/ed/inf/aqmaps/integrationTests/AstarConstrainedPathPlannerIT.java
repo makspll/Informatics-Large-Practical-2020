@@ -13,12 +13,13 @@ import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 
 import uk.ac.ed.inf.aqmaps.pathfinding.AstarTreeSearch;
+import uk.ac.ed.inf.aqmaps.pathfinding.ScaledGridSnappingHash;
 import uk.ac.ed.inf.aqmaps.pathfinding.StraightLineDistance;
 import uk.ac.ed.inf.aqmaps.simulation.Building;
 import uk.ac.ed.inf.aqmaps.simulation.Obstacle;
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
-import uk.ac.ed.inf.aqmaps.simulation.planning.ConstrainedPathPlanner;
 import uk.ac.ed.inf.aqmaps.simulation.planning.DiscreteStepAndAngleGraph;
+import uk.ac.ed.inf.aqmaps.simulation.planning.path.ConstrainedPathPlanner;
 import uk.ac.ed.inf.aqmaps.testUtilities.TestUtilities;
 
 public class AstarConstrainedPathPlannerIT extends PathPlannerTestBase {
@@ -59,10 +60,10 @@ public class AstarConstrainedPathPlannerIT extends PathPlannerTestBase {
         when(mockSensor3.toString()).thenReturn("Sensor 3");
         when(mockSensor4.toString()).thenReturn("Sensor 4");
 
-        when(mockSensor1.getCoordinates()).thenReturn(new Coordinate(0*scale, 0*scale) );
-        when(mockSensor2.getCoordinates()).thenReturn(new Coordinate(0*scale, 10*scale));
-        when(mockSensor3.getCoordinates()).thenReturn(new Coordinate(10*scale, 10*scale));
-        when(mockSensor4.getCoordinates()).thenReturn(new Coordinate(10*scale, 0*scale));
+        when(mockSensor1.getPosition()).thenReturn(new Coordinate(0*scale, 0*scale) );
+        when(mockSensor2.getPosition()).thenReturn(new Coordinate(0*scale, 10*scale));
+        when(mockSensor3.getPosition()).thenReturn(new Coordinate(10*scale, 10*scale));
+        when(mockSensor4.getPosition()).thenReturn(new Coordinate(10*scale, 0*scale));
 
         testRoute = new LinkedList<Sensor>(
                         Arrays.asList(mockSensor1,mockSensor2,mockSensor3,mockSensor4));
@@ -106,7 +107,7 @@ public class AstarConstrainedPathPlannerIT extends PathPlannerTestBase {
 
     @Override
     protected ConstrainedPathPlanner setupTestInstance() {
-        return new ConstrainedPathPlanner(readingRange, maxMoves, new AstarTreeSearch(new StraightLineDistance()));
+        return new ConstrainedPathPlanner(readingRange, maxMoves, new AstarTreeSearch(new StraightLineDistance(1.1), new ScaledGridSnappingHash(moveLength/75d, new Coordinate())));
     }
 
     @Override

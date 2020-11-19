@@ -17,7 +17,7 @@ import org.locationtech.jts.geom.Coordinate;
 
 import uk.ac.ed.inf.aqmaps.simulation.Obstacle;
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
-import uk.ac.ed.inf.aqmaps.simulation.planning.CollectionOrderPlanner;
+import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.CollectionOrderPlanner;
 import uk.ac.ed.inf.aqmaps.testUtilities.TestUtilities;
 
 public abstract class CollectionOrderPlannerTest {
@@ -50,8 +50,8 @@ public abstract class CollectionOrderPlannerTest {
     public void testRouteIsARing(){
 
         Queue<Sensor> output = planner.planRoute(startSensor
-                            ,mockSensors
-                            ,obstacles);
+                            ,mockSensors,
+                            true);
         
         Sensor firstSensor = output.peek();
         Sensor lastSensor = null;
@@ -66,8 +66,8 @@ public abstract class CollectionOrderPlannerTest {
     public void testRouteStartsAtStartSensor(){
 
         Queue<Sensor> output = planner.planRoute(startSensor
-                            ,mockSensors
-                            ,obstacles);
+                            ,mockSensors,
+                            true);
         
         Sensor firstSensor = output.peek();
         
@@ -77,11 +77,10 @@ public abstract class CollectionOrderPlannerTest {
     @Test
     public void testRouteVisitsAllSensorsOnce(){
         Queue<Sensor> output = planner.planRoute(startSensor
-        ,mockSensors
-        ,obstacles);
+        ,mockSensors,
+        true);
 
-        // we count the start sensor twice
-        assertEquals(2 + mockSensors.size(),output.size());
+        assertEquals(1 + mockSensors.size(),new HashSet<Sensor>(output).size());
     }
 
 }

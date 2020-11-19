@@ -14,10 +14,10 @@ import org.junit.jupiter.api.Timeout;
 import org.locationtech.jts.geom.Coordinate;
 
 import uk.ac.ed.inf.aqmaps.simulation.Obstacle;
-import uk.ac.ed.inf.aqmaps.simulation.PathSegment;
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
-import uk.ac.ed.inf.aqmaps.simulation.planning.ConstrainedPathPlanner;
 import uk.ac.ed.inf.aqmaps.simulation.planning.DiscreteStepAndAngleGraph;
+import uk.ac.ed.inf.aqmaps.simulation.planning.path.ConstrainedPathPlanner;
+import uk.ac.ed.inf.aqmaps.simulation.planning.path.PathSegment;
 import uk.ac.ed.inf.aqmaps.testUtilities.TestUtilities;
 
 
@@ -52,7 +52,7 @@ public abstract class PathPlannerTestBase {
     @Test 
     @Timeout(value = 10, unit=TimeUnit.SECONDS) 
     public void directionsAreValidTest(){
-        var output = planner.planPath(startCoordinate, route, graph);
+        var output = planner.planPath(startCoordinate, route, graph,true );
 
         TestUtilities.assertDirectionsValid(getTestInstanceMinAngle(),
             getTestInstanceMaxAngle(),
@@ -64,7 +64,7 @@ public abstract class PathPlannerTestBase {
     @Test 
     @Timeout(value = 10, unit=TimeUnit.SECONDS) 
     public void moveLenghtsAreValidTest(){
-        var output = planner.planPath(startCoordinate, route, graph);
+        var output = planner.planPath(startCoordinate, route, graph,true);
 
         TestUtilities.assertMoveLengthsEqual(
             getTestInstanceMoveLength(),
@@ -76,14 +76,14 @@ public abstract class PathPlannerTestBase {
     @Test
     @Timeout(value = 10, unit=TimeUnit.SECONDS) 
     public void pathConsecutiveTest(){
-        var output = planner.planPath(startCoordinate, route, graph);
+        var output = planner.planPath(startCoordinate, route, graph,true);
 
         TestUtilities.assertPointsConsecutive(output);
     }
 
     public void routeIsNotConsumedTest(){
         int oldSize = route.size();
-        var output = planner.planPath(startCoordinate, route, graph);
+        var output = planner.planPath(startCoordinate, route, graph,true);
 
         assertEquals(oldSize, route.size());
     }
@@ -91,7 +91,7 @@ public abstract class PathPlannerTestBase {
     @Test
     @Timeout(value = 10, unit=TimeUnit.SECONDS) 
     public void pathFollowsRouteTest(){
-        var output = planner.planPath(startCoordinate, route, graph);
+        var output = planner.planPath(startCoordinate, route, graph,true);
 
         ArrayList<Sensor> visitedSensors = new ArrayList<Sensor>();
         for (PathSegment pathSegment : output) {
@@ -104,7 +104,7 @@ public abstract class PathPlannerTestBase {
         int i= 0;
 
         for (Sensor s : visitedSensors) {
-            coordinates[i] = s.getCoordinates();
+            coordinates[i] = s.getPosition();
             i+= 1;
         }
 
@@ -114,7 +114,7 @@ public abstract class PathPlannerTestBase {
     @Test
     @Timeout(value = 10, unit=TimeUnit.SECONDS) 
     public void pathReachesAtLeastOneSensor(){
-        var output = planner.planPath(startCoordinate, route, graph);
+        var output = planner.planPath(startCoordinate, route, graph,true);
 
         for (PathSegment pathSegment : output) {
             if(pathSegment.getSensorRead() != null){
@@ -128,7 +128,7 @@ public abstract class PathPlannerTestBase {
     @Test
     @Timeout(value = 10, unit=TimeUnit.SECONDS) 
     public void pathIsUnderMaxMovesTest(){
-        var output = planner.planPath(startCoordinate, route, graph);
+        var output = planner.planPath(startCoordinate, route, graph,true);
 
         assertTrue(output.size() <= getTestInstanceMaxMoves());
     }
@@ -136,7 +136,7 @@ public abstract class PathPlannerTestBase {
     @Test
     @Timeout(value = 10, unit=TimeUnit.SECONDS) 
     public void pathDoesntCrossObstaclesTest(){
-        var output = planner.planPath(startCoordinate, route, graph);
+        var output = planner.planPath(startCoordinate, route, graph,true);
 
         int idx =0;
         for (Obstacle o : graph.getObstacles()) {
@@ -148,7 +148,7 @@ public abstract class PathPlannerTestBase {
     @Test
     @Timeout(value = 10, unit=TimeUnit.SECONDS) 
     public void sensorsInRangeTest(){
-        var output = planner.planPath(startCoordinate, route, graph);
+        var output = planner.planPath(startCoordinate, route, graph,true);
 
         for (PathSegment pathSegment : output) {
             

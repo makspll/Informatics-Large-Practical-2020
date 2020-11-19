@@ -1,33 +1,24 @@
-package uk.ac.ed.inf.aqmaps.simulation.planning;
+package uk.ac.ed.inf.aqmaps.simulation.planning.path;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Deque;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
 
-import javax.lang.model.util.ElementScanner6;
 
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.math.Vector2D;
 
-import uk.ac.ed.inf.aqmaps.client.SensorData;
-import uk.ac.ed.inf.aqmaps.pathfinding.Graph;
 import uk.ac.ed.inf.aqmaps.pathfinding.PathfindingGoal;
 import uk.ac.ed.inf.aqmaps.pathfinding.PointGoal;
 import uk.ac.ed.inf.aqmaps.pathfinding.SpatialTreeSearchNode;
 import uk.ac.ed.inf.aqmaps.pathfinding.TreePathfindingAlgorithm;
-import uk.ac.ed.inf.aqmaps.simulation.Obstacle;
-import uk.ac.ed.inf.aqmaps.simulation.PathSegment;
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
+import uk.ac.ed.inf.aqmaps.simulation.planning.DiscreteStepAndAngleGraph;
 import uk.ac.ed.inf.aqmaps.utilities.MathUtilities;
 
 /**
  * Base class for planners with a limited number of maximum moves and a
  * minimum reading range.
  */
-public class ConstrainedPathPlanner extends LoopingPathPlanner {
+public class ConstrainedPathPlanner implements PathPlanner {
 
     public ConstrainedPathPlanner(double readingRange, int maxMoves, TreePathfindingAlgorithm algorithm) {
         this.READING_RANGE = readingRange;
@@ -44,7 +35,8 @@ public class ConstrainedPathPlanner extends LoopingPathPlanner {
      */
     @Override
     public Deque<PathSegment> planPath(Coordinate startCoordinate, Deque<Sensor> route,
-            DiscreteStepAndAngleGraph graph) {
+            DiscreteStepAndAngleGraph graph,
+            boolean formLoop) {
         
 
         // create start node
@@ -58,18 +50,25 @@ public class ConstrainedPathPlanner extends LoopingPathPlanner {
         // create goal nodes
         Deque<PathfindingGoal> goals = new LinkedList<PathfindingGoal>(route);
 
-        // we include the start node goal at the end so that our path loops
-        // keep the reference so we can remove it from the last node's reached list
-        var loopBackGoal = new PointGoal(startCoordinate);
-        goals.add(loopBackGoal);
+        PointGoal loopBackGoal = null;
+        if(formLoop){
+            // we include the start node goal at the end so that our path loops
+            // keep the reference so we can remove it from the last node's reached list
+            loopBackGoal = new PointGoal(startCoordinate);
+            goals.add(loopBackGoal);
+        }
 
         // invoke the algorithm and set out a path
 
         var path = ALGORITHM.findPath(graph, goals, startNode, READING_RANGE);
 
-        // remove the loopBackGoal
-        path.getLast().removeGoalReached(loopBackGoal);
-        goals.remove(loopBackGoal);
+        if(formLoop){
+            // remove the goal reached for the loopback segment as 
+            // these should only contain sensors
+            path.getLast().removeGoalReached(loopBackGoal);
+            goals.remove(loopBackGoal);
+        }
+
 
         var pathOfSegments = pathPointsToSegmentsStrategy(path, goals,route, graph);
         
@@ -126,6 +125,7 @@ public class ConstrainedPathPlanner extends LoopingPathPlanner {
                 // add a proxy segment for each goal reached by the start node
                 // this will go back and forth between the nearest neighbour and the start node 
                 // untill all goals are reached
+
                 resolveProxySegments(startNode,
                     graph,
                     goalsRoute,
@@ -144,6 +144,20 @@ public class ConstrainedPathPlanner extends LoopingPathPlanner {
 
             Sensor segmentSensorReached = null;
 
+            if(nodeGoalsAchievedAtEndNode.size() == 0){
+                // if we haven't reached a node
+                // we can use this opportunity to see if the next start node has a goal reached
+                // if so, we can "steal" it to make it a legal move
+                var nextNode = pathPoints.peek();
+                
+                if(nextNode != null && nextNode.getNumberOfGoalsReached() > 0){
+                    endNode.addGoalReached(
+                        nextNode.getGoalsReached().poll());
+                }
+
+                // we then process the reached goal as normal
+            }
+
             // if we reached some node and it is the next goal on the goals route
             if(nodeGoalsAchievedAtEndNode.size() > 0
                 && nodeGoalsAchievedAtEndNode.peek() == goalsRoute.peek()){
@@ -152,8 +166,7 @@ public class ConstrainedPathPlanner extends LoopingPathPlanner {
                 // simultaneously remove the goal reached from the node
                 segmentSensorReached = sensorRoute.poll();
                 endNode.removeGoalReached(goalsRoute.poll());
-            }
-
+            } 
             // for the end node, a single goal is allowed with no issue
             var pathSegment = new PathSegment(
                 startNode.getLocation(),

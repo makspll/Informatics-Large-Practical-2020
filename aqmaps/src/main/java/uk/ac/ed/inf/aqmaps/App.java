@@ -8,6 +8,7 @@ import java.text.NumberFormat;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -28,19 +29,29 @@ import uk.ac.ed.inf.aqmaps.client.DroneWebServerClient;
 import uk.ac.ed.inf.aqmaps.client.SensorData;
 import uk.ac.ed.inf.aqmaps.client.W3WAddressData;
 import uk.ac.ed.inf.aqmaps.pathfinding.AstarTreeSearch;
+import uk.ac.ed.inf.aqmaps.pathfinding.GreatestAvoidanceDistance;
 import uk.ac.ed.inf.aqmaps.pathfinding.Heuristic;
+import uk.ac.ed.inf.aqmaps.pathfinding.ScaledGridSnappingHash;
 import uk.ac.ed.inf.aqmaps.pathfinding.StraightLineDistance;
 import uk.ac.ed.inf.aqmaps.pathfinding.TreePathfindingAlgorithm;
 import uk.ac.ed.inf.aqmaps.simulation.Building;
-import uk.ac.ed.inf.aqmaps.simulation.Drone;
 import uk.ac.ed.inf.aqmaps.simulation.Obstacle;
-import uk.ac.ed.inf.aqmaps.simulation.PathSegment;
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
-import uk.ac.ed.inf.aqmaps.simulation.planning.CollectionOrderPlanner;
-import uk.ac.ed.inf.aqmaps.simulation.planning.ConstrainedPathPlanner;
+import uk.ac.ed.inf.aqmaps.simulation.SensorDataCollectorFactory;
+import uk.ac.ed.inf.aqmaps.simulation.SensorDataCollectorFactory.CollectionOrderPlannerType;
+import uk.ac.ed.inf.aqmaps.simulation.SensorDataCollectorFactory.DistanceMatrixType;
+import uk.ac.ed.inf.aqmaps.simulation.SensorDataCollectorFactory.PathfindingHeuristicType;
+import uk.ac.ed.inf.aqmaps.simulation.collection.Drone;
 import uk.ac.ed.inf.aqmaps.simulation.planning.DiscreteStepAndAngleGraph;
-import uk.ac.ed.inf.aqmaps.simulation.planning.GreedyCollectionOrderPlanner;
-import uk.ac.ed.inf.aqmaps.simulation.planning.PathPlanner;
+import uk.ac.ed.inf.aqmaps.simulation.planning.DistanceMatrix;
+import uk.ac.ed.inf.aqmaps.simulation.planning.GreatestAvoidanceDistanceMatrix;
+import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.CollectionOrderOptimiser;
+import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.CollectionOrderPlanner;
+import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.GreedyCollectionOrderPlanner;
+import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.NearestInsertionCollectionOrderPlanner;
+import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.Optimiser2Opt;
+import uk.ac.ed.inf.aqmaps.simulation.planning.path.ConstrainedPathPlanner;
+import uk.ac.ed.inf.aqmaps.simulation.planning.path.PathSegment;
 import uk.ac.ed.inf.aqmaps.utilities.GeometryUtilities;
 import uk.ac.ed.inf.aqmaps.visualisation.AQMapGenerator;
 import uk.ac.ed.inf.aqmaps.visualisation.AttributeMap;
@@ -201,27 +212,29 @@ public class App {
         // convert geojson buildings to obstacles
         Collection<Obstacle> obstacles = convertBuildingData(buildingCollection);
 
-        //// initialize sensor data collector
-        
-        // select default collection modules
-        var sensorDataCollector = new Drone(
-                                    PATH_PLANNER,
-                                    COLLECTION_ORDER_PLANNER);
+        //// initialize collector
 
-        //// run simulation 
-
-        // prepare graph
-        
         DiscreteStepAndAngleGraph graph = new DiscreteStepAndAngleGraph(EASTERN_ANGLE,
             MAXIMUM_ANGLE,
             DISCRETE_ANGLE_STEP_SIZE,
             DISCRETE_POSITION_STEP_SIZE,
-            obstacles);
+            obstacles,
+            boundary);
 
-        Queue<PathSegment> path = sensorDataCollector.planCollection(
+        var collector = SensorDataCollectorFactory.createCollector(graph,
+            READING_RANGE, MAXIMUM_MOVES_NO, 
+            PathfindingHeuristicType.STRAIGHT_LINE,
+            CollectionOrderPlannerType.NEAREST_INSERTION,
+            DistanceMatrixType.EUCLIDIAN);
+
+        //// run simulation 
+        
+        
+        Queue<PathSegment> path = collector.planCollection(
             startCoordinate,
             sensors, 
-            graph);
+            graph,
+            true);
 
         //// produce visualisation
 
@@ -275,15 +288,19 @@ public class App {
     private static final int DISCRETE_ANGLE_STEP_SIZE = 10;
     private static final double DISCRETE_POSITION_STEP_SIZE = 0.0003d;
 
-    private static final CollectionOrderPlanner COLLECTION_ORDER_PLANNER = new GreedyCollectionOrderPlanner();
+    /**
+     * the confinement area of the sensor collector
+     */
+    private static final Polygon boundary = GeometryUtilities.geometryFactory.createPolygon(
+        new Coordinate[]{
+            new Coordinate(-3.192473d, 55.946233d),
+            new Coordinate(-3.184319d, 55.946233d),
+            new Coordinate(-3.184319d, 55.942617d),
+            new Coordinate(-3.192473d, 55.942617d),
+            new Coordinate(-3.192473d, 55.946233d)
+        }
+    );
 
-
-    private static final PrecisionModel PRECISION_MODEL = new PrecisionModel(PrecisionModel.FLOATING_SINGLE);
-    private static final Heuristic PATHFINDING_HEURISTIC = new StraightLineDistance(1.1);
-    private static final TreePathfindingAlgorithm PATHFINDING_ALGORITHM = new AstarTreeSearch(PATHFINDING_HEURISTIC);
-
-    private static final PathPlanner PATH_PLANNER = new ConstrainedPathPlanner(READING_RANGE, MAXIMUM_MOVES_NO, PATHFINDING_ALGORITHM);
-    
     private static final AttributeMap<Float,String> markerColourMap = new SensorReadingColourMap(
         0f,
         256f,

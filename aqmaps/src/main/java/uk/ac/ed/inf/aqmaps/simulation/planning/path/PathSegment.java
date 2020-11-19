@@ -1,8 +1,11 @@
-package uk.ac.ed.inf.aqmaps.simulation;
+package uk.ac.ed.inf.aqmaps.simulation.planning.path;
 
 import java.util.Objects;
 
 import org.locationtech.jts.geom.Coordinate;
+
+import uk.ac.ed.inf.aqmaps.simulation.Sensor;
+
 
 /**
  * represents a singular move made by the sensor data collector
@@ -10,7 +13,6 @@ import org.locationtech.jts.geom.Coordinate;
  * we cannot collect a reading in a move unless we have moved
  */
 public class PathSegment {
-
 
     /**
      * Creates a path segment from the start and end points, the direction of movement and the sensor read if any

@@ -22,6 +22,7 @@ import uk.ac.ed.inf.aqmaps.pathfinding.AstarTreeSearch;
 import uk.ac.ed.inf.aqmaps.pathfinding.Graph;
 import uk.ac.ed.inf.aqmaps.pathfinding.PathfindingGoal;
 import uk.ac.ed.inf.aqmaps.pathfinding.PointGoal;
+import uk.ac.ed.inf.aqmaps.pathfinding.ScaledGridSnappingHash;
 import uk.ac.ed.inf.aqmaps.pathfinding.SpatialTreeSearchNode;
 import uk.ac.ed.inf.aqmaps.pathfinding.StraightLineDistance;
 
@@ -47,7 +48,7 @@ public class AstarTreeSearchTest {
 
         Graph g = new GridGraph(obstacles);
 
-        var testSearch = new AstarTreeSearch(new StraightLineDistance());
+        var testSearch = new AstarTreeSearch(new StraightLineDistance(),new ScaledGridSnappingHash(1/75d, new Coordinate()));
 
         Coordinate startCoordinate = new Coordinate(0.5,-0.5);
         Coordinate endCoordinate = new Coordinate(3.5,-0.5);
@@ -99,7 +100,7 @@ public class AstarTreeSearchTest {
 
         Graph g = new GridGraph(obstacles);
 
-        var testSearch = new AstarTreeSearch(new StraightLineDistance());
+        var testSearch = new AstarTreeSearch(new StraightLineDistance(),new ScaledGridSnappingHash(1/75d, new Coordinate()));
 
         Coordinate startCoordinate = new Coordinate(0.5,0.5);
         Coordinate endCoordinate = new Coordinate(5.5,5.5);
@@ -152,7 +153,7 @@ public class AstarTreeSearchTest {
 
         Graph g = new GridGraph(obstacles);
 
-        var testSearch = new AstarTreeSearch(new StraightLineDistance());
+        var testSearch = new AstarTreeSearch(new StraightLineDistance(),new ScaledGridSnappingHash(1/75d, new Coordinate()));
 
         Coordinate startCoordinate = new Coordinate(0.5,0.5);
         Coordinate middleCoordinate = new Coordinate(1.5,-0.5);
@@ -198,7 +199,7 @@ public class AstarTreeSearchTest {
 
         Graph g = new GridGraph(obstacles);
 
-        var testSearch = new AstarTreeSearch(new StraightLineDistance());
+        var testSearch = new AstarTreeSearch(new StraightLineDistance(),new ScaledGridSnappingHash(1/75d, new Coordinate()));
 
         Coordinate startCoordinate = new Coordinate(0,0);
         Coordinate middleCoordinate = new Coordinate(0,0.5);

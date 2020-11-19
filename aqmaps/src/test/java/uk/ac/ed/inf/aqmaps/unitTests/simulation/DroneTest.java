@@ -21,12 +21,10 @@ import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.mockito.ArgumentMatchers;
 
-import uk.ac.ed.inf.aqmaps.simulation.Drone;
 import uk.ac.ed.inf.aqmaps.simulation.Obstacle;
-import uk.ac.ed.inf.aqmaps.simulation.PathSegment;
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
-import uk.ac.ed.inf.aqmaps.simulation.planning.CollectionOrderPlanner;
-import uk.ac.ed.inf.aqmaps.simulation.planning.PathPlanner;
+import uk.ac.ed.inf.aqmaps.simulation.collection.Drone;
+
 
 // import uk.ac.ed.inf.aqmaps.client.Sensor;
 // import uk.ac.ed.inf.aqmaps.client.W3WAddress;

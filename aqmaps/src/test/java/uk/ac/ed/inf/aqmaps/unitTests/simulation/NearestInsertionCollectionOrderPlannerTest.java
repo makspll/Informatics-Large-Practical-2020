@@ -13,10 +13,10 @@ import org.locationtech.jts.geom.Coordinate;
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
 import uk.ac.ed.inf.aqmaps.simulation.planning.EuclidianDistanceMatrix;
 import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.CollectionOrderPlanner;
-import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.GreedyCollectionOrderPlanner;
+import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.NearestInsertionCollectionOrderPlanner;
 
-public class GreedyCollectionOrderPlannerTest extends CollectionOrderPlannerTest {
-    private static GreedyCollectionOrderPlanner testPlanner = new GreedyCollectionOrderPlanner(null,
+public class NearestInsertionCollectionOrderPlannerTest extends CollectionOrderPlannerTest {
+    private static NearestInsertionCollectionOrderPlanner testPlanner = new NearestInsertionCollectionOrderPlanner(null,
             new EuclidianDistanceMatrix());
 
     private static Sensor mockSensor1 = mock(Sensor.class);

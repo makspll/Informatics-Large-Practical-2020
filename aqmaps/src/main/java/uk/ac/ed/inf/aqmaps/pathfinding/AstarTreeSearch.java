@@ -1,15 +1,20 @@
 package uk.ac.ed.inf.aqmaps.pathfinding;
 
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.List;
 import java.util.PriorityQueue;
+
+import org.locationtech.jts.geom.Coordinate;
 
 
 public class AstarTreeSearch extends TreePathfindingAlgorithm {
 
-    public AstarTreeSearch(Heuristic h){
-        this.h = h;
+    public AstarTreeSearch(Heuristic heuristic, SpatialHash hash){
+        this.heuristic = heuristic;
+        this.hash = hash;
     }
+
 
     private static int compareNodes(SpatialTreeSearchNode A, SpatialTreeSearchNode B, PathfindingGoal Goal){
         int output = (int)Math.signum((A.getCost() + A.getHeuristic()) - (B.getCost() + B.getHeuristic()));
@@ -17,7 +22,7 @@ public class AstarTreeSearch extends TreePathfindingAlgorithm {
         if(output == 0){
             // tie breaker,
             // pick based on cost only
-            return (int)Math.signum((A.getCost() - B.getCost()));
+            return (int)Math.signum((A.getHeuristic() - B.getHeuristic()));
         }
 
         return output;
@@ -30,7 +35,12 @@ public class AstarTreeSearch extends TreePathfindingAlgorithm {
         // we keep an open set where the nodes are sorted by their heuristic + 
         // cost values. If the heuristic is admissible
         // Astar will return an optimal solution
-        PriorityQueue<SpatialTreeSearchNode> openSet = new PriorityQueue<SpatialTreeSearchNode>(1,(a,b)->compareNodes(a,b,goal));
+        var openSet = new PriorityQueue<SpatialTreeSearchNode>(1,(a,b)->compareNodes(a,b,goal));
+        
+        // even though floating point issues may arise,
+        // we may benefit from at least avoiding some of the visited points
+        var visitedSet = new HashSet<Integer>();
+        visitedSet.add(hash.getHash(start.getLocation()));
 
         // start with the initial node in the open set
         openSet.add(start);
@@ -58,8 +68,17 @@ public class AstarTreeSearch extends TreePathfindingAlgorithm {
             // we add each neighbour to the open set
             for (SpatialTreeSearchNode n : neighbours) {
 
-                n.setHeuristic(h.heuristic(n, goal));
+                if(visitedSet.contains(
+                    hash.getHash(
+                        n.getLocation())))
+                    continue;
 
+                n.setHeuristic(heuristic.heuristic(n, goal));
+
+                visitedSet.add(
+                    hash.getHash(
+                        n.getLocation()));
+                        
                 openSet.add(n);
             }
         }
@@ -68,8 +87,8 @@ public class AstarTreeSearch extends TreePathfindingAlgorithm {
         return;
     }
 
-    private Heuristic h;
-
+    private final Heuristic heuristic;
+    private final SpatialHash hash;
 
     
 }

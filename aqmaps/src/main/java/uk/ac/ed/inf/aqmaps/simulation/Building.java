@@ -11,6 +11,9 @@ import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
 
+import uk.ac.ed.inf.aqmaps.simulation.planning.path.PathSegment;
+import uk.ac.ed.inf.aqmaps.utilities.GeometryUtilities;
+
 public class Building implements Obstacle {
 
     public Building(Polygon shape) {
@@ -39,14 +42,13 @@ public class Building implements Obstacle {
     }
 
     private final Polygon shape;
-    private final GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING));
 
     @Override
     public boolean intersectsPath(Coordinate a, Coordinate b) {
-        LineString ls = geometryFactory
+        LineString ls = GeometryUtilities.geometryFactory
             .createLineString(
                 new Coordinate[]{a,b});
 
-        return ls.touches(shape) || ls.crosses(shape);
+        return !ls.disjoint(shape) || ls.touches(shape);
     }      
 }

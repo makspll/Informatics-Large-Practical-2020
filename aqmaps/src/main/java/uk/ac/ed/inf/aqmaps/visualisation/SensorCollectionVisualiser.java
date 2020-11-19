@@ -7,8 +7,8 @@ import java.util.Queue;
 
 import com.mapbox.geojson.FeatureCollection;
 
-import uk.ac.ed.inf.aqmaps.simulation.PathSegment;
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
+import uk.ac.ed.inf.aqmaps.simulation.planning.path.PathSegment;
 
 public interface SensorCollectionVisualiser {
     

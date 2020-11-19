@@ -1,14 +1,11 @@
-package uk.ac.ed.inf.aqmaps.simulation.planning;
+package uk.ac.ed.inf.aqmaps.simulation.planning.path;
 
-import java.util.Collection;
 import java.util.Deque;
-import java.util.Queue;
 
 import org.locationtech.jts.geom.Coordinate;
 
-import uk.ac.ed.inf.aqmaps.simulation.Obstacle;
-import uk.ac.ed.inf.aqmaps.simulation.PathSegment;
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
+import uk.ac.ed.inf.aqmaps.simulation.planning.DiscreteStepAndAngleGraph;
 
 /**
  * Path planners create a detailed path between given route points which takes a sensor data collector 
@@ -22,10 +19,12 @@ public interface PathPlanner {
      * @param startCoordinate the starting coordinate
      * @param route the sensors in order they need to be accessed
      * @param graph the graph which defines the traversal graph
+     * @param formLoop if true the path will lead back to the start coordinate
      * @return
      */
     public Deque<PathSegment> planPath(Coordinate startCoordinate,
         Deque<Sensor> route,
-        DiscreteStepAndAngleGraph graph);
+        DiscreteStepAndAngleGraph graph,
+        boolean formLoop);
 
 }

@@ -1,4 +1,4 @@
-package uk.ac.ed.inf.aqmaps.simulation;
+package uk.ac.ed.inf.aqmaps.simulation.collection;
 
 import java.util.Collection;
 import java.util.Deque;
@@ -8,9 +8,12 @@ import java.util.Set;
 
 import org.locationtech.jts.geom.Coordinate;
 
-import uk.ac.ed.inf.aqmaps.simulation.planning.CollectionOrderPlanner;
+import uk.ac.ed.inf.aqmaps.simulation.Sensor;
 import uk.ac.ed.inf.aqmaps.simulation.planning.DiscreteStepAndAngleGraph;
-import uk.ac.ed.inf.aqmaps.simulation.planning.PathPlanner;
+import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.CollectionOrderPlanner;
+import uk.ac.ed.inf.aqmaps.simulation.planning.path.PathPlanner;
+import uk.ac.ed.inf.aqmaps.simulation.planning.path.PathSegment;
+
 
 public class Drone implements SensorDataCollector {
 
@@ -22,7 +25,8 @@ public class Drone implements SensorDataCollector {
     @Override
     public Queue<PathSegment> planCollection(Coordinate startCoordinate,
         Set<Sensor> sensors,
-        DiscreteStepAndAngleGraph graph) {
+        DiscreteStepAndAngleGraph graph,
+        boolean formLoop) {
         
         //// first we identify which sensor we are the closest to
         //// at the start coordinate
@@ -47,12 +51,19 @@ public class Drone implements SensorDataCollector {
         // but we don't want to modify the data structure, so we put it back at the end
         sensors.remove(startSensor);
 
-        Deque<Sensor> route = routePlanner.planRoute(startSensor,sensors,graph.getObstacles());
+        Deque<Sensor> route = routePlanner.planRoute(startSensor,sensors,formLoop);
+
+        if(formLoop){
+            // remove the last sensor, since we form a loop but we do not need to visit it anymore
+            route.removeLast();
+        }
+
 
         //// plan the detailed flight path along the route
         Deque<PathSegment> flightPath = flightPlanner.planPath(startCoordinate, 
                                             route, 
-                                            graph);
+                                            graph,
+                                            formLoop);
 
         for (PathSegment pathSegment : flightPath) {
             Sensor read = pathSegment.getSensorRead();

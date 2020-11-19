@@ -10,8 +10,8 @@ import com.mapbox.geojson.FeatureCollection;
 
 import org.locationtech.jts.geom.Coordinate;
 
-import uk.ac.ed.inf.aqmaps.simulation.PathSegment;
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
+import uk.ac.ed.inf.aqmaps.simulation.planning.path.PathSegment;
 
 public class OutputFormatter {
 
