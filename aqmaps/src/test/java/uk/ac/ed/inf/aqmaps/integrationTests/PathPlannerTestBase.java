@@ -138,10 +138,8 @@ public abstract class PathPlannerTestBase {
     public void pathDoesntCrossObstaclesTest(){
         var output = planner.planPath(startCoordinate, route, graph,true);
 
-        int idx =0;
         for (Obstacle o : graph.getObstacles()) {
-            assertFalse(o.intersectsPath(output),"path crosses obstacle at index: " + idx);
-            idx += 1;
+            TestUtilities.assertIntersectPath(output, o,false);
         }
     }
 

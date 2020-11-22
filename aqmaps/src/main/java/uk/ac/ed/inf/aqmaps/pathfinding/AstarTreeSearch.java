@@ -30,7 +30,7 @@ public class AstarTreeSearch<T extends SearchNode<T>> extends PathfindingAlgorit
 
 
     @Override
-    public  void findPath(SearchTree<T> g, PathfindingGoal goal, T start, double goalThreshold,Deque<T> output) {
+    public  void findPath(SearchGraph<T> g, PathfindingGoal goal, T start, double goalThreshold,Deque<T> output) {
         
         // we keep an open set where the nodes are sorted by their heuristic + 
         // cost values. If the heuristic is admissible
@@ -68,16 +68,13 @@ public class AstarTreeSearch<T extends SearchNode<T>> extends PathfindingAlgorit
             // we add each neighbour to the open set
             for (T n : neighbours) {
 
-                if(visitedSet.contains(
-                    hash.getHash(
-                        n.getLocation())))
+                int spatialHash = hash.getHash(n.getLocation());
+                if(visitedSet.contains(spatialHash))
                     continue;
 
                 n.setHeuristic(heuristic.heuristic(n, goal));
 
-                visitedSet.add(
-                    hash.getHash(
-                        n.getLocation()));
+                visitedSet.add(spatialHash);
                         
                 openSet.add(n);
             }

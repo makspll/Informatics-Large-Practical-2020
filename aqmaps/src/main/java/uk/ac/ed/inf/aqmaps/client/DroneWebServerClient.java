@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ public class DroneWebServerClient implements ClientService{
         //// work out the relative api uri in the /maps/yyyy/mm/dd/air-quality-data.json format
         var requestURI = getFullAPIURI(
             URI.create(
-                String.format("maps/%04d/%02d/%02d/air-quality-data.json",
+                String.format("/maps/%04d/%02d/%02d/air-quality-data.json",
                     date.getYear(),
                     date.getMonthValue(),
                     date.getDayOfMonth())));
@@ -61,11 +62,11 @@ public class DroneWebServerClient implements ClientService{
             new TypeToken<ArrayList<SensorData>>() {}.getType(); 
 
 
-        ArrayList<SensorData> studentList =
+        ArrayList<SensorData> sensorList =
             gson.fromJson(response.body(), sensorListType);
 
 
-        return studentList;
+        return sensorList;
 
     }
     

@@ -17,7 +17,16 @@ public class AQSensor implements Sensor{
         W3WLocation = addressData.getWords();
     }
 
+    @Override
+    public void setHaveBeenRead(boolean read) {
+        this.hasBeenRead = read;
+    }
 
+    @Override
+    public Coordinate getPosition() {
+        return getCoordinates();
+    }
+    
     public float getReading() {
         return this.reading;
     }
@@ -31,10 +40,6 @@ public class AQSensor implements Sensor{
         return this.hasBeenRead;
     }
     
-    @Override
-    public void setHaveBeenRead(boolean read) {
-        this.hasBeenRead = read;
-    }
 
     public float getBatteryLevel() {
         return this.batteryLevel;
@@ -43,6 +48,8 @@ public class AQSensor implements Sensor{
     public String getW3WLocation() {
         return this.W3WLocation;
     }
+
+
 
     @Override
     public boolean equals(Object o) {
@@ -77,10 +84,6 @@ public class AQSensor implements Sensor{
     private float batteryLevel;
     private String W3WLocation;
 
-    @Override
-    public Coordinate getPosition() {
-        return getCoordinates();
-    }
 
 
 

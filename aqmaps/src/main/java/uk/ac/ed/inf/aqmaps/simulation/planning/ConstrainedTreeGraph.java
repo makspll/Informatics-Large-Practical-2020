@@ -10,14 +10,14 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.math.Vector2D;
 
-import uk.ac.ed.inf.aqmaps.pathfinding.SearchTree;
+import uk.ac.ed.inf.aqmaps.pathfinding.SearchGraph;
 import uk.ac.ed.inf.aqmaps.simulation.DirectedSearchNode;
 import uk.ac.ed.inf.aqmaps.pathfinding.Obstacle;
 import uk.ac.ed.inf.aqmaps.utilities.BVHNode;
 import uk.ac.ed.inf.aqmaps.utilities.GeometryUtilities;
 import uk.ac.ed.inf.aqmaps.utilities.MathUtilities;
 
-public class ConstrainedTreeGraph implements SearchTree<DirectedSearchNode> {
+public class ConstrainedTreeGraph implements SearchGraph<DirectedSearchNode> {
 
     /**
      * The angle system needs to allow for each possible angle to have a "complement angle" which takes

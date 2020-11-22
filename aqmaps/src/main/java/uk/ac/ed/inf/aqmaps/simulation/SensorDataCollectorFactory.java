@@ -4,20 +4,19 @@ import java.util.ArrayList;
 
 import uk.ac.ed.inf.aqmaps.pathfinding.AstarTreeSearch;
 import uk.ac.ed.inf.aqmaps.pathfinding.hashing.GridSnappingSpatialHash;
-import uk.ac.ed.inf.aqmaps.pathfinding.heuristics.GreatestAvoidanceDistance;
 import uk.ac.ed.inf.aqmaps.pathfinding.heuristics.StraightLineDistance;
 import uk.ac.ed.inf.aqmaps.simulation.collection.Drone;
 import uk.ac.ed.inf.aqmaps.simulation.collection.SensorDataCollector;
 import uk.ac.ed.inf.aqmaps.simulation.planning.ConstrainedTreeGraph;
 import uk.ac.ed.inf.aqmaps.simulation.planning.EuclidianDistanceMatrix;
 import uk.ac.ed.inf.aqmaps.simulation.planning.GreatestAvoidanceDistanceMatrix;
-import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.ChristofidesCollectionOrderPlanner;
 import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.BaseCollectionOrderPlanner;
 import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.GreedyCollectionOrderPlanner;
 import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.NearestInsertionCollectionOrderPlanner;
 import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.optimisers.CollectionOrderOptimiser;
 import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.optimisers.Optimiser2Opt;
 import uk.ac.ed.inf.aqmaps.simulation.planning.path.BasePathPlanner;
+import uk.ac.ed.inf.aqmaps.simulation.planning.path.SimplePathPlanner;
 
 /**
  * A utility class for instantiating sensor data collectors with optimal values in one call
@@ -36,24 +35,50 @@ public class SensorDataCollectorFactory {
      */
     public static SensorDataCollector createCollector(
         ConstrainedTreeGraph g,double readingRange,int maxMoves,
+        CollectorType collectorType,
         PathfindingHeuristicType heuristicType,
         CollectionOrderPlannerType plannerType,
         DistanceMatrixType matrixType){
+        return(createCollector(g, readingRange, maxMoves, collectorType, heuristicType, plannerType, matrixType,1.5f,g.getMoveLength()/75d,0.1d * g.getMoveLength()));
+    }
+
+    /**
+     * Create a new collector within the given domain and with the given parameters
+     * @param g the graph defining the movement capabilities
+     * @param readingRange the minimum distance between the collector and the sensor required for a reading to be taken
+     * @param maxMoves the maximum number of path segments returned by the collector
+     * @param heuristicType the pathfinding heuristic to use
+     * @param plannerType the type of planner to use
+     * @param matrixType the type of distance matrix to use
+     * @param relaxationFactor the relaxation factor to use (applies to certain heuristics)
+     * @param hashingGridWidth the width of the spatial hashing grid
+     * @param opt2Epsilon the minimum required improvement threshold in the path for 2opt to keep optimising
+     * @return
+     */
+    public static SensorDataCollector createCollector(
+        ConstrainedTreeGraph g,
+        double readingRange,
+        int maxMoves,
+        CollectorType collectorType,
+        PathfindingHeuristicType heuristicType,
+        CollectionOrderPlannerType plannerType,
+        DistanceMatrixType matrixType,
+        float relaxationFactor,
+        double hashingGridWidth,
+        double opt2Epsilon){
 
         // set everything up with optimal values
         var hashingAlgorithm = new GridSnappingSpatialHash(
-            g.getMoveLength()/75d, 
+            hashingGridWidth ,
             g.getBoundary().getCentroid().getCoordinate());
         
         
         var algorithm = new AstarTreeSearch<DirectedSearchNode>(
-            heuristicType == PathfindingHeuristicType.GREATEST_AVOIDANCE ? 
-                new GreatestAvoidanceDistance(g.getObstacles()):
-                new StraightLineDistance(1.5), 
+            new StraightLineDistance(relaxationFactor), 
             hashingAlgorithm);
 
         
-        var flightPlanner = new BasePathPlanner(
+        var flightPlanner = new SimplePathPlanner(
             readingRange,
             maxMoves, 
             algorithm);
@@ -67,15 +92,12 @@ public class SensorDataCollectorFactory {
         var optimisers = new ArrayList<CollectionOrderOptimiser>();
 
         switch(plannerType){
-            case CHRISTOFIDES:
-                routePlanner = new ChristofidesCollectionOrderPlanner(optimisers, distMatrix);
-				break;
             case GREEDY:
-                optimisers.add(new Optimiser2Opt(g.getMoveLength() * 0.1d));
+                optimisers.add(new Optimiser2Opt(opt2Epsilon));
                 routePlanner = new GreedyCollectionOrderPlanner(optimisers, distMatrix);
 				break;
             case NEAREST_INSERTION:
-                optimisers.add(new Optimiser2Opt(g.getMoveLength() * 0.1d));
+                optimisers.add(new Optimiser2Opt(opt2Epsilon));
                 routePlanner = new NearestInsertionCollectionOrderPlanner(optimisers, distMatrix);
 				break;
         }
@@ -85,6 +107,9 @@ public class SensorDataCollectorFactory {
         return collector;
     }
 
+    public enum CollectorType{
+        DRONE
+    }
 
     public enum DistanceMatrixType{
         EUCLIDIAN,GREATEST_AVOIDANCE
@@ -92,11 +117,11 @@ public class SensorDataCollectorFactory {
 
 
     public enum CollectionOrderPlannerType{
-        CHRISTOFIDES,GREEDY,NEAREST_INSERTION
+        GREEDY,NEAREST_INSERTION
     }
 
     public enum PathfindingHeuristicType{
-        STRAIGHT_LINE,GREATEST_AVOIDANCE
+        STRAIGHT_LINE
     }
 
     

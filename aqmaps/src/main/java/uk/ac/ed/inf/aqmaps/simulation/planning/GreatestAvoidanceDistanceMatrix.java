@@ -39,12 +39,13 @@ public class GreatestAvoidanceDistanceMatrix extends DistanceMatrix {
         Coordinate posA = a.getCoordinates();
         Coordinate posB = b.getCoordinates();
         
+   
         var line = GeometryUtilities.geometryFactory.createLineString(new Coordinate[]{
             posA,posB
         });
 
         // find all obstacles which are on the way
-        List<Polygon> obstaclesOnTheWay = new ArrayList<Polygon>();
+        var obstaclesOnTheWay = new ArrayList<Polygon>();
         for (Obstacle obstacle : obstacleBVHTree.getPossibleCollisions(line)) {
             if(obstacle.intersectsPath(posA, posB)){
                 obstaclesOnTheWay.add(obstacle.getShape());
@@ -56,23 +57,27 @@ public class GreatestAvoidanceDistanceMatrix extends DistanceMatrix {
             return posA.distance(posB);
 
         //form a minimum bounding circle around all found obstacles
-        var minimumBoundingCircle = new MinimumBoundingCircle(
-            GeometryUtilities.geometryFactory.buildGeometry(obstaclesOnTheWay));
+        var mergedGeometry = GeometryUtilities.geometryFactory.buildGeometry(obstaclesOnTheWay);
+        var minimumBoundingCircle = new MinimumBoundingCircle(mergedGeometry);
         
         // form the points of the maximum avoidance triangle
         
         Vector2D directionToB = Vector2D.create(posA, posB);
         Vector2D perpendicularDirection = directionToB.rotateByQuarterCircle(1).normalize();
 
+        var circleCenter = minimumBoundingCircle.getCentre();
+        var circleRadius = minimumBoundingCircle.getRadius();
+
         Coordinate turningPoint = perpendicularDirection.multiply(
-                                    minimumBoundingCircle.getRadius())
-                                    .translate(minimumBoundingCircle.getCentre());
+                                    circleRadius)
+                                    .translate(circleCenter);
 
         Vector2D segmentToTurningPoint = new Vector2D(posA, turningPoint);
-        Vector2D segmentFromTurningPoint = new Vector2D(turningPoint,posB);
 
-        // sum the lengths of the arms of the circle
-        return segmentToTurningPoint.length() + segmentFromTurningPoint.length();
+        // sum the lengths to the turning point, around the circle and towards the goal from the end of the circle
+        return segmentToTurningPoint.length() 
+            + (circleRadius*Math.PI*1/2)
+            + (circleCenter.distance(posB) - circleRadius);
     }
 
     private final Collection<Obstacle> obstacles;

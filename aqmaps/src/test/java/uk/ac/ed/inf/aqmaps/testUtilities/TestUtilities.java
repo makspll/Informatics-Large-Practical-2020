@@ -2,15 +2,25 @@ package uk.ac.ed.inf.aqmaps.testUtilities;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Deque;
 import java.util.Queue;
+
+import com.mapbox.geojson.Point;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.math.Vector2D;
 
+import uk.ac.ed.inf.aqmaps.client.AQSensor;
+import uk.ac.ed.inf.aqmaps.client.SensorData;
+import uk.ac.ed.inf.aqmaps.client.W3WAddressData;
+import uk.ac.ed.inf.aqmaps.client.W3WSquareData;
+import uk.ac.ed.inf.aqmaps.pathfinding.Obstacle;
+import uk.ac.ed.inf.aqmaps.simulation.Sensor;
 import uk.ac.ed.inf.aqmaps.simulation.planning.path.PathSegment;
 
 
@@ -74,20 +84,22 @@ public class TestUtilities {
                 assertCoordinateEquals(
                     previousEnd, 
                     currentStart, 
-                    epsilon);
+                    epsilon,null);
             }
             previousSegment = pathSegment;
         }
     }
 
-    public static void assertVectorEquals(Vector2D expected, Vector2D actual, double epsilon){
-        assertEquals(expected.getX(), actual.getX(),epsilon,"X component is not the same");
-        assertEquals(expected.getY(), actual.getY(),epsilon,"Y component is not the same");
+    public static void assertVectorEquals(Vector2D expected, Vector2D actual, double epsilon, String msg){
+        assertEquals(expected.getX(), actual.getX(),epsilon,msg == null ?"X component is not the same":msg);
+        assertEquals(expected.getY(), actual.getY(),epsilon,msg == null ?"Y component is not the same":msg);
     }
 
-    public static void assertCoordinateEquals(Coordinate expected, Coordinate actual, double epsilon){
-        assertVectorEquals(new Vector2D(expected), new Vector2D(actual), epsilon);
+    public static void assertCoordinateEquals(Coordinate expected, Coordinate actual, double epsilon, String msg){
+        assertVectorEquals(new Vector2D(expected), new Vector2D(actual), epsilon,msg);
     }
+
+
 
     public static void assertDirectionValid(PathSegment p){
         Vector2D vector = new Vector2D(p.getStartPoint(), p.getEndPoint());
@@ -143,6 +155,29 @@ public class TestUtilities {
                 assertDirectionValid(minAngle,maxAngle,angleIncrement,pathSegment);
             },"Direction at idx: " + i++ + " has invalid direction");
         }
+    }
+
+    public static void assertIntersectPath(Deque<PathSegment> path, Obstacle obstacle,boolean intersects){
+
+        for (PathSegment pathSegment : path) {
+            var ls = TestUtilities.gf.createLineString(
+                new Coordinate[]{pathSegment.getStartPoint(),pathSegment.getEndPoint()});
+
+            assertTrue(intersects==!obstacle.getShape().disjoint(ls), "obstacle intersects path:" + obstacle);
+
+            assertTrue(intersects==obstacle.getShape().intersects(ls)
+                || intersects==obstacle.getShape().touches(ls),"obstacle intersects path" + obstacle);
+
+        }
+    }
+
+    public static Sensor constructSensor(Coordinate point, float reading, float battery){
+
+        Point p = Point.fromLngLat(point.x, point.y);
+
+        return new AQSensor(
+            new SensorData("", battery, reading), 
+            new W3WAddressData("country", new W3WSquareData(), "nearestPlace",  p, "w.o.rds", "language", "map"));
     }
 
 

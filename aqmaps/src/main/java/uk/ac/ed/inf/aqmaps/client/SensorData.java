@@ -8,7 +8,6 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.mapbox.geojson.Point;
 
 public class SensorData {
 
@@ -29,40 +28,14 @@ public class SensorData {
         return this.location;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
     public Float getBattery() {
         return this.battery;
-    }
-
-    public void setBattery(float battery) {
-        this.battery = battery;
     }
 
     public float getReading() {
         return this.reading;
     }
 
-    public void setReading(float reading) {
-        this.reading = reading;
-    }
-
-    public SensorData location(String location) {
-        this.location = location;
-        return this;
-    }
-
-    public SensorData battery(float battery) {
-        this.battery = battery;
-        return this;
-    }
-
-    public SensorData reading(float reading) {
-        this.reading = reading;
-        return this;
-    }
 
     @Override
     public boolean equals(Object o) {

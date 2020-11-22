@@ -14,6 +14,7 @@ import org.locationtech.jts.geom.GeometryFactory;
 import uk.ac.ed.inf.aqmaps.simulation.Building;
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
 import uk.ac.ed.inf.aqmaps.simulation.planning.path.PathSegment;
+import uk.ac.ed.inf.aqmaps.testUtilities.TestUtilities;
 
 public class BuildingTest {
 
@@ -35,7 +36,7 @@ public class BuildingTest {
             new PathSegment(new Coordinate(1.1,-1.1), 0, new Coordinate(-1.1, -1.1), mock(Sensor.class))
         )); 
 
-        assertFalse(testBuilding.intersectsPath(path));
+        TestUtilities.assertIntersectPath(path, testBuilding,false);
     }
 
     @Test
@@ -44,13 +45,13 @@ public class BuildingTest {
             new PathSegment(new Coordinate(-1.1,-1.1), 0, new Coordinate(1.1,1.1), mock(Sensor.class))
         )); 
 
-        assertTrue(testBuilding.intersectsPath(path));
+        TestUtilities.assertIntersectPath(path, testBuilding,true);
 
         var path2 = new LinkedList<PathSegment>(Arrays.asList(
             new PathSegment(new Coordinate(-1.01,0.95), 0, new Coordinate(-0.99,1.05), mock(Sensor.class))
         )); 
 
-        assertTrue(testBuilding.intersectsPath(path2));
+        TestUtilities.assertIntersectPath(path, testBuilding,true);
 
     }
 
@@ -64,6 +65,6 @@ public class BuildingTest {
         )); 
 
 
-        assertTrue(testBuilding.intersectsPath(path));
+        TestUtilities.assertIntersectPath(path, testBuilding,true);
     }
 }

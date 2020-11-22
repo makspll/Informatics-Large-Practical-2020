@@ -9,21 +9,16 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.LinkedList;
-import java.util.Queue;
-
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.Point;
-
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.locationtech.jts.geom.Coordinate;
-
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
 import uk.ac.ed.inf.aqmaps.simulation.planning.path.PathSegment;
 import uk.ac.ed.inf.aqmaps.visualisation.OutputFormatter;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -37,7 +32,7 @@ public class OutputFormatterTest {
     static Sensor sensorMock2 = mock(Sensor.class);
 
 
-    static Queue<PathSegment> testPath = new LinkedList<PathSegment>(Arrays.asList(
+    static Deque<PathSegment> testPath = new LinkedList<PathSegment>(Arrays.asList(
         new PathSegment(new Coordinate(0,0), 90, new Coordinate(0,1), null),
         new PathSegment(new Coordinate(0,1), 90,new Coordinate(0,2), sensorMock),
         new PathSegment(new Coordinate(0,2), 90,new Coordinate(0,3), sensorMock2)

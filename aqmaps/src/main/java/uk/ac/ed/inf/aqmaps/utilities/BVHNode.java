@@ -108,7 +108,9 @@ public class BVHNode<T extends Shape>{
      */
     private void partitionIntoChildren(List<EnvelopeShapePair> shapes){
 
-        assert shapes.size() != 0;
+        if(shapes.size() == 0){
+            return;
+        }
 
         // if we have one shape only, place the object as a leaf
         if(shapes.size() == 1){

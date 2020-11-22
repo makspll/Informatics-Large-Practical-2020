@@ -136,4 +136,26 @@ public class BVHNodeTest {
             assertFalse(possibleCollisions4.contains(mockShape2));
         });
     }
+
+
+    @Test
+    public void testEmpty(){
+
+        var shapes = new ArrayList<Shape>(
+        );
+
+        var testTree = new BVHNode<Shape>(shapes);
+
+        var possibleCollisions1 = testTree.getPossibleCollisions(mockShape1.getShape());
+        var possibleCollisions2 = testTree.getPossibleCollisions(mockShape2.getShape());
+        var possibleCollisions3 = testTree.getPossibleCollisions(mockShape3.getShape());
+        var possibleCollisions4 = testTree.getPossibleCollisions(mockShape4.getShape());
+
+        assertAll(()->{
+            assertTrue(possibleCollisions1.size() == 0);
+            assertTrue(possibleCollisions2.size() == 0);
+            assertTrue(possibleCollisions3.size() == 0);
+            assertTrue(possibleCollisions4.size() == 0);
+        });
+    }
 }

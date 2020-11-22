@@ -20,6 +20,7 @@ import uk.ac.ed.inf.aqmaps.simulation.Building;
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
 import uk.ac.ed.inf.aqmaps.simulation.planning.ConstrainedTreeGraph;
 import uk.ac.ed.inf.aqmaps.simulation.planning.path.BasePathPlanner;
+import uk.ac.ed.inf.aqmaps.simulation.planning.path.SimplePathPlanner;
 import uk.ac.ed.inf.aqmaps.testUtilities.TestUtilities;
 
 public class AstarConstrainedPathPlannerIT extends PathPlannerTestBase {
@@ -107,7 +108,7 @@ public class AstarConstrainedPathPlannerIT extends PathPlannerTestBase {
 
     @Override
     protected BasePathPlanner setupTestInstance() {
-        return new BasePathPlanner(readingRange, maxMoves, new AstarTreeSearch(new StraightLineDistance(1.1), new GridSnappingSpatialHash(moveLength/75d, new Coordinate())));
+        return new SimplePathPlanner(readingRange, maxMoves, new AstarTreeSearch(new StraightLineDistance(1.1), new GridSnappingSpatialHash(moveLength/75d, new Coordinate())));
     }
 
     @Override

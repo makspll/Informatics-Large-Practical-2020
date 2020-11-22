@@ -2,26 +2,23 @@ package uk.ac.ed.inf.aqmaps.unitTests.visualisation;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.Queue;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
-import org.mockito.Mock;
-
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
 import uk.ac.ed.inf.aqmaps.simulation.planning.path.PathSegment;
+import uk.ac.ed.inf.aqmaps.testUtilities.TestUtilities;
 import uk.ac.ed.inf.aqmaps.visualisation.AQMapGenerator;
 import uk.ac.ed.inf.aqmaps.visualisation.AttributeMap;
 import uk.ac.ed.inf.aqmaps.visualisation.MarkerSymbol;
-import uk.ac.ed.inf.aqmaps.visualisation.SensorReadingColourMap;
-import uk.ac.ed.inf.aqmaps.visualisation.SensorReadingMarkerSymbolMap;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -31,8 +28,8 @@ public class AQMapGeneratorTest {
 
     AQMapGenerator testGenerator = null;
 
-    AttributeMap<Float,String> mockColourMap = new SensorReadingColourMap(0f, 1f, "#000000","#ffffff");
-    AttributeMap<Float,MarkerSymbol> mockSymbolMap = new SensorReadingMarkerSymbolMap(0f, 1f, MarkerSymbol.LIGHTHOUSE,MarkerSymbol.DANGER);
+    AttributeMap<Float,String> mockColourMap = (AttributeMap<Float, String>) mock(AttributeMap.class);
+    AttributeMap<Float,MarkerSymbol> mockSymbolMap = (AttributeMap<Float,MarkerSymbol>)mock(AttributeMap.class);;
 
     String testLowBatteryColour = "#111111";
     MarkerSymbol testLowBatterySymbol = MarkerSymbol.CROSS;
@@ -52,25 +49,24 @@ public class AQMapGeneratorTest {
 
     Coordinate zeroPoint = new Coordinate(0, 0);
 
-    @Mock
-    Sensor mockSensor;
+    Sensor mockSensor = mock(Sensor.class);
 
     @Test
     public void plotMapTestBasic() throws IOException, InterruptedException {
 
         when(mockSensor.getCoordinates()).thenReturn(new Coordinate());
+        when(mockColourMap.getFor(any())).thenReturn("");
+        when(mockSymbolMap.getFor(any())).thenReturn(MarkerSymbol.NO_SYMBOL);
         
-        Queue<PathSegment> moves = new LinkedList<PathSegment>(Arrays.asList(
+        var moves = new LinkedList<PathSegment>(Arrays.asList(
             new PathSegment(zeroPoint, 0, zeroPoint, null),
             new PathSegment(zeroPoint, 0, zeroPoint, mockSensor)
-
         ));
 
         var sensors = new ArrayList<Sensor>(Arrays.asList(mockSensor));
 
         assertDoesNotThrow(()->{
             testGenerator.plotMap(moves,sensors);
-
         });
 
         var output = testGenerator.plotMap(moves,sensors);

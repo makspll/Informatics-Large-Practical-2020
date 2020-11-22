@@ -1,7 +1,6 @@
 package uk.ac.ed.inf.aqmaps;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -9,18 +8,12 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 import java.util.Set;
-
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
-import com.mapbox.geojson.Point;
-
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
@@ -30,32 +23,16 @@ import uk.ac.ed.inf.aqmaps.client.ClientService;
 import uk.ac.ed.inf.aqmaps.client.DroneWebServerClient;
 import uk.ac.ed.inf.aqmaps.client.SensorData;
 import uk.ac.ed.inf.aqmaps.client.W3WAddressData;
-import uk.ac.ed.inf.aqmaps.pathfinding.AstarTreeSearch;
 import uk.ac.ed.inf.aqmaps.pathfinding.Obstacle;
-import uk.ac.ed.inf.aqmaps.pathfinding.PathfindingAlgorithm;
-import uk.ac.ed.inf.aqmaps.pathfinding.hashing.GridSnappingSpatialHash;
-import uk.ac.ed.inf.aqmaps.pathfinding.hashing.SpatialHash;
-import uk.ac.ed.inf.aqmaps.pathfinding.heuristics.GreatestAvoidanceDistance;
-import uk.ac.ed.inf.aqmaps.pathfinding.heuristics.PathfindingHeuristic;
-import uk.ac.ed.inf.aqmaps.pathfinding.heuristics.StraightLineDistance;
 import uk.ac.ed.inf.aqmaps.simulation.Building;
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
 import uk.ac.ed.inf.aqmaps.simulation.SensorDataCollectorFactory;
 import uk.ac.ed.inf.aqmaps.simulation.SensorDataCollectorFactory.CollectionOrderPlannerType;
+import uk.ac.ed.inf.aqmaps.simulation.SensorDataCollectorFactory.CollectorType;
 import uk.ac.ed.inf.aqmaps.simulation.SensorDataCollectorFactory.DistanceMatrixType;
 import uk.ac.ed.inf.aqmaps.simulation.SensorDataCollectorFactory.PathfindingHeuristicType;
-import uk.ac.ed.inf.aqmaps.simulation.collection.Drone;
 import uk.ac.ed.inf.aqmaps.simulation.planning.ConstrainedTreeGraph;
-import uk.ac.ed.inf.aqmaps.simulation.planning.DistanceMatrix;
-import uk.ac.ed.inf.aqmaps.simulation.planning.EuclidianDistanceMatrix;
-import uk.ac.ed.inf.aqmaps.simulation.planning.GreatestAvoidanceDistanceMatrix;
-import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.BaseCollectionOrderPlanner;
-import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.GreedyCollectionOrderPlanner;
-import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.NearestInsertionCollectionOrderPlanner;
-import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.optimisers.CollectionOrderOptimiser;
-import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.optimisers.Optimiser2Opt;
-import uk.ac.ed.inf.aqmaps.simulation.planning.path.BasePathPlanner;
-import uk.ac.ed.inf.aqmaps.simulation.planning.path.PathSegment;
+import uk.ac.ed.inf.aqmaps.utilities.GeometryFactorySingleton;
 import uk.ac.ed.inf.aqmaps.utilities.GeometryUtilities;
 import uk.ac.ed.inf.aqmaps.visualisation.AQMapGenerator;
 import uk.ac.ed.inf.aqmaps.visualisation.AttributeMap;
@@ -220,7 +197,8 @@ public class EvaluationApp {
                 boundary);
 
             var collector = SensorDataCollectorFactory.createCollector(graph,
-                READING_RANGE, MAXIMUM_MOVES_NO, 
+                READING_RANGE, MAXIMUM_MOVES_NO,
+                CollectorType.DRONE,
                 PathfindingHeuristicType.STRAIGHT_LINE,
                 CollectionOrderPlannerType.NEAREST_INSERTION,
                 DistanceMatrixType.EUCLIDIAN);
@@ -232,7 +210,7 @@ public class EvaluationApp {
 
             System.out.println("planning collection...");
 
-            Queue<PathSegment> path = collector.planCollection(startCoordinate, sensors, graph, true);
+            var path = collector.planCollection(startCoordinate, sensors, graph, true,randomSeed);
 
             //// produce visualisation
 
@@ -294,40 +272,7 @@ public class EvaluationApp {
 
     }
 
-    private static void spatialHashSample(SpatialHash h, Polygon boundary)
-            throws FileNotFoundException, IOException {
-        double stepSize = 0.00001d;
 
-        var envelope = boundary.getEnvelopeInternal();
-
-        var features = new ArrayList<Feature>();
-
-        for (double y = envelope.getMinY(); y < envelope.getMaxY(); y += stepSize) {
-            for (double x = envelope.getMinX(); x < envelope.getMaxX(); x += stepSize) {
-                
-                var botLeft = Point.fromLngLat(x,y);
-                var topLeft = Point.fromLngLat(x,y+stepSize);
-                var topRight = Point.fromLngLat(x+stepSize,y+stepSize);
-                var botRight = Point.fromLngLat(x+stepSize,y);
-
-                List<List<Point>> pointsListList = new ArrayList<List<Point>>(
-                    Arrays.asList(
-                        new ArrayList<Point>(
-                            Arrays.asList(
-                                botLeft,topLeft,topRight,botRight,botLeft
-                            ))));
-
-                var poly = com.mapbox.geojson.Polygon.fromLngLats(pointsListList);
-
-                var feature = Feature.fromGeometry(poly);
-                feature.addStringProperty("hash","" + h.getHash(new Coordinate(x,y)));
-                features.add(feature);
-            }
-        }
-
-        OutputFormatter.writeReadingsMap(FeatureCollection.fromFeatures(features), new FileOutputStream("output/spatial-hash.geojson"));
-
-    }
 
     private static void terminateProgramWithError(ErrorCode error,String message){
         switch(error){
@@ -373,7 +318,6 @@ public class EvaluationApp {
         }
     );
 
-    private static final PrecisionModel PRECISION_MODEL = new PrecisionModel(PrecisionModel.FLOATING_SINGLE);
 
     private static final AttributeMap<Float,String> markerColourMap = new SensorReadingColourMap(
         0f,

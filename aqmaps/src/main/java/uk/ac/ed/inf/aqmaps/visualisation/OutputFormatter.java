@@ -3,7 +3,7 @@ package uk.ac.ed.inf.aqmaps.visualisation;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.util.Queue;
+import java.util.Deque;
 
 import com.mapbox.geojson.FeatureCollection;
 
@@ -23,7 +23,7 @@ public class OutputFormatter {
      * @param file
      * @throws IOException
      */
-    public static void writePath(Queue<PathSegment> flightPath, OutputStream file) throws IOException{
+    public static void writePath(Deque<PathSegment> flightPath, OutputStream file) throws IOException{
 
         // open writer to the output stream
         try(OutputStreamWriter writer = new OutputStreamWriter(file)){

@@ -1,12 +1,8 @@
 package uk.ac.ed.inf.aqmaps.simulation.collection;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Queue;
+import java.util.Deque;
 import java.util.Set;
-
 import org.locationtech.jts.geom.Coordinate;
-
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
 import uk.ac.ed.inf.aqmaps.simulation.planning.ConstrainedTreeGraph;
 import uk.ac.ed.inf.aqmaps.simulation.planning.path.PathSegment;
@@ -26,8 +22,9 @@ public interface SensorDataCollector {
      * @param formLoop if true the path will lead back to the start position
      * @return
      */
-    public Queue<PathSegment> planCollection(Coordinate startPosition,
+    public Deque<PathSegment> planCollection(Coordinate startPosition,
         Set<Sensor> sensors,
         ConstrainedTreeGraph graph,
-        boolean formLoop);
+        boolean formLoop,
+        int randomSeed);
 }

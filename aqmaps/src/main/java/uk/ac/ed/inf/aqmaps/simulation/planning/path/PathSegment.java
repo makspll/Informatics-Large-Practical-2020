@@ -5,6 +5,8 @@ import java.util.Objects;
 import org.locationtech.jts.geom.Coordinate;
 
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
+import uk.ac.ed.inf.aqmaps.utilities.GeometryFactorySingleton;
+import uk.ac.ed.inf.aqmaps.utilities.GeometryUtilities;
 
 
 /**
@@ -26,6 +28,13 @@ public class PathSegment {
         this.direction = direction;
         this.endPoint = endPoint;
         this.sensorRead = sensorRead;
+
+        // snap the values to the precision model
+
+        GeometryFactorySingleton.getGeometryFactory().getPrecisionModel().makePrecise(this.startPoint);
+        GeometryFactorySingleton.getGeometryFactory().getPrecisionModel().makePrecise(this.endPoint);
+        // if(sensorRead != null)
+            // GeometryFactorySingleton.getGeometryFactory().getPrecisionModel().makePrecise(this.sensorRead.getCoordinates());
     }
 
     public Coordinate getStartPoint() {
@@ -42,22 +51,6 @@ public class PathSegment {
 
     public Sensor getSensorRead() {
         return this.sensorRead;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == this)
-            return true;
-        if (!(o instanceof PathSegment)) {
-            return false;
-        }
-        PathSegment move = (PathSegment) o;
-        return Objects.equals(startPoint, move.startPoint) && direction == move.direction && Objects.equals(endPoint, move.endPoint) && Objects.equals(sensorRead, move.sensorRead);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(startPoint, direction, endPoint, sensorRead);
     }
 
     @Override

@@ -31,9 +31,25 @@ public class GridSnappingSpatialHash implements SpatialHash {
 
         // cantor hash (perfect and reversible)
         // https://www.singlelunch.com/2018/09/26/programming-trick-cantor-pairing-perfect-hashing-of-two-integers/
+        // we modify it to allow for non-negative numbers
+        snappedX = makePositive(snappedX);
+        snappedY = makePositive(snappedY);
+
         return (int)(((0.5 * (snappedX + snappedY)) * (snappedX + snappedY + 1)) + snappedY);
     }
-    
+
+    /**
+     * "shifts" positive numbers in order to fit the negative numbers on the positive number line
+     * @param n
+     * @return
+     */
+    private int makePositive(int n){
+        if(n >= 0){
+            return n*= 2;
+        }else{
+            return (-n)*2 -1;
+        }
+    }
     /**
      * the length of each square's width in the grid
      */

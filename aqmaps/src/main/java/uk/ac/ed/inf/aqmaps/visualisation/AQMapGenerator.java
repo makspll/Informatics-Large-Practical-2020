@@ -4,12 +4,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
-import java.util.Queue;
 
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.LineString;
 import com.mapbox.geojson.Point;
+
+import org.locationtech.jts.geom.PrecisionModel;
 
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
 import uk.ac.ed.inf.aqmaps.simulation.planning.path.PathSegment;
@@ -52,19 +53,23 @@ public class AQMapGenerator implements SensorCollectionVisualiser {
         for (PathSegment segment : flightPath) {
 
             // add each segment's start point
+            var startPoint = segment.getStartPoint();
+
             flightPathPoints.add(
                 GeometryUtilities.JTSCoordinateToMapboxPoint(
-                    segment.getStartPoint()));
+                    startPoint));
 
             // segment count counts how many segments are left
             segmentCount -= 1;
 
 
             // collect the last segment's end point
+            var endPoint = segment.getEndPoint();
+
             if(segmentCount == 0)
                 flightPathPoints.add(
                     GeometryUtilities.JTSCoordinateToMapboxPoint(
-                        segment.getEndPoint()));
+                        endPoint));
         }
 
         // compile collected flight path points into 
@@ -87,14 +92,20 @@ public class AQMapGenerator implements SensorCollectionVisualiser {
 
     private Feature createMarker(Sensor sensor) throws IOException, InterruptedException {
 
+        // make coordinate precise to avoid floating point error
+        var position = sensor.getCoordinates();
+
+        // convert to feature
         Feature feature = Feature.fromGeometry(
                             GeometryUtilities.JTSCoordinateToMapboxPoint(
-                                sensor.getCoordinates()));
+                                position));
 
+
+        // work out the attributes
         String colour = null;
         MarkerSymbol symbol = null;
 
-        if (!sensor.hasBeenRead()) {
+        if (!sensor.hasBeenRead()) {    
             colour = notVisitedMarkerColour;
             symbol = notVisitedMarkerSymbol;
         } else if (sensor.getBatteryLevel() < 10f) {

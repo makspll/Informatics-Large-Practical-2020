@@ -1,9 +1,6 @@
 package uk.ac.ed.inf.aqmaps.simulation.collection;
 
-import java.util.Collection;
 import java.util.Deque;
-import java.util.List;
-import java.util.Queue;
 import java.util.Set;
 
 import org.locationtech.jts.geom.Coordinate;
@@ -14,19 +11,22 @@ import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.BaseCollectionOrd
 import uk.ac.ed.inf.aqmaps.simulation.planning.path.PathPlanner;
 import uk.ac.ed.inf.aqmaps.simulation.planning.path.PathSegment;
 
-
-public class Drone implements SensorDataCollector {
+/**
+ * the drone collector is not constrained by the map layout, if the graph (or map) allows a node to be reached
+ * the drone can fly through it, the graph itself may impose constraints indirectly, but the drone assumes absolutely no restrictions in its movements.
+ */
+public class Drone extends BaseDataCollector {
 
     public Drone(PathPlanner fp, BaseCollectionOrderPlanner rp){
-        flightPlanner = fp;
-        routePlanner = rp;
+        super(fp,rp);
     }
 
     @Override
-    public Queue<PathSegment> planCollection(Coordinate startCoordinate,
+    public Deque<PathSegment> planCollection(Coordinate startCoordinate,
         Set<Sensor> sensors,
         ConstrainedTreeGraph graph,
-        boolean formLoop) {
+        boolean formLoop,
+        int randomSeed) {
         
         //// first we identify which sensor we are the closest to
         //// at the start coordinate
@@ -51,7 +51,7 @@ public class Drone implements SensorDataCollector {
         // but we don't want to modify the data structure, so we put it back at the end
         sensors.remove(startSensor);
 
-        Deque<Sensor> route = routePlanner.planRoute(startSensor,sensors,formLoop);
+        Deque<Sensor> route = collectionOrderPlanner.planRoute(startSensor,sensors,formLoop);
 
         if(formLoop){
             // remove the last sensor, since we form a loop but we do not need to visit it anymore
@@ -60,7 +60,7 @@ public class Drone implements SensorDataCollector {
 
 
         //// plan the detailed flight path along the route
-        Deque<PathSegment> flightPath = flightPlanner.planPath(startCoordinate, 
+        Deque<PathSegment> flightPath = pathPlanner.planPath(startCoordinate, 
                                             route, 
                                             graph,
                                             formLoop);
@@ -77,7 +77,6 @@ public class Drone implements SensorDataCollector {
     }
 
 
-    private PathPlanner flightPlanner;
-    private BaseCollectionOrderPlanner routePlanner;
+
 
 }

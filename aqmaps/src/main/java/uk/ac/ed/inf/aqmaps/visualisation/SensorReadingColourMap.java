@@ -9,9 +9,9 @@ public class SensorReadingColourMap implements AttributeMap<Float,String>{
     /**
      * Create new colour map with the domain specified by the minimum and maximum sensor readings and 
      * the number of colors defined by the colours list
-     * @param minValue
-     * @param maxValue
-     * @param colours
+     * @param minValue the minimum sensor reading allowed (inclusive)
+     * @param maxValue the maximum sensor reading allowed (exclusive)
+     * @param colours the list of colours to be attributed to buckets of equal size between the minimum and maximum
      */
     public SensorReadingColourMap(Float minValue,Float maxValue,String... colours){
         this.min = minValue;

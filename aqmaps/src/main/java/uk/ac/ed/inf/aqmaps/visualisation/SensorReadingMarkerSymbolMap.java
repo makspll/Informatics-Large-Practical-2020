@@ -8,9 +8,9 @@ public class SensorReadingMarkerSymbolMap implements AttributeMap<Float,MarkerSy
 
     /**
      * Create new reading to marker symbol mapping with the given minimum and maximum reading values and marker symbols
-     * @param minValue
-     * @param maxValue
-     * @param symbols
+     * @param minValue the minimum sensor reading allowed (inclusive)
+     * @param maxValue the maximum sensor reading allowed (exclusive)
+     * @param symbols the list of symbols to be attributed to buckets of equal size between the minimum and maximum
      */
     public SensorReadingMarkerSymbolMap(Float minValue,Float maxValue,MarkerSymbol... symbols){
         this.min = minValue;

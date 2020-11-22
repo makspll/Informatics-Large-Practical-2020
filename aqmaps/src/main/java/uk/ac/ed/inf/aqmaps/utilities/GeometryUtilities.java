@@ -70,7 +70,7 @@ public class GeometryUtilities {
     /**
      * The general precision model to use in geometry generation
      */
-    public final static PrecisionModel precisionModel = new PrecisionModel(PrecisionModel.FLOATING_SINGLE);
+    public final static PrecisionModel precisionModel = new PrecisionModel(PrecisionModel.maximumPreciseValue);
 
     /**
      * The geometry factory to use in generating jts geometries

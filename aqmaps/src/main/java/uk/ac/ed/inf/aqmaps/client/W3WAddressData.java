@@ -33,56 +33,30 @@ public class W3WAddressData {
         return this.country;
     }
 
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
     public W3WSquareData getSquare() {
         return this.square;
     }
 
-    public void setSquare(W3WSquareData square) {
-        this.square = square;
-    }
 
     public String getNearestPlace() {
         return this.nearestPlace;
     }
 
-    public void setNearestPlace(String nearestPlace) {
-        this.nearestPlace = nearestPlace;
-    }
 
     public Point getCoordinates() {
         return this.coordinates;
-    }
-
-    public void setCoordinates(Point coordinates) {
-        this.coordinates = coordinates;
     }
 
     public String getWords() {
         return this.words;
     }
 
-    public void setWords(String words) {
-        this.words = words;
-    }
-
     public String getLanguage() {
         return this.language;
     }
 
-    public void setLanguage(String language) {
-        this.language = language;
-    }
-
     public String getMap() {
         return this.map;
-    }
-
-    public void setMap(String map) {
-        this.map = map;
     }
 
     

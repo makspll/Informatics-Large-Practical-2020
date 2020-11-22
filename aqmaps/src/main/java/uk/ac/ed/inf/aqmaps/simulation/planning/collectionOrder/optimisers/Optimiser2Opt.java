@@ -15,7 +15,8 @@ public class Optimiser2Opt implements CollectionOrderOptimiser {
          double improvement = Double.MAX_VALUE;
  
          int noSwappedNodes = path.length-1;
- 
+         int[] pathCopy = path.clone();
+
          while(improvement >= EPSILON){
              improvement = 0;
              outerloop:
@@ -25,13 +26,17 @@ public class Optimiser2Opt implements CollectionOrderOptimiser {
                      double newDistance = distanceMatrix.totalDistance(newRoute);
  
                      if(newDistance < bestDistance){
-                         path = newRoute;
+                         pathCopy = newRoute;
                          improvement = bestDistance - newDistance;
                          bestDistance = newDistance;
                          break outerloop;
                      }
                  }
              }
+         }
+
+         for (int i = 0; i < pathCopy.length; i++) {
+             path[i] = pathCopy[i];
          }
      }
     
