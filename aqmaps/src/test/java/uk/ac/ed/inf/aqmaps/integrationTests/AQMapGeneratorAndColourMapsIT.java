@@ -18,17 +18,16 @@ import com.mapbox.geojson.Point;
 import org.junit.jupiter.api.Test;
 
 import uk.ac.ed.inf.aqmaps.client.AQSensor;
-import uk.ac.ed.inf.aqmaps.client.SensorData;
-import uk.ac.ed.inf.aqmaps.client.W3WAddressData;
-import uk.ac.ed.inf.aqmaps.client.W3WSquareData;
+import uk.ac.ed.inf.aqmaps.client.data.SensorData;
+import uk.ac.ed.inf.aqmaps.client.data.W3WAddressData;
+import uk.ac.ed.inf.aqmaps.client.data.W3WSquareData;
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
 import uk.ac.ed.inf.aqmaps.simulation.planning.path.PathSegment;
 import uk.ac.ed.inf.aqmaps.testUtilities.TestUtilities;
 import uk.ac.ed.inf.aqmaps.visualisation.AQMapGenerator;
 import uk.ac.ed.inf.aqmaps.visualisation.AttributeMap;
 import uk.ac.ed.inf.aqmaps.visualisation.MarkerSymbol;
-import uk.ac.ed.inf.aqmaps.visualisation.SensorReadingColourMap;
-import uk.ac.ed.inf.aqmaps.visualisation.SensorReadingMarkerSymbolMap;
+import uk.ac.ed.inf.aqmaps.visualisation.UniformAttributeMap;
 
 import static java.util.Map.entry;    
 
@@ -57,8 +56,8 @@ public class AQMapGeneratorAndColourMapsIT {
     };
 
 
-    AttributeMap<Float, String> colourMap = new SensorReadingColourMap(0f, 256f, colours);
-    AttributeMap<Float, MarkerSymbol> symbolMap = new SensorReadingMarkerSymbolMap(0f, 265f, symbols);
+    AttributeMap<Float, String> colourMap = new UniformAttributeMap<String>(0f, 256f, colours);
+    AttributeMap<Float, MarkerSymbol> symbolMap = new UniformAttributeMap<MarkerSymbol>(0f, 265f, symbols);
 
     String testLowBatteryColour = "#000000";
     MarkerSymbol testLowBatterySymbol = MarkerSymbol.CROSS;

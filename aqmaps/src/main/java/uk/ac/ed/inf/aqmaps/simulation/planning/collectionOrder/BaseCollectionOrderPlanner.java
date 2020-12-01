@@ -79,7 +79,11 @@ public abstract class BaseCollectionOrderPlanner {
      * @param formLoop whether or not to start and end on the same sensors
      * @return
      */
-    protected abstract int[] planInitialRoute(int startSensorIdx,Sensor[] sensors,DistanceMatrix distanceMatrix, boolean formLoop);
+    protected abstract int[] planInitialRoute(
+        int startSensorIdx,
+        Sensor[] sensors,
+        DistanceMatrix distanceMatrix,
+        boolean formLoop);
 
 
     private final Collection<CollectionOrderOptimiser> OPTIMISERS;

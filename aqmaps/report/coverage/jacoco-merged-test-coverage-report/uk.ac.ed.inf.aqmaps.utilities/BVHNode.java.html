@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BVHNode.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">aqmaps</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ed.inf.aqmaps.utilities</a> &gt; <span class="el_source">BVHNode.java</span></div><h1>BVHNode.java</h1><pre class="source lang-java linenums">package uk.ac.ed.inf.aqmaps.utilities;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
+
+
+/**
+ * Bounding Volume Hierarchy Node. This class forms a tree of AABB (Axis aligned bounding boxes) for internal nodes
+ * and of any shapes at the leaf nodes. Allows for quick broad phase collision checks between objects. Will never return a false negative but might return
+ * false positives. I.e. this structure only tells you which objects are possibly colliding (whose AABB's intersect).
+*/
+public class BVHNode&lt;T extends Shape&gt;{
+
+    /**
+     * Construct a new bvh hierarchy with the given shapes at the leaf nodes
+     * @param shapes
+     */
+<span class="fc" id="L23">    public BVHNode(Collection&lt;T&gt; shapes){</span>
+        
+        // envelop every shape
+<span class="fc" id="L26">        var envelopeShapePairs = new ArrayList&lt;EnvelopeShapePair&gt;(shapes.size());</span>
+
+<span class="fc bfc" id="L28" title="All 2 branches covered.">        for (T shape : shapes) {</span>
+<span class="fc" id="L29">            envelopeShapePairs.add(new EnvelopeShapePair(shape));</span>
+<span class="fc" id="L30">        }</span>
+
+        // create AABB from all envelopes present in this node
+<span class="fc" id="L33">        AABB = getContainingEnvelope(envelopeShapePairs);</span>
+
+        // divide the children shapes into 2 sub-trees
+<span class="fc" id="L36">        partitionIntoChildren(envelopeShapePairs);</span>
+<span class="fc" id="L37">    }</span>
+
+    /**
+     * Retrieves all possibly coliding objects (their bounding boxes intersect) from within the tree.
+     * @param other
+     * @return
+     */
+    public Collection&lt;T&gt; getPossibleCollisions(Geometry other){
+<span class="fc" id="L45">        Collection&lt;T&gt; colisions = new ArrayList&lt;T&gt;();</span>
+
+<span class="fc" id="L47">        var otherEnvelope = other.getEnvelopeInternal();</span>
+<span class="fc" id="L48">        writePossibleCollisionsWithInto(otherEnvelope, colisions);</span>
+
+<span class="fc" id="L50">        return colisions;</span>
+    }
+
+    /**
+     * constructs a node given already pre-computed envelope shape pairs
+     * @param shapeEnvelopePairs
+     */
+<span class="fc" id="L57">    private BVHNode(ArrayList&lt;EnvelopeShapePair&gt; shapeEnvelopePairs){</span>
+
+<span class="fc" id="L59">        AABB = getContainingEnvelope(shapeEnvelopePairs);</span>
+
+<span class="fc" id="L61">        partitionIntoChildren(shapeEnvelopePairs);</span>
+<span class="fc" id="L62">    }</span>
+    
+    /**
+     * utility function to save on the creation of new collections. Retreives possibly coliding objects under or in this node and 
+     * writes them to the output array
+     * @param other
+     * @param output the output array
+     */
+    private void writePossibleCollisionsWithInto(Envelope other,Collection&lt;T&gt; output){
+
+<span class="fc bfc" id="L72" title="All 2 branches covered.">        if(contents != null){</span>
+            // if we reached this node this means that this AABB is intersecting with the given envelope
+<span class="fc" id="L74">            output.add(contents);</span>
+        } else {
+
+            // if the AABB's of either child do not intersect with the given envelope
+            // then we do not need to search within them
+<span class="fc bfc" id="L79" title="All 2 branches covered.">            if(leftChild != null </span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">                &amp;&amp; !leftChild.AABB.disjoint(other))</span>
+<span class="fc" id="L81">                leftChild.writePossibleCollisionsWithInto(other, output);</span>
+
+<span class="fc bfc" id="L83" title="All 2 branches covered.">            if(rightChild != null</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">                &amp;&amp; !rightChild.AABB.disjoint(other))</span>
+<span class="fc" id="L85">                rightChild.writePossibleCollisionsWithInto(other, output);</span>
+        }
+<span class="fc" id="L87">    }</span>
+
+    /**
+     * Forms an envelope around all the given shape envelope pairs
+     * @param shapeEnvelopePairs
+     * @return
+     */
+    private Envelope getContainingEnvelope(List&lt;EnvelopeShapePair&gt; shapeEnvelopePairs){
+<span class="fc" id="L95">        var shapes = new Geometry[shapeEnvelopePairs.size()]; </span>
+
+<span class="fc bfc" id="L97" title="All 2 branches covered.">        for (int i = 0; i &lt; shapes.length; i++) {</span>
+<span class="fc" id="L98">            shapes[i] = shapeEnvelopePairs.get(i).SHAPE.getShape();</span>
+        }
+
+<span class="fc" id="L101">        return GeometryUtilities.geometryFactory</span>
+<span class="fc" id="L102">                .createGeometryCollection(shapes)</span>
+<span class="fc" id="L103">                .getEnvelopeInternal();</span>
+
+    }
+
+    /**
+     * distributes the given shapes into left and right children nodes as evenly as possible.
+     * If only one shape is given, it is placed under the current node.
+     * @param shapes
+     */
+    private void partitionIntoChildren(List&lt;EnvelopeShapePair&gt; shapes){
+
+<span class="fc bfc" id="L114" title="All 2 branches covered.">        if(shapes.size() == 0){</span>
+<span class="fc" id="L115">            return;</span>
+        }
+
+        // if we have one shape only, place the object as a leaf
+<span class="fc bfc" id="L119" title="All 2 branches covered.">        if(shapes.size() == 1){</span>
+<span class="fc" id="L120">            contents = shapes.get(0).SHAPE;</span>
+<span class="fc" id="L121">            return;</span>
+        }
+
+        // otherwise
+        // find &quot;longest&quot; axis
+
+<span class="fc" id="L127">        double smallestX = Double.MIN_VALUE;</span>
+<span class="fc" id="L128">        double largestX = Double.MAX_VALUE; </span>
+<span class="fc" id="L129">        double smallestY = Double.MIN_VALUE;</span>
+<span class="fc" id="L130">        double largestY = Double.MAX_VALUE;</span>
+
+<span class="fc bfc" id="L132" title="All 2 branches covered.">        for (int i = 0; i &lt; shapes.size(); i++) {</span>
+
+<span class="fc" id="L134">            var currEnvelope = shapes.get(i).ENVELOPE;</span>
+
+<span class="pc bpc" id="L136" title="1 of 2 branches missed.">            if(currEnvelope.getMaxX() &gt; largestX)</span>
+<span class="nc" id="L137">                largestX = currEnvelope.getMaxX();</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">            else if(currEnvelope.getMinX() &lt; smallestX){</span>
+<span class="fc" id="L139">                smallestX = currEnvelope.getMinX();</span>
+            }
+            
+<span class="pc bpc" id="L142" title="1 of 2 branches missed.">            if(currEnvelope.getMaxY() &gt; largestY)</span>
+<span class="nc" id="L143">                largestY = currEnvelope.getMaxY();</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">            else if (currEnvelope.getMinY() &lt; smallestY)</span>
+<span class="fc" id="L145">                smallestY = currEnvelope.getMinY();</span>
+        }
+        
+<span class="fc" id="L148">        double xWidth = largestX - smallestX;</span>
+<span class="fc" id="L149">        double yWidth = largestY - smallestY;</span>
+        
+        // we create a comparator to sort by the longest axis
+<span class="fc" id="L152">        Comparator&lt;EnvelopeShapePair&gt; envelopeShapePairComparator = null;</span>
+        
+<span class="pc bpc" id="L154" title="1 of 2 branches missed.">        if(xWidth &gt; yWidth){</span>
+            // sort by x values
+<span class="nc" id="L156">            envelopeShapePairComparator = Comparator.comparing(a-&gt;a.ENVELOPE.centre().getX());</span>
+        } else {
+            // sort by y values
+<span class="fc" id="L159">            envelopeShapePairComparator = Comparator.comparing(a-&gt;a.ENVELOPE.centre().getY());</span>
+        }
+        
+        //sort the envelope/shape pairs
+<span class="fc" id="L163">        shapes.sort(envelopeShapePairComparator);</span>
+
+        // pick split index s
+        // such that every child shape at index i &lt; s is placed in the left child node
+        // and every child shape at index i &gt;= on the right
+
+        // even splits for even lengths,
+        // for odd lengths the right child receives more children
+<span class="fc" id="L171">        int s = (int)Math.ceil(((float)(shapes.size()-1) / 2f));</span>
+
+        // form left subtree (number of objects here is equal to s)
+        // if s is zero this subtree gets no objects
+<span class="fc" id="L175">        var shapesLeft = new ArrayList&lt;EnvelopeShapePair&gt;(s);</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">        for (int i = 0; i &lt; s; i++) {</span>
+<span class="fc" id="L177">            shapesLeft.add(shapes.get(i));</span>
+        }
+
+<span class="fc" id="L180">        var shapesRight = new ArrayList&lt;EnvelopeShapePair&gt;(s);</span>
+<span class="fc bfc" id="L181" title="All 2 branches covered.">        for (int i = s; i &lt; shapes.size(); i++) {</span>
+<span class="fc" id="L182">            shapesRight.add(shapes.get(i));</span>
+        }
+
+<span class="pc bpc" id="L185" title="1 of 2 branches missed.">        if(shapesLeft.size() &gt; 0)</span>
+<span class="fc" id="L186">            leftChild = new BVHNode&lt;T&gt;(shapesLeft);</span>
+<span class="pc bpc" id="L187" title="1 of 2 branches missed.">        if(shapesRight.size() &gt; 0)</span>
+<span class="fc" id="L188">            rightChild = new BVHNode&lt;T&gt;(shapesRight);</span>
+<span class="fc" id="L189">    }</span>
+
+
+    /**
+     * Utility class holding envelope and shape information for a shape
+     */
+    private class EnvelopeShapePair{
+        public final Envelope ENVELOPE;
+        public final T SHAPE;
+
+<span class="fc" id="L199">        public EnvelopeShapePair(T geo){</span>
+<span class="fc" id="L200">            this.ENVELOPE = geo.getShape().getEnvelopeInternal();</span>
+<span class="fc" id="L201">            this.SHAPE = geo;</span>
+<span class="fc" id="L202">        }</span>
+    }
+
+    /**
+     * the AABB of this node, envelops all the children nodes and leaf nodes under this node
+     */
+    private Envelope AABB;
+
+    /**
+     * The left child node
+     */
+    private BVHNode&lt;T&gt; leftChild;
+
+    /**
+     * The right child node
+     */
+    private BVHNode&lt;T&gt; rightChild;
+
+    /**
+     * The shape contained in this node if it is a leaf node
+     */
+<span class="fc" id="L223">    private T contents = null;</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

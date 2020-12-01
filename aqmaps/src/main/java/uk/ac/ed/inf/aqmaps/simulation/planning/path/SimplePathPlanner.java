@@ -30,7 +30,8 @@ public class SimplePathPlanner extends BasePathPlanner {
      * 
      */
     @Override
-    protected Deque<PathSegment> pathPointsToSegmentsStrategy(Deque<DirectedSearchNode> pathPoints,
+    protected Deque<PathSegment> pathPointsToSegmentsStrategy(
+        Deque<DirectedSearchNode> pathPoints,
         Deque<PathfindingGoal> goalsRoute,
         Deque<Sensor> sensorRoute,
         ConstrainedTreeGraph graph
@@ -106,7 +107,7 @@ public class SimplePathPlanner extends BasePathPlanner {
                 
                 if(nextNode != null 
                     && nextNode.getNumberOfGoalsReached() > 0
-                    && nextNode.getGoalsReached().peek().getPosition().distance(endNode.getLocation()) < READING_RANGE){
+                    && nextNode.getGoalsReached().peek().getCoordinates().distance(endNode.getCoordinates()) < READING_RANGE){
                     endNode.addGoalReached(
                         nextNode.getGoalsReached().poll());
                 }
@@ -125,9 +126,9 @@ public class SimplePathPlanner extends BasePathPlanner {
             } 
             // for the end node, a single goal is allowed with no issue
             var pathSegment = new PathSegment(
-                startNode.getLocation(),
+                startNode.getCoordinates(),
                 endNode.getDirectionFromParent(),
-                endNode.getLocation(),
+                endNode.getCoordinates(),
                 segmentSensorReached);
 
 
@@ -197,17 +198,17 @@ public class SimplePathPlanner extends BasePathPlanner {
         while(currentGoalReachedByNode == nextGoal){
 
             var proxyPathSegment = new PathSegment(
-                node.getLocation(),
+                node.getCoordinates(),
                 pickedNeighbour.getDirectionFromParent(), 
-                pickedNeighbour.getLocation(),
+                pickedNeighbour.getCoordinates(),
                 null);
 
             var proxyBackPathSegment = new PathSegment(
-                pickedNeighbour.getLocation(),
+                pickedNeighbour.getCoordinates(),
                 graph.getClosestValidAngle(
                     MathUtilities.oppositeAngleFromEast(
                         pickedNeighbour.getDirectionFromParent())),
-                node.getLocation(),
+                node.getCoordinates(),
                 nextSensor);
 
             // add proxy segment back and forth

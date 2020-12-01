@@ -62,7 +62,7 @@ public class AstarTreeSearchIT {
         testSearch.findPath(g, endNode, startNode, 0.0000001d,output);
 
         assertEquals(startNode,output.peek());
-        assertEquals(endCoordinate,output.peekLast().getLocation());
+        assertEquals(endCoordinate,output.peekLast().getCoordinates());
         assertEquals(12,output.size());
     }
 
@@ -114,7 +114,7 @@ public class AstarTreeSearchIT {
         testSearch.findPath(g, endNode, startNode, 0.0000001d,output);
 
         assertEquals(startNode,output.peek());
-        assertEquals(endCoordinate,output.peekLast().getLocation());
+        assertEquals(endCoordinate,output.peekLast().getCoordinates());
         assertEquals(13,output.size());
 
 
@@ -182,7 +182,7 @@ public class AstarTreeSearchIT {
         for (DirectedSearchNode n : output) {
             lastNode = n;
         }
-        assertEquals(endNode.getPosition(),lastNode.getLocation());
+        assertEquals(endNode.getCoordinates(),lastNode.getCoordinates());
 
     }
 
@@ -251,8 +251,8 @@ public class AstarTreeSearchIT {
             int idx = 0;
             for (Vector2D dir : gridDirections) {
 
-                Coordinate a = node.getLocation();
-                Coordinate b = dir.translate(node.getLocation());
+                Coordinate a = node.getCoordinates();
+                Coordinate b = dir.translate(node.getCoordinates());
 
                 LineString ls = gf.createLineString(new Coordinate[]{a,b});
 

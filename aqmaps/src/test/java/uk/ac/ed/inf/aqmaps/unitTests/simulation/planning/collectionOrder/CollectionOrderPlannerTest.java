@@ -1,8 +1,6 @@
 package uk.ac.ed.inf.aqmaps.unitTests.simulation.planning.collectionOrder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -10,15 +8,12 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.locationtech.jts.geom.Coordinate;
 
 import uk.ac.ed.inf.aqmaps.pathfinding.Obstacle;
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
 import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.BaseCollectionOrderPlanner;
-import uk.ac.ed.inf.aqmaps.testUtilities.TestUtilities;
 
 public abstract class CollectionOrderPlannerTest {
     

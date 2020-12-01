@@ -22,7 +22,8 @@ public interface PathPlanner {
      * @param formLoop if true the path will lead back to the start coordinate
      * @return
      */
-    public Deque<PathSegment> planPath(Coordinate startCoordinate,
+    public Deque<PathSegment> planPath(
+        Coordinate startCoordinate,
         Deque<Sensor> route,
         ConstrainedTreeGraph graph,
         boolean formLoop);

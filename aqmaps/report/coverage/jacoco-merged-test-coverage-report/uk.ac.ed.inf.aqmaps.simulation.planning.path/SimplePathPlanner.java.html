@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SimplePathPlanner.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">aqmaps</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ed.inf.aqmaps.simulation.planning.path</a> &gt; <span class="el_source">SimplePathPlanner.java</span></div><h1>SimplePathPlanner.java</h1><pre class="source lang-java linenums">package uk.ac.ed.inf.aqmaps.simulation.planning.path;
+
+import java.util.Deque;
+import java.util.LinkedList;
+
+import uk.ac.ed.inf.aqmaps.pathfinding.PathfindingAlgorithm;
+import uk.ac.ed.inf.aqmaps.pathfinding.goals.PathfindingGoal;
+import uk.ac.ed.inf.aqmaps.simulation.DirectedSearchNode;
+import uk.ac.ed.inf.aqmaps.simulation.Sensor;
+import uk.ac.ed.inf.aqmaps.simulation.planning.ConstrainedTreeGraph;
+import uk.ac.ed.inf.aqmaps.utilities.MathUtilities;
+
+/**
+ * This path planner will apply some simple optimisations in order to produce a smaller number of path segments than the naive implementation.
+ */
+<span class="pc bpc" id="L16" title="1 of 2 branches missed.">public class SimplePathPlanner extends BasePathPlanner {</span>
+
+    public SimplePathPlanner(double readingRange, int maxMoves, PathfindingAlgorithm&lt;DirectedSearchNode&gt; algorithm) {
+<span class="fc" id="L19">        super(readingRange, maxMoves, algorithm);</span>
+<span class="fc" id="L20">    }</span>
+    
+    /**
+     * {@inheritDoc}. This planner will try to perform some simple optimisations in order to shorten the route.
+     * In order to produce a valid route this planner will introduce proxy segments which go back and forth between the nearest neighbour
+     * whenever a sensor is read at the start point of a segment or if more than one sensor is read at the endpoint. The optimisations currently include:
+     * &lt;br&gt; 
+     * 1) if the current segment does not read anything at the end point and the next reads a sensor at its start point, we &quot;absorb&quot; that sensor into
+     * the current segment.
+     * &lt;br&gt;
+     * 
+     */
+    @Override
+    protected Deque&lt;PathSegment&gt; pathPointsToSegmentsStrategy(Deque&lt;DirectedSearchNode&gt; pathPoints,
+        Deque&lt;PathfindingGoal&gt; goalsRoute,
+        Deque&lt;Sensor&gt; sensorRoute,
+        ConstrainedTreeGraph graph
+        ){
+
+
+
+<span class="pc bpc" id="L41" title="2 of 4 branches missed.">        assert goalsRoute.size() == sensorRoute.size();</span>
+
+        // we keep the start end end nodes as we iterate over the points
+<span class="fc" id="L44">        var startNode = pathPoints.poll();</span>
+<span class="fc" id="L45">        var output = new LinkedList&lt;PathSegment&gt;();</span>
+
+
+        // if we only have one singular point we have to resolve it with a proxy segment
+        // size then would be zero as we already polled
+<span class="fc bfc" id="L50" title="All 4 branches covered.">        if(pathPoints.size() == 0 &amp;&amp; startNode != null){</span>
+<span class="fc" id="L51">            resolveProxySegments(startNode, graph, goalsRoute, sensorRoute, output);</span>
+        }
+
+
+<span class="pc bpc" id="L55" title="1 of 4 branches missed.">        while(!pathPoints.isEmpty() &amp;&amp; output.size() &lt; MAX_MOVES){</span>
+<span class="fc" id="L56">            var endNode = pathPoints.poll();</span>
+            
+            // we check for the sensors reached at each point
+
+            // we have 4 possibilities
+            // 1/2) no end reaches a goal node, or only the end point does
+            // in that case we just create a single segment
+            // 3/4) the start point has reaches at least one sensor, or both the start point and endpoint 
+            // reach sensors
+            // in those cases we need to insert proxy path segments for each goal reached by the start point
+            // we can simply check for 3/4
+            // and resolve the proxy path and then
+            // treat the situation like the case 1/2
+            // we also have to keep in mind that the goals reached might not be reached
+            // in succession for any node,for example consider that the start node will have itself as the goal reached
+            // if the path loops as well as any starting sensors
+
+<span class="fc" id="L73">            var nodeGoalsAchievedAtStartNode = startNode.getGoalsReached();</span>
+
+<span class="fc bfc" id="L75" title="All 2 branches covered.">            if(nodeGoalsAchievedAtStartNode.size() != 0) {</span>
+                // cases 3/4
+
+                // add a proxy segment for each goal reached by the start node
+                // this will go back and forth between the nearest neighbour and the start node 
+                // untill all goals are reached
+
+<span class="fc" id="L82">                resolveProxySegments(startNode,</span>
+                    graph,
+                    goalsRoute,
+                    sensorRoute,
+                    output
+                    );
+               
+            }
+
+            // we can then safely proceed with the other 
+            // cases since we are back to the start point
+            // and we have not touched the endpoint or end sensor
+            // cases 1 and 2
+
+<span class="fc" id="L96">            var nodeGoalsAchievedAtEndNode = endNode.getGoalsReached();</span>
+
+<span class="fc" id="L98">            Sensor segmentSensorReached = null;</span>
+
+<span class="fc bfc" id="L100" title="All 2 branches covered.">            if(nodeGoalsAchievedAtEndNode.size() == 0){</span>
+                // if we haven't reached a node
+                // we can use this opportunity to see if the next start node has a goal reached
+                // if so, we can &quot;steal&quot; it to make it a legal move
+                // that's only if we can reach the sensor that that move reaches
+<span class="fc" id="L105">                var nextNode = pathPoints.peek();</span>
+                
+<span class="fc bfc" id="L107" title="All 2 branches covered.">                if(nextNode != null </span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">                    &amp;&amp; nextNode.getNumberOfGoalsReached() &gt; 0</span>
+<span class="pc bpc" id="L109" title="1 of 2 branches missed.">                    &amp;&amp; nextNode.getGoalsReached().peek().getCoordinates().distance(endNode.getCoordinates()) &lt; READING_RANGE){</span>
+<span class="nc" id="L110">                    endNode.addGoalReached(</span>
+<span class="nc" id="L111">                        nextNode.getGoalsReached().poll());</span>
+                }
+
+                // we then process the reached goal as normal
+            }
+
+            // if we reached some node and it is the next goal on the goals route
+<span class="fc bfc" id="L118" title="All 2 branches covered.">            if(nodeGoalsAchievedAtEndNode.size() &gt; 0</span>
+<span class="pc bpc" id="L119" title="1 of 2 branches missed.">                &amp;&amp; nodeGoalsAchievedAtEndNode.peek() == goalsRoute.peek()){</span>
+
+                // pop both the sensor and goal routes
+                // simultaneously remove the goal reached from the node
+<span class="fc" id="L123">                segmentSensorReached = sensorRoute.poll();</span>
+<span class="fc" id="L124">                endNode.removeGoalReached(goalsRoute.poll());</span>
+            } 
+            // for the end node, a single goal is allowed with no issue
+<span class="fc" id="L127">            var pathSegment = new PathSegment(</span>
+<span class="fc" id="L128">                startNode.getCoordinates(),</span>
+<span class="fc" id="L129">                endNode.getDirectionFromParent(),</span>
+<span class="fc" id="L130">                endNode.getCoordinates(),</span>
+                segmentSensorReached);
+
+
+<span class="fc" id="L134">            output.add(pathSegment);</span>
+
+            // if the end node has more than one endGoalReached
+            // resolve the rest with proxy segments
+<span class="fc bfc" id="L138" title="All 2 branches covered.">            if(nodeGoalsAchievedAtEndNode.size() &gt; 0){</span>
+<span class="fc" id="L139">                resolveProxySegments(endNode,</span>
+                    graph,
+                    goalsRoute,
+                    sensorRoute,
+                    output);
+            }
+<span class="fc" id="L145">            startNode = endNode;</span>
+
+<span class="fc" id="L147">        }</span>
+
+        // the path can still be longer than MAX_MOVES so we trim it
+<span class="pc bpc" id="L150" title="1 of 2 branches missed.">        while(output.size() &gt; MAX_MOVES){</span>
+<span class="nc" id="L151">            output.removeLast();</span>
+        }
+
+<span class="fc" id="L154">        return output;</span>
+    }
+
+      /**
+     * Resolves multiple goals reached at a node into multiple segments which reach the goals at their endpoints 
+     * @param node
+     * @param sensors
+     * @param output
+     * @param goalStartIdx the index of the goal at which to start resolving
+     */
+    private void resolveProxySegments(
+        DirectedSearchNode node,
+        ConstrainedTreeGraph graph,
+        Deque&lt;PathfindingGoal&gt; goalsRoute,
+        Deque&lt;Sensor&gt; sensorRoute,
+        Deque&lt;PathSegment&gt; output
+        )
+        {
+
+<span class="pc bpc" id="L173" title="2 of 4 branches missed.">        assert goalsRoute.size() == sensorRoute.size();</span>
+
+        // it does not matter how we pick the proxy segments
+        // due to the fact we will reach the end point sensor anyway
+        // and we have to go back to the optimal path
+
+<span class="fc" id="L179">        var neighbours = graph.getNeighbouringNodes(node);</span>
+
+        // we simply pick the first neighbour
+        // there has to be at least one,
+        // otherwise the graph is a single point which is invalid
+<span class="pc bpc" id="L184" title="2 of 4 branches missed.">        assert neighbours.size() &gt; 0;</span>
+<span class="fc" id="L185">        var pickedNeighbour = neighbours.get(0);</span>
+
+<span class="fc" id="L187">        var nextSensor = sensorRoute.poll();</span>
+<span class="fc" id="L188">        var nextGoal = goalsRoute.poll();</span>
+<span class="fc" id="L189">        var goalNodesReached = node.getGoalsReached();</span>
+        
+<span class="fc" id="L191">        var currentGoalReachedByNode = goalNodesReached.peek();</span>
+
+        // we only proxy the segments in order of appearance
+        // so if the current goal reached is not the next one to
+        // appear on the route,
+        // it means it appears later on in the route and we don't touch it
+<span class="pc bpc" id="L197" title="1 of 2 branches missed.">        while(currentGoalReachedByNode == nextGoal){</span>
+
+<span class="fc" id="L199">            var proxyPathSegment = new PathSegment(</span>
+<span class="fc" id="L200">                node.getCoordinates(),</span>
+<span class="fc" id="L201">                pickedNeighbour.getDirectionFromParent(), </span>
+<span class="fc" id="L202">                pickedNeighbour.getCoordinates(),</span>
+                null);
+
+<span class="fc" id="L205">            var proxyBackPathSegment = new PathSegment(</span>
+<span class="fc" id="L206">                pickedNeighbour.getCoordinates(),</span>
+<span class="fc" id="L207">                graph.getClosestValidAngle(</span>
+<span class="fc" id="L208">                    MathUtilities.oppositeAngleFromEast(</span>
+<span class="fc" id="L209">                        pickedNeighbour.getDirectionFromParent())),</span>
+<span class="fc" id="L210">                node.getCoordinates(),</span>
+                nextSensor);
+
+            // add proxy segment back and forth
+<span class="fc" id="L214">            output.add(proxyPathSegment);</span>
+<span class="fc" id="L215">            output.add(proxyBackPathSegment);</span>
+
+            // remove the goal reached
+<span class="fc" id="L218">            node.removeGoalReached(currentGoalReachedByNode);</span>
+
+<span class="fc" id="L220">            nextSensor = sensorRoute.poll();</span>
+<span class="fc" id="L221">            nextGoal = goalsRoute.poll();</span>
+
+<span class="fc bfc" id="L223" title="All 2 branches covered.">            if(node.getNumberOfGoalsReached() == 0){</span>
+<span class="fc" id="L224">                break;</span>
+            }
+
+<span class="fc" id="L227">            currentGoalReachedByNode = goalNodesReached.peek();</span>
+<span class="fc" id="L228">        }</span>
+
+        //return unused sensor on top
+<span class="fc" id="L231">        sensorRoute.addFirst(nextSensor);</span>
+<span class="fc" id="L232">        goalsRoute.addFirst(nextGoal);</span>
+
+<span class="pc bpc" id="L234" title="2 of 4 branches missed.">        assert goalsRoute.size() == sensorRoute.size();</span>
+
+<span class="fc" id="L236">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

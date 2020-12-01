@@ -5,8 +5,6 @@ import java.util.Collection;
 import java.util.Deque;
 import com.mapbox.geojson.FeatureCollection;
 
-import org.locationtech.jts.geom.PrecisionModel;
-
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
 import uk.ac.ed.inf.aqmaps.simulation.planning.path.PathSegment;
 

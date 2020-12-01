@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SensorDataCollectorFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">aqmaps</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ed.inf.aqmaps.simulation</a> &gt; <span class="el_source">SensorDataCollectorFactory.java</span></div><h1>SensorDataCollectorFactory.java</h1><pre class="source lang-java linenums">package uk.ac.ed.inf.aqmaps.simulation;
+
+import java.util.ArrayList;
+
+import uk.ac.ed.inf.aqmaps.pathfinding.AstarTreeSearch;
+import uk.ac.ed.inf.aqmaps.pathfinding.hashing.GridSnappingSpatialHash;
+import uk.ac.ed.inf.aqmaps.pathfinding.heuristics.StraightLineDistance;
+import uk.ac.ed.inf.aqmaps.simulation.collection.Drone;
+import uk.ac.ed.inf.aqmaps.simulation.collection.SensorDataCollector;
+import uk.ac.ed.inf.aqmaps.simulation.planning.ConstrainedTreeGraph;
+import uk.ac.ed.inf.aqmaps.simulation.planning.EuclidianDistanceMatrix;
+import uk.ac.ed.inf.aqmaps.simulation.planning.GreatestAvoidanceDistanceMatrix;
+import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.BaseCollectionOrderPlanner;
+import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.GreedyCollectionOrderPlanner;
+import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.NearestInsertionCollectionOrderPlanner;
+import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.optimisers.CollectionOrderOptimiser;
+import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.optimisers.Optimiser2Opt;
+import uk.ac.ed.inf.aqmaps.simulation.planning.path.SimplePathPlanner;
+
+/**
+ * A utility class for instantiating sensor data collectors with correct parameter values in one call
+ */
+<span class="fc" id="L23">public class SensorDataCollectorFactory {</span>
+    
+    /**
+     * Create a new collector within the given domain and with the given parameters.
+     * @param g the graph defining the movement capabilities
+     * @param readingRange the minimum distance between the collector and the sensor required for a reading to be taken
+     * @param maxMoves the maximum number of path segments returned by the collector
+     * @param heuristicType the pathfinding heuristic to use
+     * @param plannerType the type of planner to use
+     * @param matrixType the type of distance matrix to use
+     * @return
+     */
+    public static SensorDataCollector createCollector(
+        ConstrainedTreeGraph g,double readingRange,int maxMoves,
+        CollectorType collectorType,
+        PathfindingHeuristicType heuristicType,
+        CollectionOrderPlannerType plannerType,
+        DistanceMatrixType matrixType){
+<span class="fc" id="L41">        return(createCollector(g, readingRange, maxMoves, collectorType, heuristicType, plannerType, matrixType,1.5f,g.getMoveLength()/75d,0.1d * g.getMoveLength()));</span>
+    }
+
+    /**
+     * Create a new collector within the given domain and with the given parameters
+     * @param g the graph defining the movement capabilities
+     * @param readingRange the minimum distance between the collector and the sensor required for a reading to be taken
+     * @param maxMoves the maximum number of path segments returned by the collector
+     * @param heuristicType the pathfinding heuristic to use
+     * @param plannerType the type of planner to use
+     * @param matrixType the type of distance matrix to use
+     * @param relaxationFactor the relaxation factor to use (applies to certain heuristics)
+     * @param hashingGridWidth the width of the spatial hashing grid
+     * @param opt2Epsilon the minimum required improvement threshold in the path for 2opt to keep optimising
+     * @return
+     */
+    public static SensorDataCollector createCollector(
+        ConstrainedTreeGraph g,
+        double readingRange,
+        int maxMoves,
+        CollectorType collectorType,
+        PathfindingHeuristicType heuristicType,
+        CollectionOrderPlannerType plannerType,
+        DistanceMatrixType matrixType,
+        float relaxationFactor,
+        double hashingGridWidth,
+        double opt2Epsilon){
+
+        // set everything up with optimal values
+<span class="fc" id="L70">        var hashingAlgorithm = new GridSnappingSpatialHash(</span>
+            hashingGridWidth ,
+<span class="fc" id="L72">            g.getBoundary().getCentroid().getCoordinate());</span>
+        
+        
+<span class="fc" id="L75">        var algorithm = new AstarTreeSearch&lt;DirectedSearchNode&gt;(</span>
+            new StraightLineDistance(relaxationFactor), 
+            hashingAlgorithm);
+
+        
+<span class="fc" id="L80">        var flightPlanner = new SimplePathPlanner(</span>
+            readingRange,
+            maxMoves, 
+            algorithm);
+
+
+<span class="fc bfc" id="L86" title="All 2 branches covered.">        var distMatrix = (matrixType == DistanceMatrixType.EUCLIDIAN) ?</span>
+<span class="fc" id="L87">            new EuclidianDistanceMatrix():</span>
+<span class="fc" id="L88">            new GreatestAvoidanceDistanceMatrix(g.getObstacles());</span>
+
+<span class="fc" id="L90">        BaseCollectionOrderPlanner routePlanner = null;</span>
+<span class="fc" id="L91">        var optimisers = new ArrayList&lt;CollectionOrderOptimiser&gt;();</span>
+
+<span class="pc bpc" id="L93" title="1 of 3 branches missed.">        switch(plannerType){</span>
+            case GREEDY:
+<span class="fc" id="L95">                optimisers.add(new Optimiser2Opt(opt2Epsilon));</span>
+<span class="fc" id="L96">                routePlanner = new GreedyCollectionOrderPlanner(optimisers, distMatrix);</span>
+<span class="fc" id="L97">				break;</span>
+            case NEAREST_INSERTION:
+<span class="fc" id="L99">                optimisers.add(new Optimiser2Opt(opt2Epsilon));</span>
+<span class="fc" id="L100">                routePlanner = new NearestInsertionCollectionOrderPlanner(optimisers, distMatrix);</span>
+				break;
+        }
+
+<span class="fc" id="L104">        var collector = new Drone(flightPlanner, routePlanner);</span>
+
+<span class="fc" id="L106">        return collector;</span>
+    }
+
+<span class="fc" id="L109">    public enum CollectorType{</span>
+<span class="fc" id="L110">        DRONE</span>
+    }
+
+<span class="fc" id="L113">    public enum DistanceMatrixType{</span>
+<span class="fc" id="L114">        EUCLIDIAN,GREATEST_AVOIDANCE</span>
+    }
+
+
+<span class="fc" id="L118">    public enum CollectionOrderPlannerType{</span>
+<span class="fc" id="L119">        GREEDY,NEAREST_INSERTION</span>
+    }
+
+<span class="fc" id="L122">    public enum PathfindingHeuristicType{</span>
+<span class="fc" id="L123">        STRAIGHT_LINE</span>
+    }
+
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

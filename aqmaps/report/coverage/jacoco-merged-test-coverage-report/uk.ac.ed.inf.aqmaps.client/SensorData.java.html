@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SensorData.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">aqmaps</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ed.inf.aqmaps.client</a> &gt; <span class="el_source">SensorData.java</span></div><h1>SensorData.java</h1><pre class="source lang-java linenums">package uk.ac.ed.inf.aqmaps.client;
+
+import java.lang.reflect.Type;
+import java.util.Objects;
+
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+
+public class SensorData {
+
+    public static JsonDeserializer&lt;SensorData&gt; getDeserializer(){
+<span class="fc" id="L15">        return deserializer;</span>
+    }
+    
+<span class="nc" id="L18">    public SensorData() {</span>
+<span class="nc" id="L19">    }</span>
+
+<span class="fc" id="L21">    public SensorData(String location, float battery, float reading) {</span>
+<span class="fc" id="L22">        this.location = location;</span>
+<span class="fc" id="L23">        this.battery = battery;</span>
+<span class="fc" id="L24">        this.reading = reading;</span>
+<span class="fc" id="L25">    }</span>
+
+    public String getLocation() {
+<span class="fc" id="L28">        return this.location;</span>
+    }
+
+    public Float getBattery() {
+<span class="fc" id="L32">        return this.battery;</span>
+    }
+
+    public float getReading() {
+<span class="fc" id="L36">        return this.reading;</span>
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+<span class="pc bpc" id="L42" title="1 of 2 branches missed.">        if (o == this)</span>
+<span class="nc" id="L43">            return true;</span>
+<span class="pc bpc" id="L44" title="1 of 2 branches missed.">        if (!(o instanceof SensorData)) {</span>
+<span class="nc" id="L45">            return false;</span>
+        }
+<span class="fc" id="L47">        SensorData sensor = (SensorData) o;</span>
+<span class="pc bpc" id="L48" title="3 of 6 branches missed.">        return Objects.equals(location, sensor.location) &amp;&amp; Objects.equals(battery, sensor.battery) &amp;&amp; Objects.equals(reading, sensor.reading);</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L53">        return Objects.hash(location, battery, reading);</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L58">        return &quot;{&quot; +</span>
+<span class="nc" id="L59">            &quot; location='&quot; + getLocation() + &quot;'&quot; +</span>
+<span class="nc" id="L60">            &quot;, battery='&quot; + getBattery() + &quot;'&quot; +</span>
+<span class="nc" id="L61">            &quot;, reading='&quot; + getReading() + &quot;'&quot; +</span>
+            &quot;}&quot;;
+    }
+
+
+<span class="fc" id="L66">    private static JsonDeserializer&lt;SensorData&gt; deserializer = new JsonDeserializer&lt;SensorData&gt;(){</span>
+            
+        @Override
+        public SensorData deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException{
+<span class="fc" id="L70">            JsonObject jsonObject = json.getAsJsonObject();</span>
+
+<span class="fc" id="L72">            var readingElement = jsonObject.get(&quot;reading&quot;);</span>
+<span class="fc" id="L73">            float reading = 0f;</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">            if(readingElement.getAsString().equals(&quot;null&quot;)</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">                || readingElement.getAsString().equals(&quot;NaN&quot;)){</span>
+<span class="fc" id="L76">                reading = Float.NaN;</span>
+            } else {
+<span class="fc" id="L78">                reading = Float.parseFloat(readingElement.getAsString());</span>
+            }
+
+<span class="fc" id="L81">            return new SensorData(</span>
+<span class="fc" id="L82">                jsonObject.get(&quot;location&quot;).getAsString(),</span>
+<span class="fc" id="L83">                jsonObject.get(&quot;battery&quot;).getAsFloat(),</span>
+                reading);
+            
+  
+          
+        }
+    };
+
+    private String location;
+    private float battery;
+    private float reading;
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

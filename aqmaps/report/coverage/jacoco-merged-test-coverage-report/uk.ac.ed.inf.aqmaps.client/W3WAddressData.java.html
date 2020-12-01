@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>W3WAddressData.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">aqmaps</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ed.inf.aqmaps.client</a> &gt; <span class="el_source">W3WAddressData.java</span></div><h1>W3WAddressData.java</h1><pre class="source lang-java linenums">package uk.ac.ed.inf.aqmaps.client;
+
+import java.lang.reflect.Type;
+import java.util.Objects;
+
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.mapbox.geojson.Point;
+
+public class W3WAddressData {
+
+    public static JsonDeserializer&lt;W3WAddressData&gt; getDeserializer(){
+<span class="fc" id="L16">        return deserializer;</span>
+    }
+
+<span class="nc" id="L19">    public W3WAddressData() {</span>
+<span class="nc" id="L20">    }</span>
+
+<span class="fc" id="L22">    public W3WAddressData(String country, W3WSquareData square, String nearestPlace, Point coordinates, String words, String language, String map) {</span>
+<span class="fc" id="L23">        this.country = country;</span>
+<span class="fc" id="L24">        this.square = square;</span>
+<span class="fc" id="L25">        this.nearestPlace = nearestPlace;</span>
+<span class="fc" id="L26">        this.coordinates = coordinates;</span>
+<span class="fc" id="L27">        this.words = words;</span>
+<span class="fc" id="L28">        this.language = language;</span>
+<span class="fc" id="L29">        this.map = map;</span>
+<span class="fc" id="L30">    }</span>
+
+    public String getCountry() {
+<span class="fc" id="L33">        return this.country;</span>
+    }
+
+    public W3WSquareData getSquare() {
+<span class="fc" id="L37">        return this.square;</span>
+    }
+
+
+    public String getNearestPlace() {
+<span class="fc" id="L42">        return this.nearestPlace;</span>
+    }
+
+
+    public Point getCoordinates() {
+<span class="fc" id="L47">        return this.coordinates;</span>
+    }
+
+    public String getWords() {
+<span class="fc" id="L51">        return this.words;</span>
+    }
+
+    public String getLanguage() {
+<span class="fc" id="L55">        return this.language;</span>
+    }
+
+    public String getMap() {
+<span class="fc" id="L59">        return this.map;</span>
+    }
+
+    
+    @Override
+    public boolean equals(Object o) {
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">        if (o == this)</span>
+<span class="nc" id="L66">            return true;</span>
+<span class="pc bpc" id="L67" title="1 of 2 branches missed.">        if (!(o instanceof W3WAddressData)) {</span>
+<span class="nc" id="L68">            return false;</span>
+        }
+<span class="fc" id="L70">        W3WAddressData w3WAddress = (W3WAddressData) o;</span>
+<span class="pc bpc" id="L71" title="7 of 14 branches missed.">        return Objects.equals(country, w3WAddress.country) &amp;&amp; Objects.equals(square, w3WAddress.square) &amp;&amp; Objects.equals(nearestPlace, w3WAddress.nearestPlace) &amp;&amp; Objects.equals(coordinates, w3WAddress.coordinates) &amp;&amp; Objects.equals(words, w3WAddress.words) &amp;&amp; Objects.equals(language, w3WAddress.language) &amp;&amp; Objects.equals(map, w3WAddress.map);</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L76">        return Objects.hash(country, square, nearestPlace, coordinates, words, language, map);</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L81">        return &quot;{&quot; +</span>
+<span class="nc" id="L82">            &quot; country='&quot; + getCountry() + &quot;'&quot; +</span>
+<span class="nc" id="L83">            &quot;, square='&quot; + getSquare() + &quot;'&quot; +</span>
+<span class="nc" id="L84">            &quot;, nearestPlace='&quot; + getNearestPlace() + &quot;'&quot; +</span>
+<span class="nc" id="L85">            &quot;, coordinates='&quot; + getCoordinates() + &quot;'&quot; +</span>
+<span class="nc" id="L86">            &quot;, words='&quot; + getWords() + &quot;'&quot; +</span>
+<span class="nc" id="L87">            &quot;, language='&quot; + getLanguage() + &quot;'&quot; +</span>
+<span class="nc" id="L88">            &quot;, map='&quot; + getMap() + &quot;'&quot; +</span>
+            &quot;}&quot;;
+    }
+
+    private String country;
+    private W3WSquareData square;
+    private String nearestPlace;
+    private Point coordinates;
+    private String words;
+    private String language;
+    private String map;
+
+<span class="fc" id="L100">    private static JsonDeserializer&lt;W3WAddressData&gt; deserializer = new JsonDeserializer&lt;W3WAddressData&gt;(){</span>
+            
+        @Override
+        public W3WAddressData deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException{
+<span class="fc" id="L104">            JsonObject jsonObject = json.getAsJsonObject();</span>
+<span class="fc" id="L105">            var square = jsonObject.getAsJsonObject(&quot;square&quot;);</span>
+
+<span class="fc" id="L107">            var squareW3W = new W3WSquareData(</span>
+<span class="fc" id="L108">                Point.fromLngLat(</span>
+<span class="fc" id="L109">                    square.getAsJsonObject(&quot;southwest&quot;).get(&quot;lng&quot;).getAsDouble(), </span>
+<span class="fc" id="L110">                    square.getAsJsonObject(&quot;southwest&quot;).get(&quot;lat&quot;).getAsDouble()),</span>
+<span class="fc" id="L111">                Point.fromLngLat(</span>
+<span class="fc" id="L112">                    square.getAsJsonObject(&quot;northeast&quot;).get(&quot;lng&quot;).getAsDouble(), </span>
+<span class="fc" id="L113">                    square.getAsJsonObject(&quot;northeast&quot;).get(&quot;lat&quot;).getAsDouble()));</span>
+
+<span class="fc" id="L115">            var coordinates = Point.fromLngLat(</span>
+<span class="fc" id="L116">                    jsonObject.getAsJsonObject(&quot;coordinates&quot;).get(&quot;lng&quot;).getAsDouble(),</span>
+<span class="fc" id="L117">                    jsonObject.getAsJsonObject(&quot;coordinates&quot;).get(&quot;lat&quot;).getAsDouble());</span>
+
+<span class="fc" id="L119">            return new W3WAddressData(</span>
+<span class="fc" id="L120">                jsonObject.get(&quot;country&quot;).getAsString(),</span>
+                squareW3W,
+<span class="fc" id="L122">                jsonObject.get(&quot;nearestPlace&quot;).getAsString(),</span>
+                coordinates,
+<span class="fc" id="L124">                jsonObject.get(&quot;words&quot;).getAsString(),</span>
+<span class="fc" id="L125">                jsonObject.get(&quot;language&quot;).getAsString(),</span>
+<span class="fc" id="L126">                jsonObject.get(&quot;map&quot;).getAsString()</span>
+            );
+        }
+    };
+
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

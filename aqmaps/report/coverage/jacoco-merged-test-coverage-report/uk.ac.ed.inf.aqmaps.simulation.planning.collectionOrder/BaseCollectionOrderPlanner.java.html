@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BaseCollectionOrderPlanner.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">aqmaps</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder</a> &gt; <span class="el_source">BaseCollectionOrderPlanner.java</span></div><h1>BaseCollectionOrderPlanner.java</h1><pre class="source lang-java linenums">package uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.Set;
+import uk.ac.ed.inf.aqmaps.simulation.Sensor;
+import uk.ac.ed.inf.aqmaps.simulation.planning.DistanceMatrix;
+import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.optimisers.CollectionOrderOptimiser;
+
+/**
+ * Collection order planners generate good traversal orders between the given set of sensors,
+ * where &quot;good&quot; criteria are defined by each implementation of the collection planner.
+ */
+<span class="pc bpc" id="L16" title="1 of 2 branches missed.">public abstract class BaseCollectionOrderPlanner {</span>
+
+    /**
+     * Creates a collection order planner with the given opimisers and distance matrix method
+     * @param optimisers the optimisers to apply in order to the draft route, can be null 
+     * @param distMat the distance matrix to use in calculating distances between sensors
+     */
+<span class="fc" id="L23">    public BaseCollectionOrderPlanner(Collection&lt;CollectionOrderOptimiser&gt; optimisers, DistanceMatrix distMat){</span>
+<span class="fc bfc" id="L24" title="All 2 branches covered.">        this.OPTIMISERS = optimisers == null ? new ArrayList&lt;CollectionOrderOptimiser&gt;() : optimisers;</span>
+<span class="fc" id="L25">        this.DISTANCE_MATRIX = distMat;</span>
+<span class="fc" id="L26">    }</span>
+
+
+    /**
+     * Generates a collection order over the sensors.
+     * @param startSensor the sensor which starts and ends the collection
+     * @param otherSensors all the other sensors, this set must not include the start sensor
+     * @param obstacles obstacles present on the map, these are taken into account when estimating path lengths
+     */
+    public Deque&lt;Sensor&gt; planRoute(Sensor startSensor,
+        Set&lt;Sensor&gt; sensors,
+        boolean formLoop){
+
+        // by contract this set must not contain the starting sensor
+<span class="pc bpc" id="L40" title="2 of 4 branches missed.">        assert !sensors.contains(startSensor);</span>
+
+        // give each sensor an implicit index by placing
+        // them in an array
+<span class="fc" id="L44">        int sensorCount = sensors.size() + 1;</span>
+        
+        // fill first sensorCount -1 spaces in the array with other sensors
+<span class="fc" id="L47">        var sensorArray = sensors.toArray(new Sensor[sensorCount]);</span>
+        
+        // put starting sensor at the end
+<span class="fc" id="L50">        int startSensorIdx = sensorArray.length - 1;</span>
+<span class="fc" id="L51">        sensorArray[startSensorIdx] = startSensor;</span>
+
+        // setup the distance matrix 
+<span class="fc" id="L54">        DISTANCE_MATRIX.setupDistanceMatrix(sensorArray);</span>
+
+<span class="fc" id="L56">        int[] routeArray = planInitialRoute(startSensorIdx, sensorArray,DISTANCE_MATRIX,formLoop);</span>
+
+        // apply all optimisers
+        // that's if there are any to apply
+<span class="fc bfc" id="L60" title="All 2 branches covered.">        for (var optimiser : OPTIMISERS) {</span>
+<span class="fc" id="L61">            optimiser.optimise(DISTANCE_MATRIX,routeArray);</span>
+<span class="fc" id="L62">        }</span>
+        
+        // produce route in correct format
+<span class="fc" id="L65">        var route = new LinkedList&lt;Sensor&gt;();</span>
+
+<span class="fc bfc" id="L67" title="All 2 branches covered.">        for (int i = 0; i &lt; routeArray.length; i++) {</span>
+<span class="fc" id="L68">            route.addFirst(sensorArray[routeArray[i]]);</span>
+        }
+
+<span class="fc" id="L71">        return route;</span>
+    }
+
+    /**
+     * Drafts a route between the given sensors, using the given matrix. If form loop is true then the route will also begin and end on the same sensor
+     * @param startSensorIdx the index in the sensor array of the starting sensor
+     * @param sensors the list of unique sensors, with the start sensor
+     * @param distanceMatrix the distance matrix where d_[i][j] and d_[j][i] is the distance between sensor[i] and sensor[j]
+     * @param formLoop whether or not to start and end on the same sensors
+     * @return
+     */
+    protected abstract int[] planInitialRoute(int startSensorIdx,Sensor[] sensors,DistanceMatrix distanceMatrix, boolean formLoop);
+
+
+    private final Collection&lt;CollectionOrderOptimiser&gt; OPTIMISERS;
+    private final DistanceMatrix DISTANCE_MATRIX;
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

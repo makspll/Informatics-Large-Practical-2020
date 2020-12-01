@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
 import uk.ac.ed.inf.aqmaps.simulation.planning.path.PathSegment;
-import uk.ac.ed.inf.aqmaps.testUtilities.TestUtilities;
 import uk.ac.ed.inf.aqmaps.visualisation.AQMapGenerator;
 import uk.ac.ed.inf.aqmaps.visualisation.AttributeMap;
 import uk.ac.ed.inf.aqmaps.visualisation.MarkerSymbol;
@@ -23,6 +22,7 @@ import uk.ac.ed.inf.aqmaps.visualisation.MarkerSymbol;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+@SuppressWarnings({"unchecked"})
 @ExtendWith(MockitoExtension.class)
 public class AQMapGeneratorTest {
 

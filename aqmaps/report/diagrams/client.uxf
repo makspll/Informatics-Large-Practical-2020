@@ -1,0 +1,30 @@
+<diagram program="umletino" version="14.4.0-SNAPSHOT"><zoom_level>10</zoom_level><help_text>Space for diagram notes</help_text><element><id>UMLPackage</id><coordinates><x>0</x><y>283</y><w>730</w><h>370</h></coordinates><panel_attributes>Client
+--
+bg=orange</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLInterface</id><coordinates><x>70</x><y>513</y><w>360</w><h>130</h></coordinates><panel_attributes>ClientService
+--
++fetchSensorsForDate(date:Date):List&lt;SensorData&gt;
++fetchW3WAddress(w1:String,w2:String,w3:String):W3WAddress
++fetchBuildings():FeatureCollection
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>532</x><y>560</y><w>130</w><h>70</h></coordinates><panel_attributes>AQWebServerClient
+--
+-APIBaseURI: URI
+-httpClient : HttpClient
+style=autoresize</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>512</x><y>330</y><w>160</w><h>70</h></coordinates><panel_attributes>W3WSquareData
+--
+-southwest: Mapbox::Point
+-northwest: Mapbox::Point
+style=autoresize</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>312</x><y>330</y><w>100</w><h>90</h></coordinates><panel_attributes>SensorData
+--
+-location:String
+-battery:float
+-reading:float
+style=autoresize</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>32</x><y>330</y><w>160</w><h>150</h></coordinates><panel_attributes>W3WAddressData
+--
+-country:String
+-square: W3WSquareData
+-nearestPlace: String
+-coordinates: Mapbox::Point
+-words:String
+-language:String
+-map:String
+style=autoresize</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>257</x><y>520</y><w>370</w><h>60</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>10;10;350;10;350;40</additional_attributes></element></diagram>

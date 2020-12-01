@@ -12,6 +12,7 @@ import uk.ac.ed.inf.aqmaps.pathfinding.SearchNode;
 import uk.ac.ed.inf.aqmaps.pathfinding.goals.PathfindingGoal;
 import uk.ac.ed.inf.aqmaps.pathfinding.heuristics.StraightLineDistance;
 
+@SuppressWarnings({"rawtypes","unchecked"})
 public class StraightLineDistanceTest {
     StraightLineDistance testUnit;
 
@@ -32,8 +33,8 @@ public class StraightLineDistanceTest {
         var a = new Coordinate(0,0);
         var b = new Coordinate(20,20);
 
-        when(mockGoal.getPosition()).thenReturn(a);
-        when(mockNode.getLocation()).thenReturn(b);
+        when(mockGoal.getCoordinates()).thenReturn(a);
+        when(mockNode.getCoordinates()).thenReturn(b);
         
         assertEquals(a.distance(b),testUnit.heuristic(mockNode,mockGoal));
     }
@@ -46,8 +47,8 @@ public class StraightLineDistanceTest {
         var a = new Coordinate(0,0);
         var b = new Coordinate(20,20);
 
-        when(mockGoal.getPosition()).thenReturn(a);
-        when(mockNode.getLocation()).thenReturn(b);
+        when(mockGoal.getCoordinates()).thenReturn(a);
+        when(mockNode.getCoordinates()).thenReturn(b);
         
         assertEquals(a.distance(b)*2,testUnit.heuristic(mockNode,mockGoal));
     }

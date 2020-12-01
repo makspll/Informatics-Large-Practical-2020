@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ConstrainedTreeGraph.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">aqmaps</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ed.inf.aqmaps.simulation.planning</a> &gt; <span class="el_source">ConstrainedTreeGraph.java</span></div><h1>ConstrainedTreeGraph.java</h1><pre class="source lang-java linenums">package uk.ac.ed.inf.aqmaps.simulation.planning;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.math.Vector2D;
+
+import uk.ac.ed.inf.aqmaps.pathfinding.SearchGraph;
+import uk.ac.ed.inf.aqmaps.simulation.DirectedSearchNode;
+import uk.ac.ed.inf.aqmaps.pathfinding.Obstacle;
+import uk.ac.ed.inf.aqmaps.utilities.BVHNode;
+import uk.ac.ed.inf.aqmaps.utilities.GeometryUtilities;
+import uk.ac.ed.inf.aqmaps.utilities.MathUtilities;
+
+/**
+ * A graph which imposes angle, move length and boundary (+ obstacle) constraints for the nodes, and does not keep track of already produced nodes (tree search) i.e. a new node is returned each time
+ */
+<span class="pc bpc" id="L23" title="1 of 2 branches missed.">public class ConstrainedTreeGraph implements SearchGraph&lt;DirectedSearchNode&gt; {</span>
+
+    /**
+     * The angle system needs to allow for each possible angle to have a &quot;complement angle&quot; which takes
+     * you back to where you started if you moved in its direction after steping in any possible angle.
+     * the min and max angle need to cover a range of 360 degrees - the angle increment .
+     * @param minAngle the highest angle (angles will loop around this value)
+     * @param maxAngle the smallest angle
+     * @param angleIncrement the size of the smallest angle increment in the graph (needs to divide into 180)
+     * @param moveLength the exact distance between a node and its neighbour
+     * @param obstacles the obstacles present on the map
+     * @param boundary the polygon bounds of the world. Can be null
+     */
+    public ConstrainedTreeGraph(int minAngle, int maxAngle, int angleIncrement, double moveLength, Collection&lt;Obstacle&gt; obstacles, Polygon boundary) {
+<span class="fc" id="L37">       this(minAngle, maxAngle, angleIncrement, moveLength, obstacles);</span>
+<span class="fc" id="L38">       this.boundary = boundary;</span>
+<span class="fc" id="L39">    }</span>
+
+    /**
+     * The angle system needs to allow for each possible angle to have a &quot;complement angle&quot; which takes
+     * you back to where you started if you moved in its direction after steping in any possible angle.
+     * the min and max angle need to cover a range of 360 degrees - the angle increment .
+     * @param minAngle the highest angle (angles will loop around this value)
+     * @param maxAngle the smallest angle
+     * @param angleIncrement the size of the smallest angle increment in the graph (needs to divide into 180)
+     * @param moveLength the exact distance between a node and its neighbour
+     * @param obstacles the obstacles present on the map
+     */
+<span class="fc" id="L51">    public ConstrainedTreeGraph(int minAngle, int maxAngle, int angleIncrement, double moveLength, Collection&lt;Obstacle&gt; obstacles) {</span>
+<span class="pc bpc" id="L52" title="3 of 6 branches missed.">        assert 180 % angleIncrement == 0 &amp;&amp; maxAngle - minAngle &gt;= 360 - angleIncrement;</span>
+
+<span class="fc" id="L54">        this.MIN_ANGLE = minAngle;</span>
+<span class="fc" id="L55">        this.MAX_ANGLE = maxAngle;</span>
+<span class="fc" id="L56">        this.MOVE_LENGTH = moveLength;</span>
+<span class="fc" id="L57">        this.ANGLE_INCREMENT = angleIncrement;</span>
+<span class="fc" id="L58">        this.obstacles = obstacles;</span>
+<span class="fc" id="L59">        obstacleBVHTree = new BVHNode&lt;Obstacle&gt;(obstacles);</span>
+
+        // pre-calculate possible angles
+<span class="fc" id="L62">        int currAngle = MIN_ANGLE;</span>
+        
+        // find the number of possible angles
+<span class="fc" id="L65">        int angles = countValidAnglesBetween(MIN_ANGLE, MAX_ANGLE);</span>
+<span class="fc" id="L66">        allDirections = new int[angles];</span>
+
+<span class="fc" id="L68">        int i = 0;</span>
+        // first angle
+<span class="fc bfc" id="L70" title="All 2 branches covered.">        while(i &lt; angles){</span>
+<span class="fc" id="L71">            allDirections[i] = currAngle;</span>
+<span class="fc" id="L72">            currAngle = currAngle + ANGLE_INCREMENT;</span>
+<span class="fc" id="L73">            i+= 1;</span>
+        }
+<span class="fc" id="L75">    }</span>
+
+    /**
+     * Retrieve the obstacles present on the map
+     */
+    public Collection&lt;Obstacle&gt; getObstacles(){
+<span class="fc" id="L81">        return obstacles;</span>
+    }
+
+    /**
+     * Retrieve the bounds of the map
+     */
+    public Polygon getBoundary(){
+<span class="fc" id="L88">        return boundary;</span>
+    }
+
+    /**
+     * get the distance between a node and its neighbour
+     */
+    public double getMoveLength(){
+<span class="nc" id="L95">        return MOVE_LENGTH;</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public  List&lt;DirectedSearchNode&gt; getNeighbouringNodes(DirectedSearchNode node) {
+
+        // to get the neighbouring nodes, we HAVE to check collisions 
+        // with obstacles around the map
+        // we can save a lot of computation though by using 
+        // bounding volume hierarchy's
+
+        // we can completely avoid having to check any colisions by checking
+        // that the the bounding box of move length width is not coliding with anything else
+<span class="fc" id="L111">        var nodeLocation = node.getCoordinates();</span>
+
+<span class="fc" id="L113">        Geometry boundingBox = GeometryUtilities.geometryFactory.createPolygon(</span>
+            new Coordinate[]{
+<span class="fc" id="L115">                new Coordinate(nodeLocation.getX() - MOVE_LENGTH, nodeLocation.getY() - MOVE_LENGTH),</span>
+<span class="fc" id="L116">                new Coordinate(nodeLocation.getX() - MOVE_LENGTH, nodeLocation.getY() + MOVE_LENGTH),</span>
+<span class="fc" id="L117">                new Coordinate(nodeLocation.getX() + MOVE_LENGTH, nodeLocation.getY() + MOVE_LENGTH),</span>
+<span class="fc" id="L118">                new Coordinate(nodeLocation.getX() + MOVE_LENGTH, nodeLocation.getY() - MOVE_LENGTH),</span>
+<span class="fc" id="L119">                new Coordinate(nodeLocation.getX() - MOVE_LENGTH, nodeLocation.getY() - MOVE_LENGTH)</span>
+            }
+        );
+
+
+<span class="fc" id="L124">        return findNeighboursUsingObstacles(node, obstacleBVHTree.getPossibleCollisions(boundingBox));</span>
+    }
+
+    /**
+     * finds the neighbours of the given node, only taking into account the given subset of obstacles
+     * @param node
+     * @param obstaclesIncluded
+     */
+    private List&lt;DirectedSearchNode&gt; findNeighboursUsingObstacles(DirectedSearchNode node,
+        Collection&lt;Obstacle&gt; obstaclesIncluded ){
+
+<span class="fc" id="L135">        var output = new ArrayList&lt;DirectedSearchNode&gt;();</span>
+
+<span class="fc" id="L137">        Coordinate currentPoint = node.getCoordinates();</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">        for (Integer dir : allDirections) {</span>
+            
+
+<span class="fc" id="L141">            Coordinate neighbourCoordinate = stepInDirection(dir, currentPoint);</span>
+
+<span class="fc" id="L143">            Point neighbourPoint = GeometryUtilities.geometryFactory.createPoint(neighbourCoordinate);</span>
+
+            // bounds check
+<span class="fc bfc" id="L146" title="All 4 branches covered.">            if(boundary != null &amp;&amp; !neighbourPoint.coveredBy(boundary))</span>
+<span class="fc" id="L147">                continue;</span>
+
+            // obstacles check
+<span class="fc" id="L150">            boolean intersectsObstacle = false;</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">            for (Obstacle obstacle : obstaclesIncluded) {</span>
+                
+<span class="fc bfc" id="L153" title="All 2 branches covered.">                if (obstacle.intersectsPath(currentPoint, neighbourCoordinate)){</span>
+<span class="fc" id="L154">                    intersectsObstacle = true;</span>
+<span class="fc" id="L155">                    break;</span>
+                }
+<span class="fc" id="L157">            }</span>
+
+<span class="fc bfc" id="L159" title="All 2 branches covered.">            if(intersectsObstacle)</span>
+<span class="fc" id="L160">                continue;</span>
+
+<span class="fc" id="L162">            var newNode = new DirectedSearchNode(neighbourCoordinate,</span>
+                node,
+<span class="fc" id="L164">                dir,</span>
+<span class="fc" id="L165">                node.getCost() + MOVE_LENGTH);</span>
+
+<span class="fc" id="L167">            output.add(newNode);</span>
+        }
+
+<span class="fc" id="L170">        return output;</span>
+    }
+
+    /**
+     * Creates a new coordinate by stepping in the given direction from the original point
+     * @param direction
+     * @param point
+     * @return
+     */
+    private Coordinate stepInDirection(int direction, Coordinate point){
+
+        // the direction is a multiple of angleIncrement between minAngle and maxAngle inclusive
+<span class="pc bpc" id="L182" title="4 of 8 branches missed.">        assert direction &lt;= MAX_ANGLE </span>
+            &amp;&amp; direction &gt;= MIN_ANGLE 
+            &amp;&amp; direction % ANGLE_INCREMENT == 0;
+        
+        // we translate the current position coordinate by 
+        // the vector heading in the given direciton
+<span class="fc" id="L188">        Vector2D heading = MathUtilities.getHeadingVector(direction);</span>
+
+<span class="fc" id="L190">        return heading.multiply(MOVE_LENGTH).translate(point);</span>
+    }
+
+    /**
+     * returns the closest valid angle in this graph to the given double
+     * @param direction
+     */
+    public int getClosestValidAngle(double direction){
+<span class="fc" id="L198">        return ((int)Math.round(direction / ANGLE_INCREMENT) * ANGLE_INCREMENT) % (MAX_ANGLE+1);</span>
+    }
+
+
+    /**
+     * Retrieves all valid directions between the given low and high angle
+     * @param lowAngle the low angle
+     * @param highAngle the high angle
+     */
+    public int[] getValidDirectionsBetween(int lowAngle, int highAngle){
+        
+<span class="pc bpc" id="L209" title="3 of 6 branches missed.">        assert lowAngle &gt;= MIN_ANGLE &amp;&amp; highAngle &lt;= MAX_ANGLE;</span>
+
+        // get valid low and high bounds
+<span class="fc" id="L212">        int lowBound = getClosestValidAngle(lowAngle);</span>
+<span class="fc" id="L213">        int highBound = getClosestValidAngle(highAngle);</span>
+
+
+
+        // find index of low bound
+<span class="fc" id="L218">        int idxLow = lowBound / ANGLE_INCREMENT;</span>
+<span class="fc" id="L219">        int idxHigh = highBound / ANGLE_INCREMENT;</span>
+<span class="fc" id="L220">        int n = idxHigh - idxLow + 1;</span>
+
+        // find number of valid angles between low and high bound
+<span class="fc" id="L223">        int[] output = new int[n];</span>
+
+        // fill in values 
+<span class="fc bfc" id="L226" title="All 2 branches covered.">        for (int i = 0; i &lt; n; i++) {</span>
+<span class="fc" id="L227">            output[i] = allDirections[idxLow + i];</span>
+        }
+
+<span class="fc" id="L230">        return output;</span>
+    }
+
+    /**
+     * Returns the count of the valid angles between the given low and high angle
+     * @param low the low angle
+     * @param high the high angle
+     * @return
+     */
+    private int countValidAnglesBetween(int low, int high){
+<span class="fc" id="L240">        return ((high - low) / ANGLE_INCREMENT) + 1;</span>
+    }
+
+
+
+    private final int MIN_ANGLE;
+    private final int MAX_ANGLE;
+    private final double MOVE_LENGTH;
+    private final int ANGLE_INCREMENT;
+    private final int[] allDirections;
+    private Polygon boundary;
+    private final BVHNode&lt;Obstacle&gt; obstacleBVHTree;
+    private final Collection&lt;Obstacle&gt; obstacles;
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

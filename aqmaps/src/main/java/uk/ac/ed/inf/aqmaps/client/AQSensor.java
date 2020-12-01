@@ -1,92 +1,28 @@
 package uk.ac.ed.inf.aqmaps.client;
 
-import java.util.Objects;
-
-import org.locationtech.jts.geom.Coordinate;
-
+import uk.ac.ed.inf.aqmaps.client.data.SensorData;
+import uk.ac.ed.inf.aqmaps.client.data.W3WAddressData;
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
 import uk.ac.ed.inf.aqmaps.utilities.GeometryUtilities;
 
-public class AQSensor implements Sensor{
+/**
+ * {@inheritdoc}
+ * An implementation of the Sensor interface for consumption in the simulation module. Conveniently can be formed from sensor and address data 
+ * corresponding to the data received via API client.
+ */
+public class AQSensor extends Sensor{
 
-    public AQSensor(SensorData sensorData, W3WAddressData addressData){
-        reading = sensorData.getReading();
-        coordinates = GeometryUtilities.MapboxPointToJTSCoordinate(addressData.getCoordinates());
-        hasBeenRead = false;
-        batteryLevel = sensorData.getBattery();
-        W3WLocation = addressData.getWords();
+    /**
+     * Construct new AQ sensor from sensor data representing the sensor's readings and battery information, and with the address data containing 
+     * the w3w address words and coordinates of the sensor
+     * @param sensorData
+     * @param w3WAddressData
+     */
+    public AQSensor(SensorData sensorData, W3WAddressData w3WAddressData){
+        super(GeometryUtilities.MapboxPointToJTSCoordinate(w3WAddressData.getCoordinates()),
+            sensorData.getReading(), 
+            sensorData.getBattery(), 
+            w3WAddressData.getWords());
     }
 
-    @Override
-    public void setHaveBeenRead(boolean read) {
-        this.hasBeenRead = read;
-    }
-
-    @Override
-    public Coordinate getPosition() {
-        return getCoordinates();
-    }
-    
-    public float getReading() {
-        return this.reading;
-    }
-
-
-    public Coordinate getCoordinates() {
-        return this.coordinates;
-    }
-
-    public boolean hasBeenRead() {
-        return this.hasBeenRead;
-    }
-    
-
-    public float getBatteryLevel() {
-        return this.batteryLevel;
-    }
-
-    public String getW3WLocation() {
-        return this.W3WLocation;
-    }
-
-
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == this)
-            return true;
-        if (!(o instanceof AQSensor)) {
-            return false;
-        }
-        AQSensor aQSensor = (AQSensor) o;
-        return reading == aQSensor.reading && Objects.equals(coordinates, aQSensor.coordinates) && hasBeenRead == aQSensor.hasBeenRead && batteryLevel == aQSensor.batteryLevel && Objects.equals(W3WLocation, aQSensor.W3WLocation);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(reading, coordinates, hasBeenRead, batteryLevel, W3WLocation);
-    }
-
-    @Override
-    public String toString() {
-        return "{" +
-            " reading='" + getReading() + "'" +
-            ", coordinates='" + getCoordinates() + "'" +
-            ", hasBeenRead='" + hasBeenRead() + "'" +
-            ", batteryLevel='" + getBatteryLevel() + "'" +
-            ", W3WLocation='" + getW3WLocation() + "'" +
-            "}";
-    }
-    
-    private float reading;
-    private Coordinate coordinates;
-    private boolean hasBeenRead;
-    private float batteryLevel;
-    private String W3WLocation;
-
-
-
-
-
- 
 }

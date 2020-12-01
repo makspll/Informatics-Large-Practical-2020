@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DistanceMatrix.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">aqmaps</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ed.inf.aqmaps.simulation.planning</a> &gt; <span class="el_source">DistanceMatrix.java</span></div><h1>DistanceMatrix.java</h1><pre class="source lang-java linenums">package uk.ac.ed.inf.aqmaps.simulation.planning;
+
+import uk.ac.ed.inf.aqmaps.simulation.Sensor;
+
+/**
+ * Class which stores distance information between sensors
+ */
+<span class="pc bpc" id="L8" title="1 of 2 branches missed.">public abstract class DistanceMatrix {</span>
+    
+    /**
+     * Creates new blank distance matrix
+     */
+<span class="fc" id="L13">    public DistanceMatrix(){}</span>
+
+    /**
+     * Fills in the distance matrix with distance data for the given sensors
+     * @param sensors the list of sensors
+     */
+    public void setupDistanceMatrix(Sensor[] sensors){
+
+        // compute avoidance distance between each pair of sensors
+<span class="fc" id="L22">        int n = sensors.length;</span>
+<span class="fc" id="L23">        distanceMatrix = new double[n][n];</span>
+
+<span class="fc bfc" id="L25" title="All 2 branches covered.">        for (int i = 0; i &lt; n; i++) {</span>
+<span class="fc bfc" id="L26" title="All 2 branches covered.">            for (int j = i; j &lt; n; j++) {</span>
+
+<span class="fc bfc" id="L28" title="All 2 branches covered.">                if(i == j)</span>
+<span class="fc" id="L29">                    distanceMatrix[i][j] = 0;</span>
+                else{
+<span class="fc" id="L31">                    double distance = distanceMetric(sensors[i], sensors[j]);</span>
+<span class="fc" id="L32">                    distanceMatrix[i][j] = distance;</span>
+<span class="fc" id="L33">                    distanceMatrix[j][i] = distance;</span>
+                }
+
+            }
+        }
+<span class="fc" id="L38">    }</span>
+
+    /**
+     * returs the distance from sensor a to sensor b at the given indices in the sensor list
+     * @param a sensor index
+     * @param b sensor index
+     * @return
+     */
+    public double distanceBetween(int a, int b){
+<span class="fc" id="L47">        return distanceMatrix[a][b];</span>
+    }   
+
+    /**
+     * calculates the total distance of the subpath specified with start and end indices within the given path of sensor indices.
+     * @param route the path
+     * @param startIdx inclusive start index
+     * @param endIdx exclusive end index
+     * @return
+     */
+    public double totalDistance(int[] route, int startIdx, int endIdx){
+<span class="pc bpc" id="L58" title="3 of 6 branches missed.">        assert endIdx &lt;= route.length </span>
+            &amp;&amp; startIdx &gt;= 0;
+
+        // count the cost between each tour node
+<span class="fc" id="L62">        double distance = 0;</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">        for (int i = startIdx; i &lt; endIdx - 1; i++) {</span>
+<span class="fc" id="L64">            int curr = route[i];</span>
+<span class="fc" id="L65">            int next = route[i+1];</span>
+<span class="fc" id="L66">            distance += distanceBetween(curr,next);</span>
+        }
+
+<span class="fc" id="L69">        return distance;</span>
+    }
+
+    public double totalDistance(int[] route){
+<span class="fc" id="L73">        return totalDistance(route,0, route.length);</span>
+    }
+
+    /**
+     * the specific distance measure used to calculate distances. Does NOT have to be symmetric
+     * @param a sensor 1
+     * @param b sensor 2
+     * @return
+     */
+    protected abstract double distanceMetric(Sensor a, Sensor b);
+
+    protected double[][] distanceMatrix;
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

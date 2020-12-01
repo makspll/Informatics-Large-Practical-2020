@@ -1,10 +1,8 @@
 package uk.ac.ed.inf.aqmaps.unitTests.simulation.collection;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyObject;
 import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.booleanThat;
 import static org.mockito.Mockito.mock;
@@ -12,23 +10,16 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
 import java.util.Set;
 
-import com.mapbox.geojson.Point;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
-import org.mockito.ArgumentMatchers;
-
-import uk.ac.ed.inf.aqmaps.pathfinding.Obstacle;
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
 import uk.ac.ed.inf.aqmaps.simulation.collection.Drone;
 import uk.ac.ed.inf.aqmaps.simulation.planning.ConstrainedTreeGraph;
@@ -40,6 +31,7 @@ import uk.ac.ed.inf.aqmaps.simulation.planning.path.PathSegment;
 // import uk.ac.ed.inf.aqmaps.client.Sensor;
 // import uk.ac.ed.inf.aqmaps.client.W3WAddress;
 
+@SuppressWarnings({"unchecked"})
 public class DroneTest {
 
     PathPlanner mockPathPlanner = mock(PathPlanner.class);

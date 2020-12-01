@@ -22,14 +22,17 @@ public class BVHNode<T extends Shape>{
      */
     public BVHNode(Collection<T> shapes){
         
+        // envelop every shape
         var envelopeShapePairs = new ArrayList<EnvelopeShapePair>(shapes.size());
 
         for (T shape : shapes) {
             envelopeShapePairs.add(new EnvelopeShapePair(shape));
         }
 
+        // create AABB from all envelopes present in this node
         AABB = getContainingEnvelope(envelopeShapePairs);
 
+        // divide the children shapes into 2 sub-trees
         partitionIntoChildren(envelopeShapePairs);
     }
 
@@ -141,10 +144,11 @@ public class BVHNode<T extends Shape>{
             else if (currEnvelope.getMinY() < smallestY)
                 smallestY = currEnvelope.getMinY();
         }
-
+        
         double xWidth = largestX - smallestX;
         double yWidth = largestY - smallestY;
         
+        // we create a comparator to sort by the longest axis
         Comparator<EnvelopeShapePair> envelopeShapePairComparator = null;
         
         if(xWidth > yWidth){
@@ -185,6 +189,9 @@ public class BVHNode<T extends Shape>{
     }
 
 
+    /**
+     * Utility class holding envelope and shape information for a shape
+     */
     private class EnvelopeShapePair{
         public final Envelope ENVELOPE;
         public final T SHAPE;

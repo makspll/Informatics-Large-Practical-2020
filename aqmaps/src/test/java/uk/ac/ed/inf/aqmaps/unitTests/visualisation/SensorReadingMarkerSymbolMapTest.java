@@ -4,9 +4,9 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import uk.ac.ed.inf.aqmaps.visualisation.AttributeMap;
 import uk.ac.ed.inf.aqmaps.visualisation.MarkerSymbol;
-import uk.ac.ed.inf.aqmaps.visualisation.SensorReadingColourMap;
-import uk.ac.ed.inf.aqmaps.visualisation.SensorReadingMarkerSymbolMap;
+import uk.ac.ed.inf.aqmaps.visualisation.UniformAttributeMap;
 
 import static java.util.Map.entry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -25,7 +25,7 @@ public class SensorReadingMarkerSymbolMapTest {
         MarkerSymbol.DANGER
     };
 
-    SensorReadingMarkerSymbolMap symbolMap = new SensorReadingMarkerSymbolMap(0f,256f,symbols);
+    AttributeMap<Float,MarkerSymbol> symbolMap = new UniformAttributeMap<MarkerSymbol>(0f,256f,symbols);
 
 
     @Test

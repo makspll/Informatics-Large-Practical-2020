@@ -29,7 +29,7 @@ public class StraightLineDistance implements PathfindingHeuristic{
      */
     @Override
     public <T extends SearchNode<T>> double heuristic(T a, PathfindingGoal b) {
-        return a.getLocation().distance(b.getPosition()) * relaxationFactor;
+        return a.getCoordinates().distance(b.getCoordinates()) * relaxationFactor;
     }
 
 

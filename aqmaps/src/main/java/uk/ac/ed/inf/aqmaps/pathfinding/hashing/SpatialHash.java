@@ -4,7 +4,7 @@ import org.locationtech.jts.geom.Coordinate;
 
 /**
  * Classes implementing this interface allow fuzzy spatial hashing of coordinates. This is used for
- * detecting whether or not 2 points are roughly equivalent or in special datastructures.
+ * detecting whether or not 2 points are roughly equivalent or in special data structures.
  */
 public interface SpatialHash {
 

@@ -7,5 +7,9 @@ import java.util.List;
  * Given a node the graph defines the neighbouring nodes available to reach from that node in the context of a search.
  */
 public interface SearchGraph<T extends SearchNode<T>> {
+    /**
+     * Returns the neighbours of the given node within the graph
+     * @param node the node for which to return neighbours
+     */
     public  List<T> getNeighbouringNodes(T node);
 }   

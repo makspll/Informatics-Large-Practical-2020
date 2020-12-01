@@ -58,6 +58,7 @@ public abstract class DistanceMatrix {
         assert endIdx <= route.length 
             && startIdx >= 0;
 
+        // count the cost between each tour node
         double distance = 0;
         for (int i = startIdx; i < endIdx - 1; i++) {
             int curr = route[i];

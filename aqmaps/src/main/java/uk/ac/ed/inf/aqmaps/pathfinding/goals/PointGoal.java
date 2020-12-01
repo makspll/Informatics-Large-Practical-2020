@@ -21,7 +21,7 @@ public class PointGoal implements PathfindingGoal{
      * {@inheritDoc}
      */
     @Override
-    public Coordinate getPosition() {
+    public Coordinate getCoordinates() {
         return goal;
     }
 

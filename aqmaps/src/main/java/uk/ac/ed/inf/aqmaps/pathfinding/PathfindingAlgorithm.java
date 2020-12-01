@@ -7,6 +7,10 @@ import java.util.Stack;
 import uk.ac.ed.inf.aqmaps.pathfinding.goals.PathfindingGoal;
 
 
+/**
+ * Pathfinding algorithms operate over any valid search nodes and graph definitions. The graph defines the transition function between one node and its neighbours while the search nodes are used as 
+ * the path constructing object. Any number of pathfinding algorithms can be defines in these terms, both tree and graph searches are possible with the correct set of graph and node definitions.
+ */
 public abstract class PathfindingAlgorithm<T extends SearchNode<T>>{
     
     /**
@@ -82,7 +86,7 @@ public abstract class PathfindingAlgorithm<T extends SearchNode<T>>{
      * @return
      */
     protected  boolean isAtGoal(double threshold, T node, PathfindingGoal goal){
-        return node.getLocation().distance(goal.getPosition()) < threshold;
+        return node.getCoordinates().distance(goal.getCoordinates()) < threshold;
     }
     
     /**

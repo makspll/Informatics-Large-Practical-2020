@@ -8,7 +8,13 @@ import org.locationtech.jts.geom.Coordinate;
 
 import uk.ac.ed.inf.aqmaps.pathfinding.goals.PathfindingGoal;
 
-public abstract class SearchNode<T extends SearchNode<T>> {
+/**
+ * Search Nodes are used to hold the path information in pathfinding algorithms including heuristic, cost and parent node values. Search nodes also contain information about which
+ * pathfinding goals can be achieved from their position (can be multiple).
+ */
+public class SearchNode<T extends SearchNode<T>> {
+
+
     /**
      * Creates a new spatial tree search node which is fully specified apart from
      * the heuristic value
@@ -22,10 +28,11 @@ public abstract class SearchNode<T extends SearchNode<T>> {
             this.location = location;
             this.parentNode = parent;
             this.cost = cost;
+
         }
 
     /**
-     * Creates fully specified search node
+     * Creates a fully specified search node
      * @param location
      * @param parent
      * @param heuristic
@@ -43,14 +50,25 @@ public abstract class SearchNode<T extends SearchNode<T>> {
         this.cost = cost;
     }
 
+    /**
+     * Retrieve the deque of goals achievable from this search node's position
+     */
     public Deque<PathfindingGoal> getGoalsReached() {
         return this.goalsReached;
     }
 
+    /**
+     * Set the goals achievable from this search node's position
+     * @param goalReached
+     */
     public void setGoalsReached(Deque<PathfindingGoal> goalReached) {
         this.goalsReached = goalReached;
     }
 
+    /**
+     * Add a goal achievable from this node's position to the tail of its deque
+     * @param goalReached
+     */
     public void addGoalReached(PathfindingGoal goalReached){
         this.goalsReached.add(goalReached);
     }
@@ -59,26 +77,48 @@ public abstract class SearchNode<T extends SearchNode<T>> {
         return this.goalsReached.size();
     }
 
+    /**
+     * pop the first goal achievable at this node's position from its deque
+     * @param goalReached
+     */
     public void removeGoalReached(PathfindingGoal goalReached){
         this.goalsReached.remove(goalReached);
     }
 
+    /**
+     * Retrieve the heuristic value of this node
+     */
     public double getHeuristic() {
         return this.heuristic;
     }
 
-    public Coordinate getLocation() {
+    /**
+     * Retrieve the coordinates in space of this node
+     */
+    public Coordinate getCoordinates() {
         return this.location;
     }
 
+    /**
+     * Set the heuristic value of this node
+     * @param heuristic
+     */
     public void setHeuristic(double heuristic) {
         this.heuristic = heuristic;
     }
 
+    /**
+     * Retrieve the cost of reaching this search node
+     * @return
+     */
     public double getCost() {
         return this.cost;
     }
 
+    /**
+     * Retrieve the parent node of this node
+     * @return
+     */
     public T getParentNode() {
         return this.parentNode;
     }
@@ -91,7 +131,7 @@ public abstract class SearchNode<T extends SearchNode<T>> {
     @Override
     public String toString() {
         return "{" +
-            "location='" + getLocation() + "'" +
+            "location='" + getCoordinates() + "'" +
             ", heuristic+cost='" + (getHeuristic() + getCost())  + "'" +
             "}";
     }

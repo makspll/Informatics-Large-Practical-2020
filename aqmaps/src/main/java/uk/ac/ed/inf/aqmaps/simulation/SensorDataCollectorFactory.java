@@ -15,11 +15,10 @@ import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.GreedyCollectionO
 import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.NearestInsertionCollectionOrderPlanner;
 import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.optimisers.CollectionOrderOptimiser;
 import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.optimisers.Optimiser2Opt;
-import uk.ac.ed.inf.aqmaps.simulation.planning.path.BasePathPlanner;
 import uk.ac.ed.inf.aqmaps.simulation.planning.path.SimplePathPlanner;
 
 /**
- * A utility class for instantiating sensor data collectors with optimal values in one call
+ * A utility class for instantiating sensor data collectors with correct parameter values in one call
  */
 public class SensorDataCollectorFactory {
     

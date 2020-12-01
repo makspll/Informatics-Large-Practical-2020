@@ -9,7 +9,7 @@ public class EuclidianDistanceMatrix extends DistanceMatrix {
 
     @Override
     protected double distanceMetric(Sensor a, Sensor b) {
-        return a.getPosition().distance(b.getPosition());
+        return a.getCoordinates().distance(b.getCoordinates());
     }
     
 }

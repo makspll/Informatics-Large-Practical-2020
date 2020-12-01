@@ -2,9 +2,7 @@ package uk.ac.ed.inf.aqmaps.integrationTests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -14,9 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.locationtech.jts.geom.Coordinate;
 
-import uk.ac.ed.inf.aqmaps.client.AQSensor;
-import uk.ac.ed.inf.aqmaps.client.SensorData;
-import uk.ac.ed.inf.aqmaps.client.W3WAddressData;
 import uk.ac.ed.inf.aqmaps.pathfinding.AstarTreeSearch;
 import uk.ac.ed.inf.aqmaps.pathfinding.Obstacle;
 import uk.ac.ed.inf.aqmaps.pathfinding.PathfindingAlgorithm;

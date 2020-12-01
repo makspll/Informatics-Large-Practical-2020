@@ -20,6 +20,11 @@ public class MathUtilities {
         return angle;
     }
 
+    /**
+     * Return the angle representing the given angle incremented by 180 degrees (but witin 360 degrees)
+     * @param angle
+     * @return
+     */
     public static double oppositeAngleFromEast(double angle){
         return (angle + 180) % 360;
     }
@@ -38,17 +43,30 @@ public class MathUtilities {
         return new Vector2D(x, y).normalize();
     }
 
+    /**
+     * Returns true if the given values are within a threshold of each other
+     */
     public static boolean thresholdEquals(double a, double b, double epsilon){
         return Math.abs(a - b) <= epsilon;
     }
+
+    /**
+     * Returns true if the given values are within a threshold of each other. Uses default epsilon
+     */
     public static boolean thresholdEquals(double a, double b){
         return Math.abs(a - b) <= epsilon;
     }
 
-
+    /**
+     * Returns true if the given coordinates are within a threshold of each other
+     */
     public static boolean thresholdEquals(Coordinate a, Coordinate b, double epsilon){
         return Math.abs(a.distance(b)) <= epsilon;
     }
+
+    /**
+     * Returns true if the given coordinates are within a threshold of each other. uses default epsilon
+     */
     public static boolean thresholdEquals(Coordinate a, Coordinate b){
         return Math.abs(a.distance(b)) <= epsilon;
     }

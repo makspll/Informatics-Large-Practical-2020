@@ -17,6 +17,9 @@ import uk.ac.ed.inf.aqmaps.utilities.BVHNode;
 import uk.ac.ed.inf.aqmaps.utilities.GeometryUtilities;
 import uk.ac.ed.inf.aqmaps.utilities.MathUtilities;
 
+/**
+ * A graph which imposes angle, move length and boundary (+ obstacle) constraints for the nodes, and does not keep track of already produced nodes (tree search) i.e. a new node is returned each time
+ */
 public class ConstrainedTreeGraph implements SearchGraph<DirectedSearchNode> {
 
     /**
@@ -26,8 +29,8 @@ public class ConstrainedTreeGraph implements SearchGraph<DirectedSearchNode> {
      * @param minAngle the highest angle (angles will loop around this value)
      * @param maxAngle the smallest angle
      * @param angleIncrement the size of the smallest angle increment in the graph (needs to divide into 180)
-     * @param moveLength
-     * @param obstacles
+     * @param moveLength the exact distance between a node and its neighbour
+     * @param obstacles the obstacles present on the map
      * @param boundary the polygon bounds of the world. Can be null
      */
     public ConstrainedTreeGraph(int minAngle, int maxAngle, int angleIncrement, double moveLength, Collection<Obstacle> obstacles, Polygon boundary) {
@@ -42,8 +45,8 @@ public class ConstrainedTreeGraph implements SearchGraph<DirectedSearchNode> {
      * @param minAngle the highest angle (angles will loop around this value)
      * @param maxAngle the smallest angle
      * @param angleIncrement the size of the smallest angle increment in the graph (needs to divide into 180)
-     * @param moveLength
-     * @param obstacles
+     * @param moveLength the exact distance between a node and its neighbour
+     * @param obstacles the obstacles present on the map
      */
     public ConstrainedTreeGraph(int minAngle, int maxAngle, int angleIncrement, double moveLength, Collection<Obstacle> obstacles) {
         assert 180 % angleIncrement == 0 && maxAngle - minAngle >= 360 - angleIncrement;
@@ -71,19 +74,30 @@ public class ConstrainedTreeGraph implements SearchGraph<DirectedSearchNode> {
         }
     }
 
-
+    /**
+     * Retrieve the obstacles present on the map
+     */
     public Collection<Obstacle> getObstacles(){
         return obstacles;
     }
 
+    /**
+     * Retrieve the bounds of the map
+     */
     public Polygon getBoundary(){
         return boundary;
     }
 
+    /**
+     * get the distance between a node and its neighbour
+     */
     public double getMoveLength(){
         return MOVE_LENGTH;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public  List<DirectedSearchNode> getNeighbouringNodes(DirectedSearchNode node) {
 
@@ -94,7 +108,7 @@ public class ConstrainedTreeGraph implements SearchGraph<DirectedSearchNode> {
 
         // we can completely avoid having to check any colisions by checking
         // that the the bounding box of move length width is not coliding with anything else
-        var nodeLocation = node.getLocation();
+        var nodeLocation = node.getCoordinates();
 
         Geometry boundingBox = GeometryUtilities.geometryFactory.createPolygon(
             new Coordinate[]{
@@ -111,17 +125,16 @@ public class ConstrainedTreeGraph implements SearchGraph<DirectedSearchNode> {
     }
 
     /**
-     * finds the neighbours of the given node, only taking into account the given obstacles
+     * finds the neighbours of the given node, only taking into account the given subset of obstacles
      * @param node
      * @param obstaclesIncluded
-     * @return
      */
     private List<DirectedSearchNode> findNeighboursUsingObstacles(DirectedSearchNode node,
         Collection<Obstacle> obstaclesIncluded ){
 
         var output = new ArrayList<DirectedSearchNode>();
 
-        Coordinate currentPoint = node.getLocation();
+        Coordinate currentPoint = node.getCoordinates();
         for (Integer dir : allDirections) {
             
 
@@ -157,6 +170,12 @@ public class ConstrainedTreeGraph implements SearchGraph<DirectedSearchNode> {
         return output;
     }
 
+    /**
+     * Creates a new coordinate by stepping in the given direction from the original point
+     * @param direction
+     * @param point
+     * @return
+     */
     private Coordinate stepInDirection(int direction, Coordinate point){
 
         // the direction is a multiple of angleIncrement between minAngle and maxAngle inclusive
@@ -171,11 +190,20 @@ public class ConstrainedTreeGraph implements SearchGraph<DirectedSearchNode> {
         return heading.multiply(MOVE_LENGTH).translate(point);
     }
 
+    /**
+     * returns the closest valid angle in this graph to the given double
+     * @param direction
+     */
     public int getClosestValidAngle(double direction){
         return ((int)Math.round(direction / ANGLE_INCREMENT) * ANGLE_INCREMENT) % (MAX_ANGLE+1);
     }
 
 
+    /**
+     * Retrieves all valid directions between the given low and high angle
+     * @param lowAngle the low angle
+     * @param highAngle the high angle
+     */
     public int[] getValidDirectionsBetween(int lowAngle, int highAngle){
         
         assert lowAngle >= MIN_ANGLE && highAngle <= MAX_ANGLE;
@@ -202,6 +230,12 @@ public class ConstrainedTreeGraph implements SearchGraph<DirectedSearchNode> {
         return output;
     }
 
+    /**
+     * Returns the count of the valid angles between the given low and high angle
+     * @param low the low angle
+     * @param high the high angle
+     * @return
+     */
     private int countValidAnglesBetween(int low, int high){
         return ((high - low) / ANGLE_INCREMENT) + 1;
     }

@@ -39,6 +39,12 @@ public class GeometryUtilities {
      */
     public static Polygon MapboxPolygonToJTSPolygon(com.mapbox.geojson.Polygon p){
 
+        // both JTS and Mapbox follow the same polygon convention
+        // simply convert the datatypes in the same order
+        // i.e. a polygon is a list of lists, where each list is first a shell, and then any holes 
+        // within the polygon, each list must be a linear ring, i.e. its first and last point
+        // must be the same
+
         var rings = p.coordinates();
         LinearRing shell = null;
         LinearRing[] holes = null;

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MathUtilities.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">aqmaps</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ed.inf.aqmaps.utilities</a> &gt; <span class="el_source">MathUtilities.java</span></div><h1>MathUtilities.java</h1><pre class="source lang-java linenums">package uk.ac.ed.inf.aqmaps.utilities;
+
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.math.Vector2D;
+
+<span class="nc" id="L6">public class MathUtilities {</span>
+    /**
+     * returns the angle from the eastern direction clockwise between 0 and 360 of the vector
+     * @param a a vector representing a direction
+     * @return
+     */
+    public static double angleFromEast(Vector2D a){
+<span class="fc" id="L13">        double angle = -Math.toDegrees(Math.atan2(a.getX(), a.getY())) + 90;</span>
+
+        // convert the  -180 to -0 to
+<span class="fc bfc" id="L16" title="All 2 branches covered.">        if (angle &lt; 0.0) {</span>
+<span class="fc" id="L17">            angle += 360.0;</span>
+        }  
+        
+<span class="fc" id="L20">        return angle;</span>
+    }
+
+    /**
+     * Return the angle representing the given angle incremented by 180 degrees (but witin 360 degrees)
+     * @param angle
+     * @return
+     */
+    public static double oppositeAngleFromEast(double angle){
+<span class="fc" id="L29">        return (angle + 180) % 360;</span>
+    }
+
+    /**
+     * gets unit vector in the direction of angle
+     * @param angle double between 0 and 360 representing angle from the eastern direction anticlockwise (phase angle in range (0,360))
+     * @return
+     */
+    public static Vector2D getHeadingVector(double angle){
+<span class="fc" id="L38">        angle = Math.toRadians(angle);</span>
+
+<span class="fc" id="L40">        double x = Math.cos(angle);</span>
+<span class="fc" id="L41">        double y = Math.sin(angle);</span>
+
+<span class="fc" id="L43">        return new Vector2D(x, y).normalize();</span>
+    }
+
+    /**
+     * Returns true if the given values are within a threshold of each other
+     */
+    public static boolean thresholdEquals(double a, double b, double epsilon){
+<span class="nc bnc" id="L50" title="All 2 branches missed.">        return Math.abs(a - b) &lt;= epsilon;</span>
+    }
+
+    /**
+     * Returns true if the given values are within a threshold of each other. Uses default epsilon
+     */
+    public static boolean thresholdEquals(double a, double b){
+<span class="nc bnc" id="L57" title="All 2 branches missed.">        return Math.abs(a - b) &lt;= epsilon;</span>
+    }
+
+    /**
+     * Returns true if the given coordinates are within a threshold of each other
+     */
+    public static boolean thresholdEquals(Coordinate a, Coordinate b, double epsilon){
+<span class="pc bpc" id="L64" title="1 of 2 branches missed.">        return Math.abs(a.distance(b)) &lt;= epsilon;</span>
+    }
+
+    /**
+     * Returns true if the given coordinates are within a threshold of each other. uses default epsilon
+     */
+    public static boolean thresholdEquals(Coordinate a, Coordinate b){
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">        return Math.abs(a.distance(b)) &lt;= epsilon;</span>
+    }
+
+<span class="fc" id="L74">    public static double epsilon = 0.000001;</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

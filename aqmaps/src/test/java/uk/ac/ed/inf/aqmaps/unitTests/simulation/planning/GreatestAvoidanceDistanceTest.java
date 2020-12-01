@@ -14,8 +14,6 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.math.Vector2D;
 
 import uk.ac.ed.inf.aqmaps.pathfinding.Obstacle;
-import uk.ac.ed.inf.aqmaps.pathfinding.SearchNode;
-import uk.ac.ed.inf.aqmaps.pathfinding.goals.PathfindingGoal;
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
 import uk.ac.ed.inf.aqmaps.simulation.planning.GreatestAvoidanceDistanceMatrix;
 import uk.ac.ed.inf.aqmaps.testUtilities.TestUtilities;

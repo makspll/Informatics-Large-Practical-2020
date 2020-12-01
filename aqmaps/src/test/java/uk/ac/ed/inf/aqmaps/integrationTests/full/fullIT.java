@@ -31,17 +31,18 @@ import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.LineString;
 import com.mapbox.geojson.Point;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Polygon;
 import org.mockito.internal.util.reflection.FieldSetter;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import uk.ac.ed.inf.aqmaps.App;
 import uk.ac.ed.inf.aqmaps.client.AQSensor;
-import uk.ac.ed.inf.aqmaps.client.SensorData;
-import uk.ac.ed.inf.aqmaps.client.W3WAddressData;
+import uk.ac.ed.inf.aqmaps.client.AQWebServerClient;
+import uk.ac.ed.inf.aqmaps.client.data.SensorData;
+import uk.ac.ed.inf.aqmaps.client.data.W3WAddressData;
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
 import uk.ac.ed.inf.aqmaps.simulation.SensorDataCollectorFactory.CollectionOrderPlannerType;
 import uk.ac.ed.inf.aqmaps.simulation.SensorDataCollectorFactory.DistanceMatrixType;
@@ -49,14 +50,19 @@ import uk.ac.ed.inf.aqmaps.simulation.SensorDataCollectorFactory.PathfindingHeur
 import uk.ac.ed.inf.aqmaps.simulation.planning.path.PathSegment;
 import uk.ac.ed.inf.aqmaps.testUtilities.TestUtilities;
 import uk.ac.ed.inf.aqmaps.utilities.GeometryFactorySingleton;
+import uk.ac.ed.inf.aqmaps.utilities.GeometryUtilities;
 import uk.ac.ed.inf.aqmaps.visualisation.AttributeMap;
 import uk.ac.ed.inf.aqmaps.visualisation.MarkerSymbol;
-import uk.ac.ed.inf.aqmaps.visualisation.SensorReadingColourMap;
-import uk.ac.ed.inf.aqmaps.visualisation.SensorReadingMarkerSymbolMap;
+import uk.ac.ed.inf.aqmaps.visualisation.UniformAttributeMap;
 
 import com.google.gson.reflect.TypeToken;
 
-// @Disabled
+@SuppressWarnings({"unchecked"})
+/**
+ * This is a massive integration test designed to completely and thoroughly test the output of the program.
+ * Should not necessarily be run on build and hence it's an IT as opposed to a unit test.
+ * This test checks all the paths are valid, do not cross buildings, the distances are within tolerances and so on.
+ */
 public class fullIT {
     App app = new App();
 
@@ -87,9 +93,13 @@ public class fullIT {
     };
     
     
-    AttributeMap<Float, String> colourMap = new SensorReadingColourMap(0f, 256f, colours);
-    AttributeMap<Float, MarkerSymbol> symbolMap = new SensorReadingMarkerSymbolMap(0f, 256f, symbols);
+    AttributeMap<Float, String> colourMap = new UniformAttributeMap<String>(0f, 256f, colours);
+    AttributeMap<Float, MarkerSymbol> symbolMap = new UniformAttributeMap<MarkerSymbol>(0f, 256f, symbols);
     
+    /**
+     * The main program testing routine, more can be employed to check for more parameters.
+     * @throws Exception
+     */
     @Test
     public void testNormalDataMethods() throws Exception {
 
@@ -103,7 +113,10 @@ public class fullIT {
             new Coordinate( // top left
                 -3.19087,
                 55.945778
-            )};
+            ),
+            new Coordinate( // default starting point as per cw
+                -3.1878,
+                55.9444)};
 
         String resultsFilePath = "results/normal-data/data.csv";
         String testServerDir = "/normalTestData";
@@ -115,10 +128,24 @@ public class fullIT {
          new CollectionOrderPlannerType[]{CollectionOrderPlannerType.NEAREST_INSERTION},
          new DistanceMatrixType[]{DistanceMatrixType.EUCLIDIAN},
          new float[]{1f,1.5f},
-         new double[]{MOVE_LENGTH/75d,MOVE_LENGTH/100d},
+         new double[]{MOVE_LENGTH/75d,MOVE_LENGTH/100d,MOVE_LENGTH/500d},
          new double[]{0.1d*MOVE_LENGTH,0.0001d*MOVE_LENGTH});
     
     }
+
+    /**
+     * performs tests on all combinations of the given parameters and outputs them to a csv file, requires that test data is in src/test/resources
+     * @param resultFilePath
+     * @param testServerDataDir
+     * @param startingCoordinates
+     * @param heuristics
+     * @param plannerTypes
+     * @param matrixTypes
+     * @param relaxationFactors
+     * @param hashingGridWidths
+     * @param opt2Epsilons
+     * @throws IOException
+     */
     private void performTests(String resultFilePath,String testServerDataDir,
         Coordinate[] startingCoordinates,
         PathfindingHeuristicType[] heuristics,
@@ -128,6 +155,8 @@ public class fullIT {
         double[] hashingGridWidths,
         double[] opt2Epsilons
         ) throws IOException {
+
+        // prepare all files
         String resourcesPath = "src/test/resources";
 
         File resources = new File(resourcesPath);
@@ -140,6 +169,7 @@ public class fullIT {
             resultDir.mkdirs();
         }
 
+        // are we running the first test ? used to append headers on first run
         boolean firstTest = true;
 
         // as horendous as this looks this won't ever be fully utilized
@@ -153,6 +183,8 @@ public class fullIT {
                             for (var relaxationFactor: relaxationFactors){
                                 for(var gridWidth: hashingGridWidths){
                                     for(var epsilon: opt2Epsilons){
+                                        
+                                        // prepare arguments to the program
 
                                         String[] args = new String[]{
                                             date.getDayOfMonth()+"" ,
@@ -167,7 +199,9 @@ public class fullIT {
                                             "-r",relaxationFactor+"",
                                             "-eps",epsilon+"",
                                             "-sw",gridWidth+""};
-                        
+                                            
+                                        
+                                        // prepare output variables
                                         boolean failed = false;
                                         String failureReason = null;
                                         int pathLength = -1;
@@ -175,13 +209,18 @@ public class fullIT {
                                         long executionTime = -1;
                                         boolean returnsCloseToStart = false;
                                         try {
+                                            // measure time
                                             var startTime = System.nanoTime();
                                             testFullOn(absoluteServerDataPath, args);
                                             var endTime = System.nanoTime();
-                        
+                                            
+                                            // read the generated flight path and geojson
                                             var flightpath = readFlightpathOutput(date, absoluteServerDataPath + "/words");
                                             var geojson = readGeojsonOutput(date);
-                        
+                                            
+                                            // calculate how long it took,
+                                            // check the path is correct and measure path length
+
                                             executionTime = endTime - startTime;
                                             pathLength = flightpath.size();
                                             sensorsReached = countSensorsReached(flightpath);
@@ -190,20 +229,24 @@ public class fullIT {
                                             var firstPoint = flightpath.peek().getStartPoint();
 
                                             double distanceFromEndToStart = firstPoint.distance(lastPoint);
-                                                
+                                            
+                                            // make sure path returns to start
                                             returnsCloseToStart = distanceFromEndToStart < RETURN_POS_DISTANCE_MAX;
                                             
+                                            // assert the output is correct 
                                             assertTrue(returnsCloseToStart);
-
                                             assertOutput(date, absoluteServerDataPath,geojson, flightpath);
                                         } catch (Exception e) {
                                             failed = true;
                                             failureReason = e.toString();
                                         }
-                        
+                                        
+                                        // append all this data to a file on the fly
                                         appendResultToCsv(resultFilePath,
                                             date, 
-                                            pathLength, 
+                                            pathLength,
+                                            coordinate.getX(),
+                                            coordinate.getY(),
                                             sensorsReached,
                                             returnsCloseToStart, 
                                             executionTime, 
@@ -219,7 +262,8 @@ public class fullIT {
                                         System.out.println("Finished test: " + date.toString());
 
                                         firstTest = false;
-
+                                        
+                                        // clean up files, remove generated ones apart from data
                                         try {
                                             var flightPathGen = new File(String.format("flightpath-%02d-%02d-%04d.txt",
                                             date.getDayOfMonth(),
@@ -255,6 +299,8 @@ public class fullIT {
         String path, 
         LocalDate date, 
         int pathLength, 
+        double startX,
+        double startY,
         int sensorsReached, 
         boolean returnsCloseToStart,
         long executionTime, 
@@ -272,11 +318,13 @@ public class fullIT {
         if(appendHeaders){
             appendLineTo(
                 path,
-                String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
+                String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
                     "day",
                     "month",
                     "year",
                     "moves",
+                    "start x",
+                    "start y",
                     "sensorsReached",
                     "returnsClose",
                     "time(ms)",
@@ -291,11 +339,13 @@ public class fullIT {
         }
         appendLineTo(
             path,
-            String.format("%02d,%02d,%04d,%d,%d,%b,%f,%b,%s,%s,%s,%s,%f,%f,%f",
+            String.format("%02d,%02d,%04d,%d,%f,%f,%d,%b,%f,%b,%s,%s,%s,%s,%f,%f,%f",
                 date.getDayOfMonth(),
                 date.getMonthValue(),
                 date.getYear(),
                 pathLength,
+                startX,
+                startY,
                 sensorsReached,
                 returnsCloseToStart,
                 executionTime*0.000001,
@@ -331,6 +381,12 @@ public class fullIT {
         }
         return count;
     }
+    /**
+     * runs a full test on the given root path test dat alocation and arguments
+     * @param dataRootPath
+     * @param args
+     * @throws Exception
+     */
     private void testFullOn(String dataRootPath, String... args)
             throws Exception {
         // inject fake http client
@@ -353,6 +409,11 @@ public class fullIT {
         App.main(args);
     }
 
+    /**
+     * Gets the entire file content at the given fiele path
+     * @param rootPath
+     * @param relativePath
+     */
     private String getFileContentsAt(String rootPath,String relativePath) throws IOException {
         File file = new File(rootPath + relativePath);
 
@@ -367,6 +428,9 @@ public class fullIT {
         return stringBuilder.toString();
     }
 
+    /**
+     * Returns the available test data in the folder (dates)
+     */
     private List<LocalDate> getDatesAvailableAt(String rootPath){
         
         var output = new ArrayList<LocalDate>();
@@ -396,6 +460,44 @@ public class fullIT {
         return output;
     }
 
+    /**
+     * Asserts that a path segmenth holds teh correct information
+     * @param p
+     * @param d
+     */
+    private void assertPathSegment(PathSegment p, LocalDate d){
+        // assert sensor read within range
+        if(p.getSensorRead() != null){
+
+            assertTrue(
+                p.getEndPoint().distance(
+                    p.getSensorRead().getCoordinates()) <=
+                READING_RANGE, 
+                "sensor out of range at:" +d.toString());
+        }
+
+        // assert move length correct
+
+        var moveLength = p.getStartPoint().distance(p.getEndPoint());
+        GeometryFactorySingleton.getGeometryFactory().getPrecisionModel().makePrecise(moveLength);
+
+        assertEquals(MOVE_LENGTH,
+            moveLength,
+            TOLERANCE,"Move length is incorrect at :" + d.toString());
+
+        // assert is not on the boundary
+        var lineString = GeometryFactorySingleton.getGeometryFactory().createLineString(new Coordinate[]{p.getStartPoint(),p.getEndPoint()});
+        assertTrue(boundary.getBoundary().disjoint(lineString),"path segment touches the boundary at:" + d.toString());
+    }
+
+    /**
+     * asserts that the written output is correct
+     * @param date
+     * @param rootPath
+     * @param featureCollection
+     * @param flightPath
+     * @throws IOException
+     */
     private void assertOutput(LocalDate date,
         String rootPath,
         FeatureCollection featureCollection, 
@@ -406,7 +508,7 @@ public class fullIT {
         // 2) the path segments are consecutive
         // 3) the path segments number is less than or equal to 150
         // 4) the path length is equal to move length
-
+        // 5) assert the path is always within the confinement area
         assertTrue(flightPath.size() <= 150,"flight path is above 150 moves");
 
         PathSegment previous = flightPath.poll();
@@ -414,13 +516,9 @@ public class fullIT {
         var visitedSensors = new HashSet<String>();
         var sensorCoordinates = new HashMap<String,Coordinate>();
 
-        if(previous.getSensorRead() != null){
-            assertTrue(
-                previous.getEndPoint().distance(
-                    previous.getSensorRead().getCoordinates()) <=
-                READING_RANGE, 
-                "sensor out of range at:" +date.toString());
+        assertPathSegment(previous, date);
 
+        if(previous.getSensorRead() != null){
             var sensor= previous.getSensorRead();
             visitedSensors.add(sensor.getW3WLocation());
             sensorCoordinates.put(sensor.getW3WLocation(),sensor.getCoordinates());
@@ -428,12 +526,7 @@ public class fullIT {
 
         for (PathSegment current : flightPath) {
 
-            var moveLength = current.getStartPoint().distance(current.getEndPoint());
-            GeometryFactorySingleton.getGeometryFactory().getPrecisionModel().makePrecise(moveLength);
-
-            assertEquals(MOVE_LENGTH,
-                moveLength,
-                TOLERANCE,"Move length is incorrect");
+            assertPathSegment(current,date);
 
             TestUtilities.assertCoordinateEquals(
                     previous.getEndPoint(), 
@@ -442,17 +535,11 @@ public class fullIT {
                     "path not consecutive at:" + date.toString());
     
             if(current.getSensorRead() != null){
-
-                assertTrue(
-                    current.getEndPoint().distance(
-                        current.getSensorRead().getCoordinates()) <=
-                    READING_RANGE, 
-                    "sensor out of range at:" +date.toString());
-
                 var sensor = current.getSensorRead();
                 visitedSensors.add(sensor.getW3WLocation());
                 sensorCoordinates.put(sensor.getW3WLocation(),sensor.getCoordinates());
             }
+
 
             previous = current;
         }
@@ -464,7 +551,7 @@ public class fullIT {
 
         String json = getFileContentsAt(rootPath, String.format("/maps/%04d/%02d/%02d/air-quality-data.json",date.getYear(),date.getMonthValue(),date.getDayOfMonth()));
         var gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(SensorData.class, SensorData.getDeserializer());
+        gsonBuilder.registerTypeAdapter(SensorData.class, AQWebServerClient.sensorDataDeserializer);
         Gson gson = gsonBuilder.create();
 
         // capture type of list of sensors ussing annonymous inner class
@@ -481,8 +568,8 @@ public class fullIT {
         var addressToReading = new HashMap<String,Float>();
 
         for (SensorData sensorData : sensorList) {
-            String address = sensorData.getLocation();
-            boolean visited =visitedSensors.contains(sensorData.getLocation());
+            String address = sensorData.getW3WLocation();
+            boolean visited =visitedSensors.contains(sensorData.getW3WLocation());
             boolean lowBattery = sensorData.getBattery() < 10f;
 
             if(!visited){
@@ -529,6 +616,12 @@ public class fullIT {
         }
     }
 
+    /**
+     * Parses the output geojson
+     * @param date
+     * @return
+     * @throws IOException
+     */
     private FeatureCollection readGeojsonOutput(LocalDate date) throws IOException {
 
         var relativePath = String.format("readings-%02d-%02d-%04d.geojson",
@@ -582,7 +675,7 @@ public class fullIT {
                 String locationDetails = getFileContentsAt(rootWordsLocation, "/" + words[0] + "/" + words[1] + "/" + words[2] + "/details.json");
 
                 var gsonBuilder = new GsonBuilder();
-                gsonBuilder.registerTypeAdapter(W3WAddressData.class, W3WAddressData.getDeserializer());
+                gsonBuilder.registerTypeAdapter(W3WAddressData.class, AQWebServerClient.w3wAddressDeserializer);
                 Gson gson = gsonBuilder.create();
         
                 W3WAddressData address =
@@ -611,4 +704,14 @@ public class fullIT {
     private static double RETURN_POS_DISTANCE_MAX = 0.0003;
 
     private static double TOLERANCE = 0.00000000001d;
+    
+    private static final Polygon boundary = GeometryUtilities.geometryFactory.createPolygon(
+        new Coordinate[]{
+            new Coordinate(-3.192473d, 55.946233d),
+            new Coordinate(-3.184319d, 55.946233d),
+            new Coordinate(-3.184319d, 55.942617d),
+            new Coordinate(-3.192473d, 55.942617d),
+            new Coordinate(-3.192473d, 55.946233d)
+        }
+    );
 }

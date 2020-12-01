@@ -30,11 +30,8 @@ public class PathSegment {
         this.sensorRead = sensorRead;
 
         // snap the values to the precision model
-
         GeometryFactorySingleton.getGeometryFactory().getPrecisionModel().makePrecise(this.startPoint);
         GeometryFactorySingleton.getGeometryFactory().getPrecisionModel().makePrecise(this.endPoint);
-        // if(sensorRead != null)
-            // GeometryFactorySingleton.getGeometryFactory().getPrecisionModel().makePrecise(this.sensorRead.getCoordinates());
     }
 
     public Coordinate getStartPoint() {

@@ -15,7 +15,9 @@ public interface SensorDataCollector {
     
     /**
      * Plans the best order of visiting sensors (best being defined by the collector itself)
-     * and creates a detailed ordered path segment collection which when followed will allow a successful collection
+     * and creates a detailed ordered path segment collection which when followed will allow a successful collection. 
+     * The sensors returned will have their state set to either
+     * read or not read, depending on whether they are reached within the path or not
      * @param startPosition the starting coordinate
      * @param sensors the sensors needing to be visited
      * @param graph the graph which defines the possible positions of the collector

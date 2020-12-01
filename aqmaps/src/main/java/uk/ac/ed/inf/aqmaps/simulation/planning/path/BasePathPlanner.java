@@ -12,7 +12,6 @@ import uk.ac.ed.inf.aqmaps.pathfinding.goals.PointGoal;
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
 import uk.ac.ed.inf.aqmaps.simulation.DirectedSearchNode;
 import uk.ac.ed.inf.aqmaps.simulation.planning.ConstrainedTreeGraph;
-import uk.ac.ed.inf.aqmaps.utilities.MathUtilities;
 
 /**
  * Base class for planners with a limited number of maximum moves and a

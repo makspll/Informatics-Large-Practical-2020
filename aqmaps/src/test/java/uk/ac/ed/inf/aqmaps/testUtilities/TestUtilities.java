@@ -16,9 +16,9 @@ import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.math.Vector2D;
 
 import uk.ac.ed.inf.aqmaps.client.AQSensor;
-import uk.ac.ed.inf.aqmaps.client.SensorData;
-import uk.ac.ed.inf.aqmaps.client.W3WAddressData;
-import uk.ac.ed.inf.aqmaps.client.W3WSquareData;
+import uk.ac.ed.inf.aqmaps.client.data.SensorData;
+import uk.ac.ed.inf.aqmaps.client.data.W3WAddressData;
+import uk.ac.ed.inf.aqmaps.client.data.W3WSquareData;
 import uk.ac.ed.inf.aqmaps.pathfinding.Obstacle;
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
 import uk.ac.ed.inf.aqmaps.simulation.planning.path.PathSegment;

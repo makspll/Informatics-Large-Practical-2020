@@ -19,9 +19,9 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Polygon;
 import uk.ac.ed.inf.aqmaps.client.AQSensor;
 import uk.ac.ed.inf.aqmaps.client.ClientService;
-import uk.ac.ed.inf.aqmaps.client.DroneWebServerClient;
-import uk.ac.ed.inf.aqmaps.client.SensorData;
-import uk.ac.ed.inf.aqmaps.client.W3WAddressData;
+import uk.ac.ed.inf.aqmaps.client.AQWebServerClient;
+import uk.ac.ed.inf.aqmaps.client.data.SensorData;
+import uk.ac.ed.inf.aqmaps.client.data.W3WAddressData;
 import uk.ac.ed.inf.aqmaps.pathfinding.Obstacle;
 import uk.ac.ed.inf.aqmaps.simulation.Building;
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
@@ -36,8 +36,8 @@ import uk.ac.ed.inf.aqmaps.visualisation.AQMapGenerator;
 import uk.ac.ed.inf.aqmaps.visualisation.AttributeMap;
 import uk.ac.ed.inf.aqmaps.visualisation.MarkerSymbol;
 import uk.ac.ed.inf.aqmaps.visualisation.OutputFormatter;
-import uk.ac.ed.inf.aqmaps.visualisation.SensorReadingColourMap;
-import uk.ac.ed.inf.aqmaps.visualisation.SensorReadingMarkerSymbolMap;
+import uk.ac.ed.inf.aqmaps.visualisation.UniformAttributeMap;
+
 import static java.util.Map.entry;    
 
 /**
@@ -97,7 +97,7 @@ public class App {
         URI hostResolvedAPIURI = URI.create(
             API_BASE_URI_STRING + String.format(":%s",portNumber));
 
-        var clientService = new DroneWebServerClient(
+        var clientService = new AQWebServerClient(
             httpClient,
             hostResolvedAPIURI);
 
@@ -253,7 +253,7 @@ public class App {
             
             // fetch sensor address data for this sensor
             W3WAddressData addressData = clientService.fetchW3WAddress(
-                                            sensorData.getLocation());
+                                            sensorData.getW3WLocation());
 
             // create the sensor and add it to the set
             AQSensor sensor = new AQSensor(sensorData, addressData);
@@ -335,7 +335,7 @@ public class App {
         }
     );
 
-    private static final AttributeMap<Float,String> markerColourMap = new SensorReadingColourMap(
+    private static final AttributeMap<Float,String> markerColourMap = new UniformAttributeMap<String>(
         0f,
         256f,
         "#00ff00", // green
@@ -348,7 +348,7 @@ public class App {
         "#ff0000"  // red
     );
 
-    private static final AttributeMap<Float,MarkerSymbol> markerSymbols = new SensorReadingMarkerSymbolMap(
+    private static final AttributeMap<Float,MarkerSymbol> markerSymbols = new UniformAttributeMap<MarkerSymbol>(
         0f,
         256f,
         MarkerSymbol.LIGHTHOUSE,

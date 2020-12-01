@@ -40,7 +40,7 @@ public class AstarTreeSearch<T extends SearchNode<T>> extends PathfindingAlgorit
         // even though floating point issues may arise,
         // we benefit from at least avoiding some of the visited points
         var visitedSet = new HashSet<Integer>();
-        visitedSet.add(hash.getHash(start.getLocation()));
+        visitedSet.add(hash.getHash(start.getCoordinates()));
 
         // start with the initial node in the open set
         openSet.add(start);
@@ -68,7 +68,7 @@ public class AstarTreeSearch<T extends SearchNode<T>> extends PathfindingAlgorit
             // we add each neighbour to the open set
             for (T n : neighbours) {
 
-                int spatialHash = hash.getHash(n.getLocation());
+                int spatialHash = hash.getHash(n.getCoordinates());
                 if(visitedSet.contains(spatialHash))
                     continue;
 

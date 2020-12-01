@@ -9,7 +9,6 @@ import java.util.LinkedList;
 import org.junit.jupiter.api.Test;
 
 import uk.ac.ed.inf.aqmaps.pathfinding.Obstacle;
-import uk.ac.ed.inf.aqmaps.pathfinding.SearchGraph;
 import uk.ac.ed.inf.aqmaps.simulation.SensorDataCollectorFactory;
 import uk.ac.ed.inf.aqmaps.simulation.SensorDataCollectorFactory.CollectionOrderPlannerType;
 import uk.ac.ed.inf.aqmaps.simulation.SensorDataCollectorFactory.CollectorType;

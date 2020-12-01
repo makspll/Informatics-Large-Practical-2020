@@ -18,6 +18,7 @@ import uk.ac.ed.inf.aqmaps.pathfinding.goals.PathfindingGoal;
 import uk.ac.ed.inf.aqmaps.pathfinding.hashing.SpatialHash;
 import uk.ac.ed.inf.aqmaps.pathfinding.heuristics.PathfindingHeuristic;
 
+@SuppressWarnings({"rawtypes","unchecked"})
 public class AstarTreeSearchTest {
 
     AstarTreeSearch testUnit;
@@ -38,11 +39,11 @@ public class AstarTreeSearchTest {
             mockGoal,mockGoal,mockGoal
         ));
     
-        when(mockGoal.getPosition()).thenReturn(new Coordinate());
-        when(mockNode.getLocation()).thenReturn(new Coordinate());
+        when(mockGoal.getCoordinates()).thenReturn(new Coordinate());
+        when(mockNode.getCoordinates()).thenReturn(new Coordinate());
         when(hash.getHash(any())).thenReturn(1);
 
-        var output = testUnit.findPath(mockGraph, path, mockNode, 0.1);
+        testUnit.findPath(mockGraph, path, mockNode, 0.1);
 
         assertEquals(3, path.size(),"path was consumed");
     }
@@ -58,8 +59,8 @@ public class AstarTreeSearchTest {
             mockGoal,mockGoal,mockGoal
         ));
     
-        when(mockGoal.getPosition()).thenReturn(new Coordinate());
-        when(mockNode.getLocation()).thenReturn(new Coordinate());
+        when(mockGoal.getCoordinates()).thenReturn(new Coordinate());
+        when(mockNode.getCoordinates()).thenReturn(new Coordinate());
         when(hash.getHash(any())).thenReturn(1);
 
         var output = testUnit.findPath(mockGraph, path, mockNode, 0.1);

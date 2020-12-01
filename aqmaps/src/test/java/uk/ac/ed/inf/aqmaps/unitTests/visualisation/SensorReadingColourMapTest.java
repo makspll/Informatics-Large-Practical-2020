@@ -4,7 +4,9 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import uk.ac.ed.inf.aqmaps.visualisation.SensorReadingColourMap;
+import uk.ac.ed.inf.aqmaps.visualisation.AttributeMap;
+import uk.ac.ed.inf.aqmaps.visualisation.UniformAttributeMap;
+
 import static java.util.Map.entry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -22,7 +24,7 @@ public class SensorReadingColourMapTest {
         "#ff0000"  // red
     };
 
-    SensorReadingColourMap colourMap = new SensorReadingColourMap(0f,256f,colours);
+    AttributeMap<Float,String> colourMap = new UniformAttributeMap<String>(0f,256f,colours);
 
 
     @Test

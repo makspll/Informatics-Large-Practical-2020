@@ -104,7 +104,7 @@ public abstract class PathPlannerTestBase {
         int i= 0;
 
         for (Sensor s : visitedSensors) {
-            coordinates[i] = s.getPosition();
+            coordinates[i] = s.getCoordinates();
             i+= 1;
         }
 

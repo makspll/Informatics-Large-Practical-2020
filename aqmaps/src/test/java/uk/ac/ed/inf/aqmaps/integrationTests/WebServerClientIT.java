@@ -19,10 +19,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import uk.ac.ed.inf.aqmaps.client.SensorData;
-import uk.ac.ed.inf.aqmaps.client.W3WAddressData;
-import uk.ac.ed.inf.aqmaps.client.W3WSquareData;
-import uk.ac.ed.inf.aqmaps.client.DroneWebServerClient;
+import uk.ac.ed.inf.aqmaps.client.data.SensorData;
+import uk.ac.ed.inf.aqmaps.client.data.W3WAddressData;
+import uk.ac.ed.inf.aqmaps.client.data.W3WSquareData;
+import uk.ac.ed.inf.aqmaps.client.AQWebServerClient;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -30,11 +30,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@SuppressWarnings({"rawtypes","unchecked"})
 public class WebServerClientIT {
 
     private static HttpClient mockClient = mock(HttpClient.class);
     private static URI apiURI = URI.create("http://localhost:9898");
-    private static DroneWebServerClient testClient = new DroneWebServerClient(mockClient,apiURI);
+    private static AQWebServerClient testClient = new AQWebServerClient(mockClient,apiURI);
 
     private static SensorData testSensorData1 = new SensorData("a.b.c", 1f, Float.NaN);
     private static SensorData testSensorData2 = new SensorData("a.b.c", 1f, Float.NaN);
@@ -86,22 +87,22 @@ public class WebServerClientIT {
     public static void setup(){
         testSensorDataJson = "[" +
         String.format("{\"location\":%s,\"battery\":%s,\"reading\":%s}",
-            testSensorData1.getLocation(),
+            testSensorData1.getW3WLocation(),
             testSensorData1.getBattery(),
             "\"null\"") + "," +
         String.format("{\"location\":%s,\"battery\":%s,\"reading\":%s}",
-            testSensorData2.getLocation(),
+            testSensorData2.getW3WLocation(),
             testSensorData2.getBattery(),
             "\"NaN\"") + "," +
         String.format("{\"location\":%s,\"battery\":%s,\"reading\":%s}",
-            testSensorData3.getLocation(),
+            testSensorData3.getW3WLocation(),
             testSensorData3.getBattery(),
             "\"255.0\"") + "]";
     }
     @BeforeEach
     public void reset(){
         mockClient = mock(HttpClient.class);
-        testClient = new DroneWebServerClient(mockClient,apiURI);
+        testClient = new AQWebServerClient(mockClient,apiURI);
     }
 
     @Test

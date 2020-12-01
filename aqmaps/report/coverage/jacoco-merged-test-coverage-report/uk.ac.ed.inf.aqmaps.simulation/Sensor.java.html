@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Sensor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">aqmaps</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ed.inf.aqmaps.simulation</a> &gt; <span class="el_source">Sensor.java</span></div><h1>Sensor.java</h1><pre class="source lang-java linenums">package uk.ac.ed.inf.aqmaps.simulation;
+
+import java.util.Objects;
+import org.locationtech.jts.geom.Coordinate;
+import uk.ac.ed.inf.aqmaps.pathfinding.goals.PathfindingGoal;
+
+/**
+ * Sensors contain a reading value and a battery level as well as the what 3 words location and coordinates of the sensor.
+ * This sensor will contain placeholder values for readings and battery status untill it is set to have been read.
+ */
+public abstract class Sensor implements PathfindingGoal {
+
+<span class="fc" id="L13">    public Sensor(Coordinate coordinates, float reading, float batteryLevel, String W3WLocation){</span>
+<span class="fc" id="L14">        this.coordinates = coordinates;</span>
+<span class="fc" id="L15">        this.reading = reading;</span>
+<span class="fc" id="L16">        this.batteryLevel = batteryLevel;</span>
+<span class="fc" id="L17">        this.W3WLocation = W3WLocation;</span>
+<span class="fc" id="L18">    }</span>
+
+    @Override
+    public boolean equals(Object o) {
+<span class="pc bpc" id="L22" title="1 of 2 branches missed.">        if (o == this)</span>
+<span class="fc" id="L23">            return true;</span>
+<span class="nc bnc" id="L24" title="All 2 branches missed.">        if (!(o instanceof Sensor)) {</span>
+<span class="nc" id="L25">            return false;</span>
+        }
+<span class="nc" id="L27">        Sensor aQSensor = (Sensor) o;</span>
+<span class="nc bnc" id="L28" title="All 10 branches missed.">        return reading == aQSensor.reading &amp;&amp; Objects.equals(coordinates, aQSensor.coordinates) &amp;&amp; hasBeenRead == aQSensor.hasBeenRead &amp;&amp; batteryLevel == aQSensor.batteryLevel &amp;&amp; Objects.equals(W3WLocation, aQSensor.W3WLocation);</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="fc" id="L33">        return Objects.hash(reading, coordinates, hasBeenRead, batteryLevel, W3WLocation);</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L38">        return &quot;{&quot; +</span>
+<span class="nc" id="L39">            &quot; reading='&quot; + getReading() + &quot;'&quot; +</span>
+<span class="nc" id="L40">            &quot;, coordinates='&quot; + getCoordinates() + &quot;'&quot; +</span>
+<span class="nc" id="L41">            &quot;, hasBeenRead='&quot; + hasBeenRead() + &quot;'&quot; +</span>
+<span class="nc" id="L42">            &quot;, batteryLevel='&quot; + getBatteryLevel() + &quot;'&quot; +</span>
+<span class="nc" id="L43">            &quot;, W3WLocation='&quot; + getW3WLocation() + &quot;'&quot; +</span>
+            &quot;}&quot;;
+    }
+    
+    /**
+     * Sets the sensor state to &quot;read&quot;. If the sensor is not set to have been read, asking it for readings and battery levels will return placeholder values
+     */
+    public void setHaveBeenRead(boolean read) {
+<span class="fc" id="L51">        this.hasBeenRead = read;</span>
+<span class="fc" id="L52">    }</span>
+
+    /**
+     * Return the coordinates of the sensor
+     */
+    public Coordinate getCoordinates() {
+<span class="fc" id="L58">        return this.coordinates;</span>
+    }
+    
+    /**
+     * Return the reading at this sensor. Will return NaN untill the setHaveBeenRead(true) has been called 
+     */
+    public float getReading() {
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">        return hasBeenRead ? this.reading : Float.NaN;</span>
+    }
+
+    /**
+     * Return the battery level at this sensor. Will return NaN untill the setHaveBeenRead(true) has been called 
+     */
+    public float getBatteryLevel() {
+<span class="pc bpc" id="L72" title="1 of 2 branches missed.">        return hasBeenRead ? this.batteryLevel : Float.NaN;</span>
+    }
+
+    /**
+     * Returns true if this sensor has been read (i.e. setHaveBeenRead(true) has been called on this object)
+     */
+    public boolean hasBeenRead() {
+<span class="fc" id="L79">        return this.hasBeenRead;</span>
+    }
+    
+    /**
+     * Retrieves the 3 word address (w3w) of this sensor
+     */
+    public String getW3WLocation() {
+<span class="fc" id="L86">        return this.W3WLocation;</span>
+    }
+
+    private boolean hasBeenRead;
+    private float reading;
+    private Coordinate coordinates;
+    private float batteryLevel;
+    private String W3WLocation;
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

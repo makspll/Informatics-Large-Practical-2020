@@ -4,12 +4,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Deque;
 import java.util.LinkedList;
-import java.util.Queue;
-
-import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 
 import uk.ac.ed.inf.aqmaps.pathfinding.AstarTreeSearch;
@@ -23,6 +19,7 @@ import uk.ac.ed.inf.aqmaps.simulation.planning.path.BasePathPlanner;
 import uk.ac.ed.inf.aqmaps.simulation.planning.path.SimplePathPlanner;
 import uk.ac.ed.inf.aqmaps.testUtilities.TestUtilities;
 
+@SuppressWarnings({"rawtypes","unchecked"})
 public class AstarConstrainedPathPlannerIT extends PathPlannerTestBase {
 
     private double scale = 0.1d;
@@ -61,10 +58,10 @@ public class AstarConstrainedPathPlannerIT extends PathPlannerTestBase {
         when(mockSensor3.toString()).thenReturn("Sensor 3");
         when(mockSensor4.toString()).thenReturn("Sensor 4");
 
-        when(mockSensor1.getPosition()).thenReturn(new Coordinate(0*scale, 0*scale) );
-        when(mockSensor2.getPosition()).thenReturn(new Coordinate(0*scale, 10*scale));
-        when(mockSensor3.getPosition()).thenReturn(new Coordinate(10*scale, 10*scale));
-        when(mockSensor4.getPosition()).thenReturn(new Coordinate(10*scale, 0*scale));
+        when(mockSensor1.getCoordinates()).thenReturn(new Coordinate(0*scale, 0*scale) );
+        when(mockSensor2.getCoordinates()).thenReturn(new Coordinate(0*scale, 10*scale));
+        when(mockSensor3.getCoordinates()).thenReturn(new Coordinate(10*scale, 10*scale));
+        when(mockSensor4.getCoordinates()).thenReturn(new Coordinate(10*scale, 0*scale));
 
         testRoute = new LinkedList<Sensor>(
                         Arrays.asList(mockSensor1,mockSensor2,mockSensor3,mockSensor4));

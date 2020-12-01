@@ -27,7 +27,7 @@ public class NearestInsertionCollectionOrderPlannerTest extends CollectionOrderP
 
     @Override
     protected Sensor setupStartSensor() {
-        when(mockSensor1.getPosition()).thenReturn(new Coordinate(0, 0));
+        when(mockSensor1.getCoordinates()).thenReturn(new Coordinate(0, 0));
         when(mockSensor1.toString()).thenReturn("Sensor 1");
 
         return mockSensor1;
@@ -35,9 +35,9 @@ public class NearestInsertionCollectionOrderPlannerTest extends CollectionOrderP
 
     @Override
     protected Set<Sensor> setupOtherSensors() {
-        when(mockSensor2.getPosition()).thenReturn(new Coordinate(1, 1));
-        when(mockSensor3.getPosition()).thenReturn(new Coordinate(1, -2));
-        when(mockSensor4.getPosition()).thenReturn(new Coordinate(5, 1));
+        when(mockSensor2.getCoordinates()).thenReturn(new Coordinate(1, 1));
+        when(mockSensor3.getCoordinates()).thenReturn(new Coordinate(1, -2));
+        when(mockSensor4.getCoordinates()).thenReturn(new Coordinate(5, 1));
 
         when(mockSensor2.toString()).thenReturn("Sensor 2");
         when(mockSensor3.toString()).thenReturn("Sensor 3");

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GeometryUtilities.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">aqmaps</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ed.inf.aqmaps.utilities</a> &gt; <span class="el_source">GeometryUtilities.java</span></div><h1>GeometryUtilities.java</h1><pre class="source lang-java linenums">package uk.ac.ed.inf.aqmaps.utilities;
+
+import com.mapbox.geojson.Point;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LinearRing;
+
+
+/**
+ * A collection of utility geometry methods 
+ */
+<span class="nc" id="L14">public class GeometryUtilities {</span>
+    
+    /**
+     * Convert a mapbox point to a jts coordinate
+     * @param p
+     * @return
+     */
+    public static Coordinate MapboxPointToJTSCoordinate(Point p){
+<span class="fc" id="L22">        return new Coordinate(p.longitude(),p.latitude());</span>
+    }
+
+    
+    /**
+     * Convert a jts cooridnate to a mapbox point
+     * @param p
+     * @return
+     */
+    public static Point JTSCoordinateToMapboxPoint(Coordinate p){
+<span class="fc" id="L32">        return Point.fromLngLat(p.getX(),p.getY());</span>
+    }
+
+    /**
+     * Convert mapbox polygon to jts polygon
+     * @param p
+     * @return
+     */
+    public static Polygon MapboxPolygonToJTSPolygon(com.mapbox.geojson.Polygon p){
+
+        // both JTS and Mapbox follow the same polygon convention
+        // simply convert the datatypes in the same order
+        // i.e. a polygon is a list of lists, where each list is first a shell, and then any holes 
+        // within the polygon, each list must be a linear ring, i.e. its first and last point
+        // must be the same
+
+<span class="fc" id="L48">        var rings = p.coordinates();</span>
+<span class="fc" id="L49">        LinearRing shell = null;</span>
+<span class="fc" id="L50">        LinearRing[] holes = null;</span>
+        
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        if(rings.size() &gt; 1){</span>
+<span class="fc" id="L53">            holes = new LinearRing[rings.size() - 1];</span>
+        }
+
+<span class="fc bfc" id="L56" title="All 2 branches covered.">        for(int i = 0; i &lt; rings.size(); i++){</span>
+<span class="fc" id="L57">            var currRing = rings.get(i);</span>
+
+<span class="fc" id="L59">            Coordinate[] coordinates = new Coordinate[currRing.size()];</span>
+
+<span class="fc bfc" id="L61" title="All 2 branches covered.">            for(int j = 0; j &lt; currRing.size(); j++){</span>
+<span class="fc" id="L62">                coordinates[j] = MapboxPointToJTSCoordinate(currRing.get(j));</span>
+            }
+
+<span class="fc" id="L65">            LinearRing convertedRing = geometryFactory.createLinearRing(coordinates);</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">            if(i == 0){</span>
+<span class="fc" id="L67">                shell = convertedRing;</span>
+            } else {
+<span class="fc" id="L69">                holes[i - 1] =convertedRing; </span>
+            }
+        }
+        
+<span class="fc" id="L73">        return geometryFactory.createPolygon(shell,holes);</span>
+    }
+
+    /**
+     * The general precision model to use in geometry generation
+     */
+<span class="fc" id="L79">    public final static PrecisionModel precisionModel = new PrecisionModel(PrecisionModel.maximumPreciseValue);</span>
+
+    /**
+     * The geometry factory to use in generating jts geometries
+     */
+<span class="fc" id="L84">    public final static GeometryFactory geometryFactory = new GeometryFactory(precisionModel);</span>
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

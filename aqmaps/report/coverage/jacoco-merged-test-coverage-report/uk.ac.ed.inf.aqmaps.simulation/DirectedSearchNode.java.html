@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DirectedSearchNode.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">aqmaps</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ed.inf.aqmaps.simulation</a> &gt; <span class="el_source">DirectedSearchNode.java</span></div><h1>DirectedSearchNode.java</h1><pre class="source lang-java linenums">package uk.ac.ed.inf.aqmaps.simulation;
+
+import org.locationtech.jts.geom.Coordinate;
+
+import uk.ac.ed.inf.aqmaps.pathfinding.SearchNode;
+
+/**
+ * A data structure representing a tree search node for 
+ * spatial pathfinding problems with integer angles.
+ */
+public class DirectedSearchNode extends SearchNode&lt;DirectedSearchNode&gt;{
+
+
+    /**
+     * Creates a new spatial tree search node which is fully specified apart from
+     * the heuristic value
+     * @param location the location of the new node
+     * @param parent the parent of the given node (if null the node is considered to be the starting node)
+     * @param directionFromParent the direction from the parent node taken to reach the node
+     * @param cost the cost of reaching this node from the start of the search
+     */
+    public DirectedSearchNode(Coordinate location,
+        DirectedSearchNode parent,
+        int directionFromParent,
+        double cost){
+<span class="fc" id="L26">            super(location, parent, cost);</span>
+<span class="fc" id="L27">            this.directionFromParent = directionFromParent;</span>
+<span class="fc" id="L28">        }</span>
+
+    /**
+     * Creates fully specified tree search node
+     * @param location
+     * @param parent
+     * @param directionFromParent
+     * @param heuristic
+     * @param cost
+     */
+    public DirectedSearchNode(Coordinate location,
+        DirectedSearchNode parent, 
+        int directionFromParent, 
+        double heuristic, 
+        double cost
+        ){
+<span class="fc" id="L44">        super(location, parent, heuristic, cost);</span>
+<span class="fc" id="L45">        this.directionFromParent = directionFromParent;</span>
+<span class="fc" id="L46">    }</span>
+
+    public int getDirectionFromParent() {
+<span class="fc" id="L49">        return this.directionFromParent;</span>
+    }
+
+<span class="fc" id="L52">    private int directionFromParent = -1;</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OutputFormatter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">aqmaps</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ed.inf.aqmaps.visualisation</a> &gt; <span class="el_source">OutputFormatter.java</span></div><h1>OutputFormatter.java</h1><pre class="source lang-java linenums">package uk.ac.ed.inf.aqmaps.visualisation;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.util.Deque;
+
+import com.mapbox.geojson.FeatureCollection;
+
+import org.locationtech.jts.geom.Coordinate;
+
+import uk.ac.ed.inf.aqmaps.simulation.Sensor;
+import uk.ac.ed.inf.aqmaps.simulation.planning.path.PathSegment;
+
+/**
+ * The output formatter formats and writes the given flight path and visualisation to a file
+ */
+<span class="nc" id="L18">public class OutputFormatter {</span>
+
+    /**
+     * Write flight path to given file
+     * @param flightPath 
+     * @param file
+     * @throws IOException
+     */
+    public static void writePath(Deque&lt;PathSegment&gt; flightPath, OutputStream file) throws IOException{
+
+        // open writer to the output stream
+<span class="fc" id="L29">        try(OutputStreamWriter writer = new OutputStreamWriter(file)){</span>
+            
+            // number of leftover segments
+<span class="fc" id="L32">            int segmentCount = flightPath.size();</span>
+            
+            // for each path segment writa a comma separated line
+<span class="fc bfc" id="L35" title="All 2 branches covered.">            for (PathSegment pathSegment : flightPath) {</span>
+
+                // start point - long,lat
+<span class="fc" id="L38">                Coordinate startPoint = pathSegment.getStartPoint();</span>
+<span class="fc" id="L39">                writer.write(String.format(&quot;%s,&quot;,startPoint.getX()));</span>
+<span class="fc" id="L40">                writer.write(String.format(&quot;%s,&quot;,startPoint.getY()));</span>
+
+                // direction - int
+<span class="fc" id="L43">                int direction = pathSegment.getDirection();</span>
+<span class="fc" id="L44">                writer.write(String.format(&quot;%s,&quot;,direction));</span>
+
+                // end point - long,lat
+<span class="fc" id="L47">                Coordinate endPoint = pathSegment.getEndPoint();</span>
+<span class="fc" id="L48">                writer.write(String.format(&quot;%s,&quot;,endPoint.getX()));</span>
+<span class="fc" id="L49">                writer.write(String.format(&quot;%s,&quot;,endPoint.getY()));</span>
+
+                // location of connected sensor, or null if none read
+<span class="fc" id="L52">                Sensor readSensor = pathSegment.getSensorRead();</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">                writer.write(readSensor == null ? &quot;null&quot; : readSensor.getW3WLocation());</span>
+
+                // this will be 0 when we just processed last segment
+<span class="fc" id="L56">                segmentCount -= 1;</span>
+
+                // write newline character after each line except the last one
+<span class="fc bfc" id="L59" title="All 2 branches covered.">                if(segmentCount != 0)</span>
+<span class="fc" id="L60">                    writer.write(&quot;\n&quot;);</span>
+
+<span class="fc" id="L62">            }</span>
+        }
+
+        // resources will be disposed off automatically via try block
+<span class="fc" id="L66">    }</span>
+
+    /**
+     * Write geojson readings visualisation to the given file
+     * @param readingsMap
+     * @param file
+     * @throws IOException
+     */
+    public static void writeReadingsMap(FeatureCollection readingsMap,OutputStream file) throws IOException{
+        
+        // open writer to the output stream
+<span class="fc" id="L77">        try(OutputStreamWriter writer = new OutputStreamWriter(file)){</span>
+            
+            // convert feature collection to json and dump it to the output stream
+<span class="fc" id="L80">            writer.write(readingsMap.toJson());</span>
+        }
+
+        // resources will be disposed off automatically via try block
+<span class="fc" id="L84">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

@@ -10,5 +10,5 @@ public interface PathfindingGoal {
     /**
      * @return Returns the spatial position of the pathfinding goal
      */
-    public Coordinate getPosition();
+    public Coordinate getCoordinates();
 }
