@@ -59,10 +59,25 @@
       <artifactId>commons-collections</artifactId>
       <version>3.2.1</version>
     </dependency>
+    <!-- javadocs -->
+    <dependency>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-javadoc-plugin</artifactId>
+      <version>3.2.0</version>
+      <type>maven-plugin</type>
+    </dependency>
 
   </dependencies>
   <build>
     <plugins> 
+      <plugin>
+        <!-- javadocs -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.2.0</version>
+        <configuration>
+        </configuration>
+      </plugin>
         <!-- surefire plugin to handle junit 5 -->
       <plugin>
           <groupId>org.apache.maven.plugins</groupId>

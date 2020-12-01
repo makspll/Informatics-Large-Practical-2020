@@ -5,6 +5,20 @@
 \usepackage{float}
 \usepackage[margin=0.7in]{geometry}
 \usepackage{amsmath}
+\usepackage[hidelinks]{hyperref}
+\usepackage{enumitem}% http://ctan.org/pkg/enumitem
+\usepackage{multicol}
+\usepackage{multienum}
+\setlist{nolistsep}
+\setlist{nosep}
+
+
+\newenvironment{mitem}{%
+  \multienumerate\renewcommand{\labelname}{\textbullet}%
+}{%
+  \endmultienumerate%
+}
+
 \DeclareMathOperator*{\argmax}{arg\,max}
 \DeclareMathOperator*{\argmin}{arg\,min}
 
@@ -163,7 +177,7 @@ The usage of the AttributeMap interface allows for a lot of flexibility in the w
     \caption{UML diagram of the Simulation module}
     \label{fig:simulation}
 \end{figure}
-\section{Class Documentation}
+
 \section{Drone Control Algorithm}
 \subsection{TSP Solver}
 
@@ -388,6 +402,168 @@ The hardest and easiest collection days' geojson visualisations are shown below 
 
 The artifacts of path segmenting are evident in the harder day, where the drone wanders near closely spaced sensors on the bottom right it creates a horizontal 
 proxy segment. But overall the algorithm manages very well, never carrying out the collection in more than 111 moves and averaging at 90 moves $\pm$ 6.7. Execution times averaged at 103ms.
+
+\section{Class Documentation}
+
+\subsection{Quicklinks}
+\hyperref[sec:aqmaps]{aqmaps}\\
+\hyperref[sec:aqmaps.client]{aqmaps.client}\\
+\hyperref[sec:aqmaps.client.data]{aqmaps.client.data}\\
+\hyperref[sec:aqmaps.pathfinding]{aqmaps.pathfinding}\\
+\hyperref[sec:aqmaps.pathfinding.goals]{aqmaps.pathfinding.goals}\\
+\hyperref[sec:aqmaps.pathfinding.hashing]{aqmaps.pathfinding.hashing}\\
+\hyperref[sec:aqmaps.pathfinding.heuristics]{aqmaps.pathfinding.hashing.heuristics}\\
+\hyperref[sec:aqmaps.simulation]{aqmaps.simulation}\\
+\hyperref[sec:aqmaps.simulation.collection]{aqmaps.simulation.collection}\\
+\hyperref[sec:aqmaps.simulation.planning]{aqmaps.simulation.planning}\\
+\hyperref[sec:aqmaps.simulation.planning.collectionOrder]{aqmaps.simulation.planning.collectionOrder}\\
+\hyperref[sec:aqmaps.simulation.planning.collectionOrder.optimisers]{aqmaps.simulation.planning.collectionOrder.optimisers}\\
+\hyperref[sec:aqmaps.simulation.planning.path]{aqmaps.simulation.planning.path}\\
+\hyperref[sec:aqmaps.utilities]{aqmaps.utilities}\\
+\hyperref[sec:aqmaps.visualisation]{aqmaps.visualisation}\\
+
+\subsection{Documentation}
+
+\subsubsection{aqmaps}
+\label{sec:aqmaps}
+\small
+
+\subparagraph{App}
+Application which organises the collection of air quality data and visualises it
+\hrule
+\begin{itemize}[noitemsep]
+    \item static void \textbf{main}(String[] args) - launches the program with the given arguments.
+        \subitem args - an array of string arguments the first 7 must correspond (in order) to:
+            \subsubitem - day of collection 
+            \subsubitem - month of colleciton 
+            \subsubitem - year of collection
+            \subsubitem - starting latitude
+            \subsubitem - starting longitude
+            \subsubitem - random seed
+            \subsubitem - port number of the web server
+\end{itemize}
+
+\subsubsection{aqmaps.client}
+\label{sec:aqmaps.client}
+
+\subparagraph{AQSensor} An implementation of the Sensor interface for consumption in the simulation module. Conveniently can be formed from sensor and address data corresponding to the data received via API client.
+\\
+
+Implements \textbf{Sensor}, \textbf{PathfindingGoal}
+\hrule
+
+\begin{mitem}
+    \scriptsize
+    \mitemxx{\textbf{AQSensor}(SensorData sensorData, W3WAddressData w3WAddressData)}
+    {Construct new AQ sensor from sensor data representing the sensor's readings and battery information, and with the address data containing the w3w address words and coordinates of the sensor}
+
+    \mitemxx{String \textbf{hasBeenRead}()}
+    {returns true if this sensor has been read}
+    \mitemxx{String \textbf{setHaveBeenRead}()}
+    {Sets the sensor "read" state to the given argument}
+    \mitemxx{float  \textbf{getBatteryLevel}()}
+    { returns the battery level at this sensor provided it has been read}
+    \mitemxx{jts::Coordinate   \textbf{getCoordinates}()}
+    {returns the long,lat coordinates of the sensor}
+    \mitemxx{float \textbf{getReading}()}
+    {returns the reading at this sensor provided it has been read}
+    \mitemxx{String \textbf{getW3WLocation}()}
+    {returns the 3 word address (w3w) of this sensor}
+\end{mitem}
+
+
+\subparagraph{AQWebServerClient} The web server client communicates with a server which contains the air quality information and retrieves/parses/validates it
+\\
+
+Implements \textbf{ClientService}
+\hrule
+
+\begin{mitem}
+    \scriptsize
+    \mitemxx{\textbf{AQWebServerClient}(HttpClient client, URI APIBaseURI)}
+    {Construct a new web server client served via the given http client and the api uri}
+    \mitemxx{mapbox::FeatureCollection \textbf{fetchBuildings}}
+    {Retrieves the feature collection of all the no-fly zones available from the server}
+    \mitemxx{List$<$SensorData$>$ \textbf{fetchSensorsForDate}(LocalDate date)}
+    {Retrieves the data of all sensors to be collected on the given date}
+    \mitemxx{W3WAddressData \textbf{fetchW3WAddress}(String wordAddress)}
+    {Retrieves the detailed data on the given what-3-words address}
+\end{mitem}
+
+
+\subsubsection{aqmaps.client.data}
+\label{sec:aqmaps.client.data}
+
+\subparagraph{SensorData} Object representing the reading, battery and location data of a sensor
+\hrule
+
+\begin{mitem}
+    \scriptsize
+    \mitemxx{\textbf{SensorData}(String W3WLocation, float battery, float reading)}
+    {Constructs a new sensor data object}
+    \mitemxx{getters for all attributes}
+    {-}
+\end{mitem}
+
+\subparagraph{W3WAddressData} An object containing information about a what-3-word square.
+\hrule
+
+\begin{mitem}
+    \scriptsize
+    \mitemxx{\textbf{W3WAddressData}(String country, W3WSquareData square, String nearestPlace, mapbox::Point coordinates, String words, String language, String map)}
+    {Constructs a new W3WAddress data object}
+    \mitemxx{getters for all attributes}
+    {-}
+\end{mitem}
+
+\subparagraph{W3WSquareData} Object representing information about a what-3-words square's coordinates.
+\hrule
+
+\begin{mitem}
+    \scriptsize
+    \mitemxx{\textbf{W3WSquareData}(mapbox::Point southwest, mapbox::Point northeast)}
+    {Constructs a new W3WSquare data object}
+    \mitemxx{getters for all attributes}
+    {-}
+\end{mitem}
+
+\subsubsection{aqmaps.pathfinding}
+\label{sec:aqmaps.pathfinding}
+
+\subsubsection{aqmaps.pathfinding.goals}
+\label{sec:aqmaps.pathfinding.goals}
+
+\subsubsection{aqmaps.pathfinding.hashing}
+\label{sec:aqmaps.pathfinding.hashing}
+
+\subsubsection{aqmaps.pathfinding.heuristics}
+\label{sec:aqmaps.pathfinding.heuristics}
+
+\subsubsection{aqmaps.simulation}
+\label{sec:aqmaps.simulation}
+
+\subsubsection{aqmaps.simulation.collection}
+\label{sec:aqmaps.simulation.collection}
+
+\subsubsection{aqmaps.simulation.planning}
+\label{sec:aqmaps.simulation.planning}
+
+\subsubsection{aqmaps.simulation.planning.collectionOrder}
+\label{sec:aqmaps.simulation.planning.collectionOrder}
+
+\subsubsection{aqmaps.simulation.planning.collectionOrder.optimisers}
+\label{sec:aqmaps.simulation.planning.collectionOrder.optimisers}
+
+\subsubsection{aqmaps.simulation.planning.path}
+\label{sec:aqmaps.simulation.planning.path}
+
+\subsubsection{aqmaps.utilities}
+\label{sec:aqmaps.utilities}
+
+\subsubsection{aqmaps.visualisation}
+\label{sec:aqmaps.visualisation}
+
+\normalsize
 \begin{thebibliography}{9}
 
 \bibitem{metric-tsp} 

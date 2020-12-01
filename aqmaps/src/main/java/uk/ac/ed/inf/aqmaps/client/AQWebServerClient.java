@@ -28,7 +28,7 @@ import java.lang.reflect.Type;
 
 
 /**
- * The web server client communicates with a server which contains the necessary information and retrieves it
+ * {The web server client communicates with a server which contains the necessary information and retrieves it}
  */
 public class AQWebServerClient implements ClientService{
 

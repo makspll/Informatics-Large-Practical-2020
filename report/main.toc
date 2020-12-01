@@ -1,0 +1,35 @@
+\contentsline {section}{\numberline {1}Software Architecture}{1}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Client module}{1}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}Pathfinding module}{1}{subsection.1.2}%
+\contentsline {subsection}{\numberline {1.3}Simulation module}{2}{subsection.1.3}%
+\contentsline {subsection}{\numberline {1.4}Visualisation module}{3}{subsection.1.4}%
+\contentsline {section}{\numberline {2}Drone Control Algorithm}{6}{section.2}%
+\contentsline {subsection}{\numberline {2.1}TSP Solver}{6}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Generating neighbour nodes}{6}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Pathfinding}{7}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}Path segmenting}{8}{subsection.2.4}%
+\contentsline {subsection}{\numberline {2.5}Examples}{9}{subsection.2.5}%
+\contentsline {section}{\numberline {3}Class Documentation}{10}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Quicklinks}{10}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Documentation}{10}{subsection.3.2}%
+\contentsline {subsubsection}{\numberline {3.2.1}aqmaps}{10}{subsubsection.3.2.1}%
+\contentsline {subparagraph}{App}{10}{section*.2}%
+\contentsline {subsubsection}{\numberline {3.2.2}aqmaps.client}{11}{subsubsection.3.2.2}%
+\contentsline {subparagraph}{AQSensor}{11}{section*.3}%
+\contentsline {subparagraph}{AQWebServerClient}{11}{section*.4}%
+\contentsline {subsubsection}{\numberline {3.2.3}aqmaps.client.data}{11}{subsubsection.3.2.3}%
+\contentsline {subparagraph}{SensorData}{11}{section*.5}%
+\contentsline {subparagraph}{W3WAddressData}{11}{section*.6}%
+\contentsline {subparagraph}{W3WSquareData}{11}{section*.7}%
+\contentsline {subsubsection}{\numberline {3.2.4}aqmaps.pathfinding}{12}{subsubsection.3.2.4}%
+\contentsline {subsubsection}{\numberline {3.2.5}aqmaps.pathfinding.goals}{12}{subsubsection.3.2.5}%
+\contentsline {subsubsection}{\numberline {3.2.6}aqmaps.pathfinding.hashing}{12}{subsubsection.3.2.6}%
+\contentsline {subsubsection}{\numberline {3.2.7}aqmaps.pathfinding.heuristics}{12}{subsubsection.3.2.7}%
+\contentsline {subsubsection}{\numberline {3.2.8}aqmaps.simulation}{12}{subsubsection.3.2.8}%
+\contentsline {subsubsection}{\numberline {3.2.9}aqmaps.simulation.collection}{12}{subsubsection.3.2.9}%
+\contentsline {subsubsection}{\numberline {3.2.10}aqmaps.simulation.planning}{12}{subsubsection.3.2.10}%
+\contentsline {subsubsection}{\numberline {3.2.11}aqmaps.simulation.planning.collectionOrder}{12}{subsubsection.3.2.11}%
+\contentsline {subsubsection}{\numberline {3.2.12}aqmaps.simulation.planning.collectionOrder.optimisers}{12}{subsubsection.3.2.12}%
+\contentsline {subsubsection}{\numberline {3.2.13}aqmaps.simulation.planning.path}{12}{subsubsection.3.2.13}%
+\contentsline {subsubsection}{\numberline {3.2.14}aqmaps.utilities}{12}{subsubsection.3.2.14}%
+\contentsline {subsubsection}{\numberline {3.2.15}aqmaps.visualisation}{12}{subsubsection.3.2.15}%
