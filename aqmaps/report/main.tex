@@ -1,8 +1,13 @@
 \documentclass[10pt,a4paper]{article}
 
+\usepackage{listings}
 \usepackage{graphicx}
 \usepackage{float}
 \usepackage[margin=0.7in]{geometry}
+\usepackage{amsmath}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
 \begin{document}
 
 \pagenumbering{Roman}
@@ -160,5 +165,242 @@ The usage of the AttributeMap interface allows for a lot of flexibility in the w
 \end{figure}
 \section{Class Documentation}
 \section{Drone Control Algorithm}
+\subsection{TSP Solver}
+
+\lstdefinestyle{mystyle}{
+    % backgroundcolor=\color{backcolour},
+    % commentstyle=\color{codegreen},
+    % keywordstyle=\color{magenta},
+    % numberstyle=\tiny\color{codegray},
+    % stringstyle=\color{codepurple},
+    % basicstyle=\ttfamily\footnotesize,
+    % breakatwhitespace=false,
+    % breaklines=true,
+    % captionpos=b,
+    % keepspaces=true,
+    % numbers=left,
+    % numbersep=5pt,
+    % showspaces=false,
+    % showstringspaces=false,
+    % showtabs=false,
+    % tabsize=2,
+    % numberfirstline=false,
+    mathescape,
+    literate=
+        {=}{$\leftarrow{}$}{1}
+        {==}{$={}$}{1}
+        {!=}{$\neq$}{1}
+        {leq}{$\leq{}$}{1}
+        {nullset}{$\emptyset$}{1}
+        {geq}{$\geq{}$}{1},
+    morekeywords={Let,While,ArgMax,ArgMin, Function, For, If, return, Return, Algorithm, Skip},
+}
+
+\begin{figure}[H]
+    \begin{lstlisting}[style=mystyle]
+        Algorithm NearestInsertion:
+            Let R be the sensor nearest to the starting point
+            Let U = unvisited sensors
+            Let T = [R] be the current tour (implicitly looping)
+
+            While U != nullset:
+                R = $\argmin_{s\in R}$ distanceToTour(s) 
+                i = $\argmin_{i\in I(T)}$ insertionCost(i,R)
+                T = T with R inserted at i
+                U = U - {R}
+            
+            Return T
+
+        Function distanceToTour(s):
+            minimum = $\infty$
+            For t in T:
+                If dist(s,t) < minimum:
+                    minimum = dist(s,t)
+            Return minimum
+        
+        Function insertionCost(i,s):
+            N = T with s inserted at i
+            Return euclidian length of N
+        
+
+    \end{lstlisting}
+    \caption{Nearest Insertion TSP solver}
+    \label{alg:ni}
+\end{figure}
+
+The more general part of the problem is selecting the collection order of the sensors on any given day.
+Assuming the drone already has the data for the appropriate collection day, it must decide on a visiting order of the sensors.
+\par 
+For this part many techniques were tried, and experimentation proved that applying the Nearest Insertion heuristic together with a euclidian distance matrix was an adequate solution. 
+At each step we chose the sensor which is closest to one of the sensors present in the tour already - the first sensor is the one nearest to the starting point -, and insert it in a way which minimises the cost.
+If U is the set of unvisited sensors and T is set of sensors in the tour, at each step we pick the sensor s such that:
+\begin{equation}
+    \exists s,\exists k \in T,\forall o\in U.distance(s,k) < distance(o,k)
+\end{equation} 
+and insert it into the tour between consecutive sensors $i,j \in T$ such that the cost of the tour is minimized.
+\\
+Following this initial pass, 2-opt optimisations are applied to the route to remove crossings in the graph and further reduce the cost.
+The 2-opt algorithm in each pass checks if reversing any sub-segment of all possible sub-segments of a full tour reduces it's cost, and if so keeps the reversal. 
+The passes are repetead until improvements fall under a threshold of 0.00003 degrees
+
+This alrogithm turns out to be pareto-optimal \cite{metric-tsp} among a family of cutting-edge algorithms for problem sizes of between 30-50 vertices.
+Pareto-optimality means that this algorithm was either finding the best path compared to the other algorithms, or was finding one the quickest. It also happens that 
+this algorithm is just a variation of Prim's algorithm as in this process we find the minimum spanning tree of the implicit graph, therefore Nearest insertion is actually a 
+2-approximation algorithm \cite{2-approximation-ni} of the optimal solution.
+\subsection{Generating neighbour nodes}
+All the other sections of the algorithm make use of the "neighbour" function, i.e. the function which generates neighbour nodes for any node representing 
+a point on the map.
+
+This is done using the Bounding Volume Hierarchy data structure. The structure allows for logarithmic time lookups of possibly colliding obstacles (with any shape).
+We do this by creating a binary tree whose nodes are defined by an Axis Aligned Bounding Volume enveloping all the obstacles present in the leaf nodes underneath the node.
+The root node then envelops all the obstacles present in the hierarchy.
+\par
+When creating the tree we find the axis along which the difference between the extremal coordinates of the AABB's is the largest, i.e. the "longest axis".
+We then pick a splitting point on the axis and partition the shapes into the left and right sub trees according to which side of the splitting point they're on.
+\par 
+With this setup, the structure can tell us which obstacles are possibly colliding with any given shape by checking for collisions (cheaply) with the AABB's and only returning those leafs whose AABB's were collided with (possibly from both subtrees).
+
+\subsection{Pathfinding}
+\begin{figure}[H]
+    \begin{lstlisting}[style=mystyle]
+        Algorithm A*:
+            Let R = starting node
+            let G = goal coordinates
+            Let O = {R} // open set
+            Let V = {} // approximately visited
+            
+            While O != nullset:
+                R = $\argmin_{o\in O}$ Fvalue(o)
+                O = O - R
+
+                If isNearGoal(R):
+                    R.goalsReached = R.goalsReached + G
+                    Return reconstructPath(R) // using parent references
+
+                // generate neighbour nodes with appropriate costs and parent set to R
+                // nodes colliding with obstacles or outside of boundary are excluded
+                // this is done via Bounding Volume Hierarchies
+                N = neighbours(R) 
+
+                For n in N:
+                    
+                    hash = cantorHash(n.x,n.y)
+
+                    If hash in V:
+                        Skip n
+                    
+                    V = V + hash
+                    O = O + n
+            
+            // no path found
+            Return []
+
+        Function Fvalue(n):
+            Return dist(n,G)*1.5 + cost(n)
+
+        Function cantorHash(x,y):
+            Let gridWidth = $\frac{1}{75} * 0.0003 $
+            Let gridX,gridY = coordinates of center of drone confinement area 
+            nx,ny = (x - gridX)/gridWidth,(y - gridY)/gridWidth
+            nx,ny = makePositive($\lfloor nx \rfloor$),makePositive($\lfloor ny \rfloor$)
+
+            return $\lfloor$(((0.5 * (nx + ny)) * (nx + ny + 1)) + ny)$\rfloor$;
+        
+        Function makePositive(n):
+            If n $\geq$ 0:
+                Return $2n$
+            Otherwise:
+                Return $-2n - 1$
+               
+            
+            
+    \end{lstlisting}
+    \caption{Custom A* pathfinding algorithm}
+    \label{alg:a*}
+\end{figure}
+
+Pathfinding between any two points on the plane was carried out using the A* tree search algorithm with the euclidian distance heuristic. 
+The algorithm is just a modified breadth-first search, where the search nodes are picked in order of least f value which is defined as:
+\begin{equation}
+    f(n) = h(n) + c(n)
+\end{equation}
+with $c(n)$ is the cost of reaching the node n from the start state, and $h(n)$ is the approximation of the cost of reaching the goal state from the node n.
+Assuming that the node in the search frontier with the smallest f value is always expanded and that the heuristic is admissible A* will return the optimal path.
+
+A naive application of A* could not work however due to floating-point error causing the expansion of a lot of poor nodes and the sheer amount of nodes present in the frontier at any time. 
+The straight-line-distance heuristic was relaxed and the new definition was the following:
+\begin{equation}
+    h(n) = distance(n,g) * 1.5
+\end{equation}
+This makes nodes closer to the goal receive much smaller heuristic values and so more direct paths to the goal are expanded first. 
+This means that the returned paths are no longer optimal as the heuristic is no longer admissible, but since most paths would not be obstucted by buildings - this
+change does not actually impact the length of the paths all that much.
+
+Another change was the addition of a spatial hash to try and prune nodes which were approximately visited, by finding out 
+their coordinates relative to a grid centered around the center of the boundary (with integer width square size), and hashing those coordinates
+using a modified cantor pairing allowing for negative values
+
+\subsection{Path segmenting}
+Once we have a path of individual points, we need to convert it to a path of path segments with information about which sensor is read at each segment.
+We can do this by "sliding" a window over the points and always looking at two points at a time in order. 
+We call the points at each position of the windo P and N, where P is the point before N. 
+The pathfinding algorithm also attaches a deque of sensors reached by each P/N.  
+Multiple conversion problems arise when naively pairing up the points to create segments:
+
+\begin{itemize}
+    \item P or N may reach multiple sensors which is invalid, each P-N segment must only allow for one reading
+    \item The list of points might be empty if no path is found
+    \item P might reach a sensor which is illegal, only N's in each segment are allowed to read sensors (since an N point always occurs at the end of a move)
+\end{itemize}
+
+\noindent The empty list of points can be prevented by simply returning no path segments, 
+the rest of the problems can be defeated if we apply a number of rules in order (portrayed in Figure \ref{fig:segmenting}):
+\begin{itemize}
+    \item While P attains a goal, create a proxy segment to any neighbouring node, and one back, assign the first sensor attained by P 
+        to the newest back-facing segment's N node
+    \item If N attains no goals, see if the next segment's P node attains any sensors, if so "steal" one away from it
+    \item while N attains more than one sensor reduce the number of attained sensors by creating proxy segments as above for each
+    \item If N only attains one sensor or none, create P-N path segment as normal
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\columnwidth]{diagrams/diagram.pdf}
+    \caption{Segmenting behaviours}
+    \label{fig:segmenting}
+\end{figure}
+
+\subsection{Examples}
+The algorithm was tested on over 35000 configurations over the data provided. 
+The hardest and easiest collection days' geojson visualisations are shown below (with the algorithm set to optimal parameters as given above) 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\columnwidth]{diagrams/hard-day.png}
+    \caption{geojson.io rendering of hardest collection at day 9-2-2020 with a starting point of -3.19087,55.945778, with 111 moves}
+    \label{fig:simulation}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\columnwidth]{diagrams/easy-day.png}
+    \caption{geojson.io rendering of easiest collection at day 2-1-2021 with a starting point of -3.1878,55.9444, with 46 moves}
+    \label{fig:simulation}
+\end{figure}
+
+The artifacts of path segmenting are evident in the harder day, where the drone wanders near closely spaced sensors on the bottom right it creates a horizontal 
+proxy segment. But overall the algorithm manages very well, never carrying out the collection in more than 111 moves and averaging at 90 moves $\pm$ 6.7. Execution times averaged at 103ms.
+\begin{thebibliography}{9}
+
+\bibitem{metric-tsp} 
+The Metric Travelling Salesman Problem:
+The Experiment on Pareto-optimal
+Algorithms,
+Sergey Avdoshin, E.N.Beresneva
+2017.
+\bibitem{2-approximation-ni} 
+https://aswani.ieor.berkeley.edu/teaching/FA13/151/lecture\_notes/ieor151\_lec17.pdf,
+The Traveling Salesman Problem
+Professor Z. Max Shen
+
+\end{thebibliography}
 
 \end{document}
