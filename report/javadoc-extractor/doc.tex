@@ -1,0 +1,579 @@
+\subsubsection{ .ac.ed.inf.aqmaps.visualisation }
+\subparagraph{ AttributeMap } Attribute maps divide their domain into attribute buckets and allow for quick retrieval of the necessary attributes
+ 
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ C getFor  } (T o)}
+	{Retrieve attribute for the given input}
+\end{mitem}
+
+\subparagraph{ MarkerSymbol } Available symbols for use with geojson
+ 
+\hrule
+
+\subparagraph{ SensorCollectionVisualiser } Classes implementing this interface generate geojson visualisations of the flight path and sensor readings
+ 
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ com.mapbox.geojson.FeatureCollection plotMap  } (Deque<PathSegment> flightPathCollection<Sensor> sensorsToBeVisited)}
+	{Create a geojson visualisation of the given flight path and sensors with their readings}
+\end{mitem}
+
+\subparagraph{ UniformAttributeMap } A general attribute map which maps a range of values from a (min,max) range to attribute buckets of size (max-min)/buckets number uniformly.
+ 
+Implements \textbf{ AttributeMap }
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ public UniformAttributeMap  } (Float minFloat maxC... attributes)}
+	{}
+	\mitemxx{ \textbf{ public C getFor  } (Float value)}
+	{Retrieve attribute for the given input}
+\end{mitem}
+
+\subsubsection{ .ac.ed.inf.aqmaps.utilities }
+\subparagraph{ BVHNode } Bounding Volume Hierarchy Node. This class forms a tree of AABB (Axis aligned bounding boxes) for internal nodes
+ and of any shapes at the leaf nodes. Allows for quick broad phase collision checks between objects. Will never return a false negative but might return
+ false positives. I.e. this structure only tells you which objects are possibly colliding (whose AABB's intersect).
+ 
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ public BVHNode  } (Collection<T> shapes)}
+	{Construct a new bvh hierarchy with the given shapes at the leaf nodes}
+	\mitemxx{ \textbf{ public Collection<T> getPossibleCollisions  } (org.locationtech.jts.geom.Geometry other)}
+	{Retrieves all possibly coliding objects (their bounding boxes intersect) from within the tree.}
+\end{mitem}
+
+\subparagraph{ GeometryFactorySingleton } The geometry factory containing the precision model to be used when generating geometries with JTS
+ 
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ public GeometryFactorySingleton } ()}
+	{}
+	\mitemxx{ \textbf{ public static org.locationtech.jts.geom.GeometryFactory getGeometryFactory } ()}
+	{Retrieve the geometry factory, containing the precision model}
+\end{mitem}
+
+\subparagraph{ GeometryUtilities } A collection of utility geometry methods
+ 
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ public GeometryUtilities } ()}
+	{}
+	\mitemxx{ \textbf{ public static org.locationtech.jts.geom.Coordinate MapboxPointToJTSCoordinate  } (com.mapbox.geojson.Point p)}
+	{Convert a mapbox point to a jts coordinate}
+\end{mitem}
+
+\subparagraph{ MathUtilities } 
+ 
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ public MathUtilities } ()}
+	{}
+	\mitemxx{ \textbf{ public static double angleFromEast  } (org.locationtech.jts.math.Vector2D a)}
+	{returns the angle from the eastern direction clockwise between 0 and 360 of the vector}
+\end{mitem}
+
+\subparagraph{ Shape } Anything which contains a shape can implement this interface. Shapes can be polygons, or absolutely any other geometry
+ 
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ org.locationtech.jts.geom.Geometry getShape } ()}
+	{Return this shape's geometry}
+\end{mitem}
+
+\subsubsection{ .ac.ed.inf.aqmaps.simulation.planning.path }
+\subparagraph{ BasePathPlanner } Base class for planners with a limited number of maximum moves and a
+ minimum reading range. All inheriting path planners must make sure that each sensor is read at the endpoint of some path segment
+ and that that sensor is within reading range of the endpoint. They also must make sure that the path is under the maximum move limit
+ 
+Implements \textbf{ PathPlanner }
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ public BasePathPlanner  } (double readingRangeint maxMovesPathfindingAlgorithm<DirectedSearchNode> algorithm)}
+	{}
+	\mitemxx{ \textbf{ public Deque<PathSegment> planPath  } (org.locationtech.jts.geom.Coordinate startCoordinateDeque<Sensor> routeConstrainedTreeGraph graphboolean formLoop)}
+	{Plans the exact path required to reach all the given sensors, the specific constraints on placed on the route are decided\newline%
+ by the specific implementation of the planner itself.\newline%
+ The ConstrainedPathPlanner class adds a maximum move,reading range and also the move sequence constraint to the path planning problem, a valid path will allow the collector\newline%
+ to come within READING\_RANGE of each sensor (the distance between each sensor and the collector at some path segment's endpoint will be less than or equal to READING\_RANGE).\newline%
+ The number of segments returned will always be <= MAX\_MOVES. The move sequence in each path segment requires that a sensor be read at the end of each path segment only, i.e. the collector must move before collecting\newline%
+ any reading, and only one reading must be made per path segment.}
+\end{mitem}
+
+\subparagraph{ PathPlanner } Path planners create a detailed path between given route points which takes a sensor data collector 
+ between the route points according to the path planner's constraints
+ 
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ Deque<PathSegment> planPath  } (org.locationtech.jts.geom.Coordinate startCoordinateDeque<Sensor> routeConstrainedTreeGraph graphboolean formLoop)}
+	{Plans the exact path required to reach all the given sensors, the specific constraints on placed on the route are decided\newline%
+ by the specific implementation of the planner itself.}
+\end{mitem}
+
+\subparagraph{ PathSegment } represents a singular move made by the sensor data collector
+ each move follows the pattern of: move->collect reading, 
+ we cannot collect a reading in a move unless we have moved
+ 
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ public PathSegment  } (org.locationtech.jts.geom.Coordinate startPointint directionorg.locationtech.jts.geom.Coordinate endPointSensor sensorRead)}
+	{Creates a path segment from the start and end points, the direction of movement and the sensor read if any}
+	\mitemxx{ \textbf{ public org.locationtech.jts.geom.Coordinate getStartPoint } ()}
+	{}
+\end{mitem}
+
+\subparagraph{ SimplePathPlanner } This path planner will apply some simple optimisations in order to produce a smaller number of path segments than the naive implementation.
+ 
+Implements \textbf{ PathPlanner }
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ public SimplePathPlanner  } (double readingRangeint maxMovesPathfindingAlgorithm<DirectedSearchNode> algorithm)}
+	{}
+	\mitemxx{ \textbf{ protected Deque<PathSegment> pathPointsToSegmentsStrategy  } (Deque<DirectedSearchNode> pathPointsDeque<PathfindingGoal> goalsRouteDeque<Sensor> sensorRouteConstrainedTreeGraph graph)}
+	{The main defining characteristic of a constrained path planner. Converts a path of points to a path of path segments\newline%
+ needs to make sure that each pathfinding goal is visited only in the end segment of some path segment in range.\newline%
+ the passed deque arguments will be consumed. This planner will try to perform some simple optimisations in order to shorten the route.\newline%
+ In order to produce a valid route this planner will introduce proxy segments which go back and forth between the nearest neighbour\newline%
+ whenever a sensor is read at the start point of a segment or if more than one sensor is read at the endpoint. The optimisations currently include:\newline%
+  \newline%
+ 1) if the current segment does not read anything at the end point and the next reads a sensor at its start point, we "absorb" that sensor into\newline%
+ the current segment.}
+\end{mitem}
+
+\subsubsection{ .ac.ed.inf.aqmaps.simulation.planning.collectionOrder.optimisers }
+\subparagraph{ CollectionOrderOptimiser } Collection order optimisers provide re-usable methods for optimising a route after one is already selected
+ 
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ void optimise  } (DistanceMatrix distanceMatrixint{[}{]} path)}
+	{}
+\end{mitem}
+
+\subparagraph{ Optimiser2Opt } An optimiser which performs the 2-opt algorithm to remove crossings in the path
+ 
+Implements \textbf{ CollectionOrderOptimiser }
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ public Optimiser2Opt  } (double epsilon)}
+	{Construct a 2 opt optimiser with the given epsilon threshold. The threshold determines the minimum decrease in path cost required for the optimiser to keep optimising each loop.}
+	\mitemxx{ \textbf{ public void optimise  } (DistanceMatrix distanceMatrixint{[}{]} path)}
+	{}
+\end{mitem}
+
+\subsubsection{ .ac.ed.inf.aqmaps.simulation.planning.collectionOrder }
+\subparagraph{ BaseCollectionOrderPlanner } Collection order planners generate good traversal orders between the given set of sensors,
+ where "good" criteria are defined by each implementation of the collection planner.
+ 
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ public BaseCollectionOrderPlanner  } (Collection<CollectionOrderOptimiser> optimisersDistanceMatrix distMat)}
+	{Creates a collection order planner with the given opimisers and distance matrix method}
+	\mitemxx{ \textbf{ public Deque<Sensor> planRoute  } (Sensor startSensorSet<Sensor> sensorsboolean formLoop)}
+	{Generates a collection order over the sensors.}
+\end{mitem}
+
+\subparagraph{ GreedyCollectionOrderPlanner } Plans a collection of sensor data in a greedy order and in a way that forms a loop, 
+ i.e. by picking the closest sensor at each step.
+ 
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ public GreedyCollectionOrderPlanner  } (Collection<CollectionOrderOptimiser> optimiserDistanceMatrix distMat)}
+	{}
+	\mitemxx{ \textbf{ protected int{[}{]} planInitialRoute  } (int startSensorIdxSensor{[}{]} sensorsDistanceMatrix distanceMatrixboolean formLoop)}
+	{Description copied from class:~BaseCollectionOrderPlanner}
+\end{mitem}
+
+\subparagraph{ NearestInsertionCollectionOrderPlanner } Collection order planner which employs the nearest insertion method to try and pick the best route.
+ 
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ public NearestInsertionCollectionOrderPlanner  } (Collection<CollectionOrderOptimiser> optimisersDistanceMatrix distMat)}
+	{}
+	\mitemxx{ \textbf{ protected int{[}{]} planInitialRoute  } (int startSensorIdxSensor{[}{]} sensorsDistanceMatrix distanceMatrixboolean formLoop)}
+	{Drafts a route between the given sensors, using the given matrix. If form loop is true then the route will also begin and end on the same sensor. The route is planned using the nearest insertion heuristic.}
+\end{mitem}
+
+\subsubsection{ .ac.ed.inf.aqmaps.simulation.planning }
+\subparagraph{ ConstrainedTreeGraph } A graph which imposes angle, move length and boundary (+ obstacle) constraints for the nodes, and does not keep track of already produced nodes (tree search) i.e. a new node is returned each time
+ 
+Implements \textbf{ SearchGraph }
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ public ConstrainedTreeGraph  } (int minAngleint maxAngleint angleIncrementdouble moveLengthCollection<Obstacle> obstaclesorg.locationtech.jts.geom.Polygon boundary)}
+	{The angle system needs to allow for each possible angle to have a "complement angle" which takes\newline%
+ you back to where you started if you moved in its direction after steping in any possible angle.\newline%
+ the min and max angle need to cover a range of 360 degrees {-} the angle increment .}
+	\mitemxx{ \textbf{ public Collection<Obstacle> getObstacles } ()}
+	{Retrieve the obstacles present on the map}
+\end{mitem}
+
+\subparagraph{ DistanceMatrix } Class which stores distance information between sensors
+ 
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ public DistanceMatrix } ()}
+	{Creates new blank distance matrix}
+	\mitemxx{ \textbf{ public void setupDistanceMatrix  } (Sensor{[}{]} sensors)}
+	{Fills in the distance matrix with distance data for the given sensors}
+\end{mitem}
+
+\subparagraph{ EuclidianDistanceMatrix } Distance matrix using euclidian distance as the value for distances
+ 
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ public EuclidianDistanceMatrix } ()}
+	{}
+	\mitemxx{ \textbf{ protected double distanceMetric  } (Sensor aSensor b)}
+	{Description copied from class:~DistanceMatrix}
+\end{mitem}
+
+\subparagraph{ GreatestAvoidanceDistanceMatrix } Distance matrix using the greatest avoidance distance as the distance metric. This distance is calculated by forming a minimum bounding circle around all obstacles
+ between any two sensors and calculating the length of the path which "wraps" around the circle (approximated as a triangle)
+ 
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ public GreatestAvoidanceDistanceMatrix  } (Collection<Obstacle> obstacles)}
+	{initialize blank distance matrix with the given obstacles}
+	\mitemxx{ \textbf{ protected double distanceMetric  } (Sensor aSensor b)}
+	{Description copied from class:~DistanceMatrix}
+\end{mitem}
+
+\subsubsection{ .ac.ed.inf.aqmaps.simulation.collection }
+\subparagraph{ BaseDataCollector } Each data collector follows the same pattern, it uses a path planner to find a way between two points, as well as a collection order planner which
+ sets out the route around all the sensors. Each collector may use this data differently, for example it may discard the path given by a path planner under certain circumstances,
+ or change the route mid-way.
+ 
+Implements \textbf{ SensorDataCollector }
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ public BaseDataCollector  } (PathPlanner fpBaseCollectionOrderPlanner rp)}
+	{}
+\end{mitem}
+
+\subparagraph{ Drone } the drone collector is not constrained by the map layout, if the graph (or map) allows a node to be reached
+ the drone can fly through it, the graph itself may impose constraints indirectly, but the drone assumes absolutely no restrictions in its movements.
+ 
+Implements \textbf{ SensorDataCollector }
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ public Drone  } (PathPlanner fpBaseCollectionOrderPlanner rp)}
+	{}
+	\mitemxx{ \textbf{ public Deque<PathSegment> planCollection  } (org.locationtech.jts.geom.Coordinate startCoordinateSet<Sensor> sensorsConstrainedTreeGraph graphboolean formLoopint randomSeed)}
+	{Description copied from interface:~SensorDataCollector}
+\end{mitem}
+
+\subparagraph{ SensorDataCollector } Data collectors provide a method to generate an ordered collection of path segments which when followed
+ will lead to a successfull retrieval of sensor data.
+ 
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ Deque<PathSegment> planCollection  } (org.locationtech.jts.geom.Coordinate startPositionSet<Sensor> sensorsConstrainedTreeGraph graphboolean formLoopint randomSeed)}
+	{Plans the best order of visiting sensors (best being defined by the collector itself)\newline%
+ and creates a detailed ordered path segment collection which when followed will allow a successful collection. \newline%
+ The sensors returned will have their state set to either\newline%
+ read or not read, depending on whether they are reached within the path or not}
+\end{mitem}
+
+\subsubsection{ .ac.ed.inf.aqmaps.simulation }
+\subparagraph{ Building } An obstacle which has a polygonal shape
+ 
+Implements \textbf{ Obstacle }
+Implements \textbf{ Shape }
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ public Building  } (org.locationtech.jts.geom.Polygon shape)}
+	{initialize new building with the given shape}
+	\mitemxx{ \textbf{ public org.locationtech.jts.geom.Polygon getShape } ()}
+	{Retrieve the shape of the obstacle}
+\end{mitem}
+
+\subparagraph{ DirectedSearchNode } A data structure representing a tree search node for 
+ spatial pathfinding problems with integer angles.
+ 
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ public DirectedSearchNode  } (org.locationtech.jts.geom.Coordinate locationDirectedSearchNode parentint directionFromParentdouble cost)}
+	{Creates a new spatial tree search node which is fully specified apart from\newline%
+ the heuristic value}
+	\mitemxx{ \textbf{ public int getDirectionFromParent } ()}
+	{}
+\end{mitem}
+
+\subparagraph{ Sensor } Sensors contain a reading value and a battery level as well as the what 3 words location and coordinates of the sensor.
+ This sensor will contain placeholder values for readings and battery status untill it is set to have been read.
+ 
+Implements \textbf{ PathfindingGoal }
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ public Sensor  } (org.locationtech.jts.geom.Coordinate coordinatesfloat readingfloat batteryLevelString W3WLocation)}
+	{}
+	\mitemxx{ \textbf{ public boolean equals  } (Object o)}
+	{}
+\end{mitem}
+
+\subparagraph{ SensorDataCollectorFactory } A utility class for instantiating sensor data collectors with correct parameter values in one call
+ 
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ public SensorDataCollectorFactory } ()}
+	{}
+	\mitemxx{ \textbf{ public static SensorDataCollector createCollector  } (ConstrainedTreeGraph gdouble readingRangeint maxMovesSensorDataCollectorFactory.CollectorType collectorTypeSensorDataCollectorFactory.PathfindingHeuristicType heuristicTypeSensorDataCollectorFactory.CollectionOrderPlannerType plannerTypeSensorDataCollectorFactory.DistanceMatrixType matrixType)}
+	{Create a new collector within the given domain and with the given parameters.}
+\end{mitem}
+
+\subparagraph{ SensorDataCollectorFactory.CollectionOrderPlannerType } 
+ 
+\hrule
+
+\subparagraph{ SensorDataCollectorFactory.CollectorType } 
+ 
+\hrule
+
+\subparagraph{ SensorDataCollectorFactory.DistanceMatrixType } 
+ 
+\hrule
+
+\subparagraph{ SensorDataCollectorFactory.PathfindingHeuristicType } 
+ 
+\hrule
+
+\subsubsection{ .ac.ed.inf.aqmaps.pathfinding.heuristics }
+\subparagraph{ PathfindingHeuristic } Pathfinding heuristics are used to isolate "good" nodes to expand next in the search.
+ 
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ <T extends SearchNode<T>> double heuristic  } (T aPathfindingGoal b)}
+	{Returns the value of the heuristic between the given node and the goal. A heuristic must be \newline%
+ a) admissible {-} i.e. never overestimate the real cost of reaching the goal\newline%
+ b) consistent {-} i.e. follow the triangle inequality\newline%
+ Otherwise pathfinding algorithms might struggle to find a good solution or to even find one at all}
+\end{mitem}
+
+\subparagraph{ StraightLineDistance } The simplest heuristic, uses the euclidian distance between the node and its goal as the value of its heuristic.
+ 
+Implements \textbf{ PathfindingHeuristic }
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ public StraightLineDistance } ()}
+	{Initializes a new instance of the straight line heuristic with a relaxation factor of 1 (i.e. no relaxation)}
+	\mitemxx{ \textbf{ public <T extends SearchNode<T>> double heuristic  } (T aPathfindingGoal b)}
+	{Returns the value of the heuristic between the given node and the goal. A heuristic must be \newline%
+ a) admissible {-} i.e. never overestimate the real cost of reaching the goal\newline%
+ b) consistent {-} i.e. follow the triangle inequality\newline%
+ Otherwise pathfinding algorithms might struggle to find a good solution or to even find one at all}
+\end{mitem}
+
+\subsubsection{ .ac.ed.inf.aqmaps.pathfinding.hashing }
+\subparagraph{ GridSnappingSpatialHash } hashes real coordinates by scaling them and "snapping" them to a grid..
+ 
+Implements \textbf{ SpatialHash }
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ public GridSnappingSpatialHash  } (double gridSizeorg.locationtech.jts.geom.Coordinate gridCenter)}
+	{Create new instance of grid snapping hash}
+	\mitemxx{ \textbf{ public int getHash  } (org.locationtech.jts.geom.Coordinate a)}
+	{Returns a hash for the given coordinate. A good hash will be equal for points which are near each other\newline%
+ according to some metric, and different for ones that are not.}
+\end{mitem}
+
+\subparagraph{ SpatialHash } Classes implementing this interface allow fuzzy spatial hashing of coordinates. This is used for
+ detecting whether or not 2 points are roughly equivalent or in special data structures.
+ 
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ int getHash  } (org.locationtech.jts.geom.Coordinate a)}
+	{Returns a hash for the given coordinate. A good hash will be equal for points which are near each other\newline%
+ according to some metric, and different for ones that are not.}
+\end{mitem}
+
+\subsubsection{ .ac.ed.inf.aqmaps.pathfinding.goals }
+\subparagraph{ PathfindingGoal } Classes inheriting from this interface can be used as pathfinding goals
+ 
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ org.locationtech.jts.geom.Coordinate getCoordinates } ()}
+	{}
+\end{mitem}
+
+\subparagraph{ PointGoal } A point goal is the simplest kind of goal, a single location in space.
+ 
+Implements \textbf{ PathfindingGoal }
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ public PointGoal  } (org.locationtech.jts.geom.Coordinate goal)}
+	{Creates a new point goal}
+	\mitemxx{ \textbf{ public org.locationtech.jts.geom.Coordinate getCoordinates } ()}
+	{}
+\end{mitem}
+
+\subsubsection{ .ac.ed.inf.aqmaps.pathfinding }
+\subparagraph{ AstarTreeSearch } Classic pathfinding algorithm, modified BFS which uses both the cost to reach a node and the predicted cost from that node to the goal
+ to chose the nodes to be expanded next. This version of Astar treats the search as a tree search and so uses a hashing function to determine if a node has been visited yet.
+ 
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ public AstarTreeSearch  } (PathfindingHeuristic heuristicSpatialHash hash)}
+	{Creates a new instance of Astar search with the given heuristic and spatial hashing function.}
+	\mitemxx{ \textbf{ public void findPath  } (SearchGraph<T> gPathfindingGoal goalT startdouble goalThresholdDeque<T> output)}
+	{Description copied from class:~PathfindingAlgorithm}
+\end{mitem}
+
+\subparagraph{ Obstacle } Obstacles represent impassable regions in pathfinding
+ 
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ org.locationtech.jts.geom.Polygon getShape } ()}
+	{Retrieve the shape of the obstacle}
+\end{mitem}
+
+\subparagraph{ PathfindingAlgorithm } Pathfinding algorithms operate over any valid search nodes and graph definitions. The graph defines the transition function between one node and its neighbours while the search nodes are used as 
+ the path constructing object. Any number of pathfinding algorithms can be defines in these terms, both tree and graph searches are possible with the correct set of graph and node definitions.
+ 
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ public PathfindingAlgorithm } ()}
+	{}
+	\mitemxx{ \textbf{ public abstract void findPath  } (SearchGraph<T> gPathfindingGoal goalT startdouble goalThresholdDeque<T> output)}
+	{Finds a path from the start to the goal node and outputs the result into the provided deque.\newline%
+ If a path doesn't exist no nodes will be added to the output, if it does at least one node will be added. The nodes will have their goalsReached deque's set\newline%
+ to the corresponding goals that can be reached from their locations within the goal threshold. One node can reach multiple nodes}
+\end{mitem}
+
+\subparagraph{ SearchGraph } Search trees (or graphs) define the function whose domain and range are all possible search nodes. 
+ Given a node the graph defines the neighbouring nodes available to reach from that node in the context of a search.
+ 
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ List<T> getNeighbouringNodes  } (T node)}
+	{Returns the neighbours of the given node within the graph}
+\end{mitem}
+
+\subparagraph{ SearchNode } Search Nodes are used to hold the path information in pathfinding algorithms including heuristic, cost and parent node values. Search nodes also contain information about which
+ pathfinding goals can be achieved from their position (can be multiple).
+ 
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ public SearchNode  } (org.locationtech.jts.geom.Coordinate locationT parentdouble cost)}
+	{Creates a new spatial tree search node which is fully specified apart from\newline%
+ the heuristic value}
+	\mitemxx{ \textbf{ public Deque<PathfindingGoal> getGoalsReached } ()}
+	{Retrieve the deque of goals achievable from this search node's position}
+\end{mitem}
+
+\subsubsection{ .ac.ed.inf.aqmaps.client.data }
+\subparagraph{ SensorData } Object representing the reading, battery and location data of a sensor
+ 
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ public SensorData } ()}
+	{Empty constructor, necessary for proper de{-}serialization}
+	\mitemxx{ \textbf{ public String getW3WLocation } ()}
+	{Returns the w3w location of this sensor}
+\end{mitem}
+
+\subparagraph{ W3WAddressData } An object containing information about a what-3-word square including it's coordinates and meta-data
+ 
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ public W3WAddressData } ()}
+	{Empty constructor, necessary for proper de{-}serialization}
+	\mitemxx{ \textbf{ public String getCountry } ()}
+	{}
+\end{mitem}
+
+\subparagraph{ W3WSquareData } Object representing information about a what-3-words square's coordinates.
+ 
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ public W3WSquareData } ()}
+	{Empty constructor, necessary for proper de{-}serialization}
+	\mitemxx{ \textbf{ public com.mapbox.geojson.Point getSouthwest } ()}
+	{}
+\end{mitem}
+
+\subsubsection{ .ac.ed.inf.aqmaps.client }
+\subparagraph{ AQWebServerClient } {The web server client communicates with a server which contains the necessary information and retrieves it}
+ 
+Implements \textbf{ ClientService }
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ public AQWebServerClient  } (HttpClient clientURI APIBaseURI)}
+	{}
+	\mitemxx{ \textbf{ public List<SensorData> fetchSensorsForDate  } (LocalDate date)}
+	{}
+\end{mitem}
+
+\subparagraph{ ClientService } A client service retrieves the necessary information to create an AQ map
+ 
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ List<SensorData> fetchSensorsForDate  } (LocalDate date)}
+	{}
+\end{mitem}
+
+\subparagraph{ HTTPException } An exception thrown whenever an unexpected http status is returned
+ 
+Implements \textbf{ Serializable }
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ public HTTPException  } (int errorStatusCodeString message)}
+	{}
+\end{mitem}
+
+\subsubsection{ .ac.ed.inf.aqmaps }
+\subparagraph{ App } Sensor data pick up path planner and visualiser
+ 
+\hrule
+\begin{mitem}
+\scriptsize
+	\mitemxx{ \textbf{ public App } ()}
+	{}
+	\mitemxx{ \textbf{ public static void main  } (String{[}{]} args)}
+	{}
+\end{mitem}
+

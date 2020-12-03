@@ -104,16 +104,16 @@ public class fullIT {
     public void testNormalDataMethods() throws Exception {
 
         Coordinate[] startingCoordinates = new Coordinate[]{
-            new Coordinate( // bottom right
-                -3.1846618652343746,
-                55.942888563895934),
-            new Coordinate( // in crack of informatics forum
-                -3.186888098716736,
-                55.944838225043306),
-            new Coordinate( // top left
-                -3.19087,
-                55.945778
-            ),
+            // new Coordinate( // bottom right
+            //     -3.1846618652343746,
+            //     55.942888563895934),
+            // new Coordinate( // in crack of informatics forum
+            //     -3.186888098716736,
+            //     55.944838225043306),
+            // new Coordinate( // top left
+            //     -3.19087,
+            //     55.945778
+            // ),
             new Coordinate( // default starting point as per cw
                 -3.1878,
                 55.9444)};
@@ -127,9 +127,9 @@ public class fullIT {
          new PathfindingHeuristicType[]{PathfindingHeuristicType.STRAIGHT_LINE},
          new CollectionOrderPlannerType[]{CollectionOrderPlannerType.NEAREST_INSERTION},
          new DistanceMatrixType[]{DistanceMatrixType.EUCLIDIAN},
-         new float[]{1f,1.5f},
-         new double[]{MOVE_LENGTH/75d,MOVE_LENGTH/100d,MOVE_LENGTH/500d},
-         new double[]{0.1d*MOVE_LENGTH,0.0001d*MOVE_LENGTH});
+         new float[]{1.5f},
+         new double[]{MOVE_LENGTH/75d},
+         new double[]{0.1d*MOVE_LENGTH});
     
     }
 
@@ -657,20 +657,20 @@ public class fullIT {
 
             var values = line.split(",");
 
-            double startX = Double.parseDouble(values[0]);
-            double startY = Double.parseDouble(values[1]);
+            double startX = Double.parseDouble(values[1]);
+            double startY = Double.parseDouble(values[2]);
 
-            int dir = Integer.parseInt(values[2]);
+            int dir = Integer.parseInt(values[3]);
 
-            double endX = Double.parseDouble(values[3]);
-            double endY = Double.parseDouble(values[4]);
+            double endX = Double.parseDouble(values[4]);
+            double endY = Double.parseDouble(values[5]);
     
             // find out location of sensor
             // if it exists
             Sensor sensor = null;
-            if(!values[5].equals("null")){
+            if(!values[6].equals("null")){
 
-                String[] words = values[5].split("\\.");
+                String[] words = values[6].split("\\.");
 
                 String locationDetails = getFileContentsAt(rootWordsLocation, "/" + words[0] + "/" + words[1] + "/" + words[2] + "/details.json");
 

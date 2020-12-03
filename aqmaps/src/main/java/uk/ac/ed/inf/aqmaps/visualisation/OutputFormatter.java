@@ -30,9 +30,12 @@ public class OutputFormatter {
             
             // number of leftover segments
             int segmentCount = flightPath.size();
-            
+            int segmentIdx = 1;
             // for each path segment writa a comma separated line
             for (PathSegment pathSegment : flightPath) {
+
+                // line number
+                writer.write(String.format("%s,",segmentIdx));
 
                 // start point - long,lat
                 Coordinate startPoint = pathSegment.getStartPoint();
@@ -54,7 +57,7 @@ public class OutputFormatter {
 
                 // this will be 0 when we just processed last segment
                 segmentCount -= 1;
-
+                segmentIdx += 1;
                 // write newline character after each line except the last one
                 if(segmentCount != 0)
                     writer.write("\n");

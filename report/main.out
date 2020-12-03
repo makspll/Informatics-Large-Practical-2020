@@ -12,18 +12,18 @@
 \BOOKMARK [1][-]{section.3}{Class Documentation}{}% 12
 \BOOKMARK [2][-]{subsection.3.1}{Quicklinks}{section.3}% 13
 \BOOKMARK [2][-]{subsection.3.2}{Documentation}{section.3}% 14
-\BOOKMARK [3][-]{subsubsection.3.2.1}{aqmaps}{subsection.3.2}% 15
-\BOOKMARK [3][-]{subsubsection.3.2.2}{aqmaps.client}{subsection.3.2}% 16
-\BOOKMARK [3][-]{subsubsection.3.2.3}{aqmaps.client.data}{subsection.3.2}% 17
-\BOOKMARK [3][-]{subsubsection.3.2.4}{aqmaps.pathfinding}{subsection.3.2}% 18
-\BOOKMARK [3][-]{subsubsection.3.2.5}{aqmaps.pathfinding.goals}{subsection.3.2}% 19
-\BOOKMARK [3][-]{subsubsection.3.2.6}{aqmaps.pathfinding.hashing}{subsection.3.2}% 20
-\BOOKMARK [3][-]{subsubsection.3.2.7}{aqmaps.pathfinding.heuristics}{subsection.3.2}% 21
-\BOOKMARK [3][-]{subsubsection.3.2.8}{aqmaps.simulation}{subsection.3.2}% 22
-\BOOKMARK [3][-]{subsubsection.3.2.9}{aqmaps.simulation.collection}{subsection.3.2}% 23
-\BOOKMARK [3][-]{subsubsection.3.2.10}{aqmaps.simulation.planning}{subsection.3.2}% 24
-\BOOKMARK [3][-]{subsubsection.3.2.11}{aqmaps.simulation.planning.collectionOrder}{subsection.3.2}% 25
-\BOOKMARK [3][-]{subsubsection.3.2.12}{aqmaps.simulation.planning.collectionOrder.optimisers}{subsection.3.2}% 26
-\BOOKMARK [3][-]{subsubsection.3.2.13}{aqmaps.simulation.planning.path}{subsection.3.2}% 27
-\BOOKMARK [3][-]{subsubsection.3.2.14}{aqmaps.utilities}{subsection.3.2}% 28
-\BOOKMARK [3][-]{subsubsection.3.2.15}{aqmaps.visualisation}{subsection.3.2}% 29
+\BOOKMARK [3][-]{subsubsection.3.2.1}{ .ac.ed.inf.aqmaps.visualisation }{subsection.3.2}% 15
+\BOOKMARK [3][-]{subsubsection.3.2.2}{ .ac.ed.inf.aqmaps.utilities }{subsection.3.2}% 16
+\BOOKMARK [3][-]{subsubsection.3.2.3}{ .ac.ed.inf.aqmaps.simulation.planning.path }{subsection.3.2}% 17
+\BOOKMARK [3][-]{subsubsection.3.2.4}{ .ac.ed.inf.aqmaps.simulation.planning.collectionOrder.optimisers }{subsection.3.2}% 18
+\BOOKMARK [3][-]{subsubsection.3.2.5}{ .ac.ed.inf.aqmaps.simulation.planning.collectionOrder }{subsection.3.2}% 19
+\BOOKMARK [3][-]{subsubsection.3.2.6}{ .ac.ed.inf.aqmaps.simulation.planning }{subsection.3.2}% 20
+\BOOKMARK [3][-]{subsubsection.3.2.7}{ .ac.ed.inf.aqmaps.simulation.collection }{subsection.3.2}% 21
+\BOOKMARK [3][-]{subsubsection.3.2.8}{ .ac.ed.inf.aqmaps.simulation }{subsection.3.2}% 22
+\BOOKMARK [3][-]{subsubsection.3.2.9}{ .ac.ed.inf.aqmaps.pathfinding.heuristics }{subsection.3.2}% 23
+\BOOKMARK [3][-]{subsubsection.3.2.10}{ .ac.ed.inf.aqmaps.pathfinding.hashing }{subsection.3.2}% 24
+\BOOKMARK [3][-]{subsubsection.3.2.11}{ .ac.ed.inf.aqmaps.pathfinding.goals }{subsection.3.2}% 25
+\BOOKMARK [3][-]{subsubsection.3.2.12}{ .ac.ed.inf.aqmaps.pathfinding }{subsection.3.2}% 26
+\BOOKMARK [3][-]{subsubsection.3.2.13}{ .ac.ed.inf.aqmaps.client.data }{subsection.3.2}% 27
+\BOOKMARK [3][-]{subsubsection.3.2.14}{ .ac.ed.inf.aqmaps.client }{subsection.3.2}% 28
+\BOOKMARK [3][-]{subsubsection.3.2.15}{ .ac.ed.inf.aqmaps }{subsection.3.2}% 29

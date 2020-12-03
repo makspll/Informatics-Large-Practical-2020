@@ -64,9 +64,9 @@ public class OutputFormatterTest {
         when(sensorMock.getW3WLocation()).thenReturn("address1");
         when(sensorMock2.getW3WLocation()).thenReturn("address2");
         
-        testPathOutput = "0.0,0.0,90,0.0,1.0,null\n"
-                           +"0.0,1.0,90,0.0,2.0,"+sensorMock.getW3WLocation()+"\n"
-                           +"0.0,2.0,90,0.0,3.0,"+sensorMock2.getW3WLocation(); // notice no new line here !
+        testPathOutput = "1,0.0,0.0,90,0.0,1.0,null\n"
+                           +"2,0.0,1.0,90,0.0,2.0,"+sensorMock.getW3WLocation()+"\n"
+                           +"3,0.0,2.0,90,0.0,3.0,"+sensorMock2.getW3WLocation(); // notice no new line here !
 
         // check no exceptions are thrown
         assertDoesNotThrow(()->{
