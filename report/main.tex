@@ -3,27 +3,20 @@
 \usepackage{listings}
 \usepackage{graphicx}
 \usepackage{float}
-\usepackage[margin=0.7in]{geometry}
+\usepackage[margin=0.5in]{geometry}
 \usepackage{amsmath}
-\usepackage[hidelinks]{hyperref}
 \usepackage{enumitem}% http://ctan.org/pkg/enumitem
-\usepackage{multicol}
-\usepackage{multienum}
-\usepackage{tcolorbox}
 \usepackage{etoolbox}
-\usepackage{array}
-\AtBeginEnvironment{tabular}{\scriptsize}
 
+
+\usepackage{tcolorbox}
+\usepackage[hidelinks]{hyperref}
+\usepackage{array}
+\usepackage{tabularx}
+\AtBeginEnvironment{tabularx}{\scriptsize}
+\renewcommand{\tabularxcolumn}[1]{m{#1}}
 \setlist{nolistsep}
 \setlist{nosep}
-
-
-\newenvironment{mitem}{%
-  \multienumerate\renewcommand{\labelname}{\textbullet}%
-}{%
-  \endmultienumerate%
-}
-
 \newcommand{\cbox}[2]{
     \begin{tcolorbox}[title=#1,
         colback=red!5!white,
@@ -37,6 +30,8 @@
 }
 
 
+
+
 \DeclareMathOperator*{\argmax}{arg\,max}
 \DeclareMathOperator*{\argmin}{arg\,min}
 
@@ -45,8 +40,8 @@
 
 
 \pagenumbering{Roman}
-\tableofcontents
-\newpage
+% \tableofcontents
+% \newpage
 \pagenumbering{arabic}
 
 
@@ -76,7 +71,7 @@ Any other classes which will "feed" into the rest of the system, but are constru
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=\columnwidth]{diagrams/client.uxf.pdf}
+    \includegraphics[width=0.7\columnwidth]{diagrams/client.uxf.pdf}
     \caption{UML diagram of the client module}
     \label{fig:client}
 \end{figure}
@@ -181,19 +176,19 @@ and should such changes be required, new methods can be added to the formatter.
 The usage of the AttributeMap interface allows for a lot of flexibility in the way the AQMapGenerator assigns colors and symbols, and should this behaviour need to be changed, it'd be very easy to do.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\columnwidth]{diagrams/visualisation.uxf.pdf}
+    \includegraphics[width=0.7\columnwidth]{diagrams/visualisation.uxf.pdf}
     \caption{UML diagram of the Visualisation module}
     \label{fig:visualisation}
 \end{figure}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\columnwidth]{diagrams/pathfinding.uxf.pdf}
+    \includegraphics[width=0.7\columnwidth]{diagrams/pathfinding.uxf.pdf}
     \caption{UML diagram of the pathfinding module}
     \label{fig:pathfinding}
 \end{figure}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\columnwidth]{diagrams/simulation.uxf.pdf}
+    \includegraphics[width=0.8\columnwidth]{diagrams/simulation.uxf.pdf}
     \caption{UML diagram of the Simulation module}
     \label{fig:simulation}
 \end{figure}
@@ -207,7 +202,7 @@ The usage of the AttributeMap interface allows for a lot of flexibility in the w
     % keywordstyle=\color{magenta},
     % numberstyle=\tiny\color{codegray},
     % stringstyle=\color{codepurple},
-    % basicstyle=\ttfamily\footnotesize,
+    basicstyle=\footnotesize,
     % breakatwhitespace=false,
     % breaklines=true,
     % captionpos=b,
@@ -262,30 +257,26 @@ The usage of the AttributeMap interface allows for a lot of flexibility in the w
     \label{alg:ni}
 \end{figure}
 
-The more general part of the problem is selecting the collection order of the sensors on any given day.
-Assuming the drone already has the data for the appropriate collection day, it must decide on a visiting order of the sensors.
+The choice of which order to visit the sensors in is a general TSP problem.
 \par 
-For this part many techniques were tried, and experimentation proved that applying the Nearest Insertion heuristic together with a euclidian distance matrix was an adequate solution. 
-At each step we chose the sensor which is closest to one of the sensors present in the tour already - the first sensor is the one nearest to the starting point -, and insert it in a way which minimises the cost.
-If U is the set of unvisited sensors and T is set of sensors in the tour, at each step we pick the sensor s such that:
-\begin{equation}
-    \exists s,\exists k \in T,\forall o\in U.distance(s,k) < distance(o,k)
-\end{equation} 
-and insert it into the tour between consecutive sensors $i,j \in T$ such that the cost of the tour is minimized.
+The heuristic chosen to tackle this part of the problem was the \hyperref[tab:NearestInsertionCollectionOrderPlanner]{\color{blue}Nearest Insertion heuristic} followed by a number of \hyperref[tab:Optimiser2Opt]{\color{blue}2-opt optimisations}.
+\par
+As pseuducode in Figure \ref{alg:ni} shows, the heuristic inserts sensors into the tour one at a time, choosing the sensor which is closest to any sensor in the tour.
 \\
-Following this initial pass, 2-opt optimisations are applied to the route to remove crossings in the graph and further reduce the cost.
+After a route is found, 2-opt optimisations are applied to it to remove paths which are crossing each other.
 The 2-opt algorithm in each pass checks if reversing any sub-segment of all possible sub-segments of a full tour reduces it's cost, and if so keeps the reversal. 
 The passes are repetead until improvements fall under a threshold of 0.00003 degrees
 
 This alrogithm turns out to be pareto-optimal \cite{metric-tsp} among a family of cutting-edge algorithms for problem sizes of between 30-50 vertices.
-Pareto-optimality means that this algorithm was either finding the best path compared to the other algorithms, or was finding one the quickest. It also happens that 
-this algorithm is just a variation of Prim's algorithm as in this process we find the minimum spanning tree of the implicit graph, therefore Nearest insertion is actually a 
-2-approximation algorithm \cite{2-approximation-ni} of the optimal solution.
+Pareto-optimality means that this algorithm was either finding the best path compared to the other algorithms, or was finding one the quickest. 
+Since this process yields the route built on the Minimum Spanning Tree, 
+the path found will always be less than or equal to 2 times the optimal solution \cite{2-approximation-ni}.
 \subsection{Generating neighbour nodes}
 All the other sections of the algorithm make use of the "neighbour" function, i.e. the function which generates neighbour nodes for any node representing 
 a point on the map.
 
-This is done using the Bounding Volume Hierarchy data structure. The structure allows for logarithmic time lookups of possibly colliding obstacles (with any shape).
+This is done using the \hyperref[tab:BVHNode]{\color{blue}{Bounding Volume Hierarchy}} data structure. 
+The structure allows for logarithmic time lookups of possibly colliding obstacles (with any shape).
 We do this by creating a binary tree whose nodes are defined by an Axis Aligned Bounding Volume enveloping all the obstacles present in the leaf nodes underneath the node.
 The root node then envelops all the obstacles present in the hierarchy.
 \par
@@ -353,42 +344,28 @@ With this setup, the structure can tell us which obstacles are possibly collidin
     \label{alg:a*}
 \end{figure}
 
-Pathfinding between any two points on the plane was carried out using the A* tree search algorithm with the euclidian distance heuristic. 
+Pathfinding between any two points on the plane was carried out using the \hyperref[tab:AstarTreeSearch]{\color{blue}A* tree search} algorithm using the euclidian distance heuristic. 
 The algorithm is just a modified breadth-first search, where the search nodes are picked in order of least f value which is defined as:
-\begin{equation}
-    f(n) = h(n) + c(n)
-\end{equation}
-with $c(n)$ is the cost of reaching the node n from the start state, and $h(n)$ is the approximation of the cost of reaching the goal state from the node n.
-Assuming that the node in the search frontier with the smallest f value is always expanded and that the heuristic is admissible A* will return the optimal path.
+    $f(n) = 1.5 \cdot h(n) + c(n)$
+with $c(n)$ being the cost of reaching the node n from the start state, and $h(n)$ is the approximation of the cost of reaching the goal state from the node n.
+\\
 
-A naive application of A* could not work however due to floating-point error causing the expansion of a lot of poor nodes and the sheer amount of nodes present in the frontier at any time. 
-The straight-line-distance heuristic was relaxed and the new definition was the following:
-\begin{equation}
-    h(n) = distance(n,g) * 1.5
-\end{equation}
-This makes nodes closer to the goal receive much smaller heuristic values and so more direct paths to the goal are expanded first. 
-This means that the returned paths are no longer optimal as the heuristic is no longer admissible, but since most paths would not be obstucted by buildings - this
+\noindent The heuristic is relaxed by a factor of 1.5, to promote the expansion of straighter paths.
+\noindent This means that the paths are no longer optimal as the heuristic is no longer admissible, but since most paths would not be obstucted by buildings - this
 change does not actually impact the length of the paths all that much.
 
-Another change was the addition of a spatial hash to try and prune nodes which were approximately visited, by finding out 
-their coordinates relative to a grid centered around the center of the boundary (with integer width square size), and hashing those coordinates
-using a modified cantor pairing allowing for negative values
+To speed up the algorithm \hyperref[tab:GridSnappingSpatialHash]{\color{blue}spatial hashing} was used to prune nodes which were visited (or visited close-enough), expressing their coordinates relative to a grid centered around the center of the boundary (with integer width square size), and hashing those coordinates
+using a modified cantor pairing allowing for negative values.
 
 \subsection{Path segmenting}
 Once we have a path of individual points, we need to convert it to a path of path segments with information about which sensor is read at each segment.
 We can do this by "sliding" a window over the points and always looking at two points at a time in order. 
 We call the points at each position of the windo P and N, where P is the point before N. 
 The pathfinding algorithm also attaches a deque of sensors reached by each P/N.  
-Multiple conversion problems arise when naively pairing up the points to create segments:
+A naive sequential pairing does not work due to multiple goals allowed at each point, and the requirement of the drone to move before collecting the reading.
+We apply a number of rules to make a valid path:
 
-\begin{itemize}
-    \item P or N may reach multiple sensors which is invalid, each P-N segment must only allow for one reading
-    \item The list of points might be empty if no path is found
-    \item P might reach a sensor which is illegal, only N's in each segment are allowed to read sensors (since an N point always occurs at the end of a move)
-\end{itemize}
-
-\noindent The empty list of points can be prevented by simply returning no path segments, 
-the rest of the problems can be defeated if we apply a number of rules in order (portrayed in Figure \ref{fig:segmenting}):
+\noindent (portrayed in Figure \ref{fig:segmenting}):
 \begin{itemize}
     \item While P attains a goal, create a proxy segment to any neighbouring node, and one back, assign the first sensor attained by P 
         to the newest back-facing segment's N node
@@ -409,13 +386,13 @@ The algorithm was tested on over 35000 configurations over the data provided.
 The hardest and easiest collection days' geojson visualisations are shown below (with the algorithm set to optimal parameters as given above) 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.6\columnwidth]{diagrams/hard-day.png}
+    \includegraphics[width=0.4\columnwidth]{diagrams/hard-day.png}
     \caption{geojson.io rendering of hardest collection at day 9-2-2020 with a starting point of -3.19087,55.945778, with 111 moves}
     \label{fig:hardmap}
 \end{figure}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.6\columnwidth]{diagrams/easy-day.png}
+    \includegraphics[width=0.4\columnwidth]{diagrams/easy-day.png}
     \caption{geojson.io rendering of easiest collection at day 2-1-2021 with a starting point of -3.1878,55.9444, with 46 moves}
     \label{fig:easymap}
 \end{figure}
@@ -424,11 +401,6 @@ The artifacts of path segmenting are evident in the harder day, where the drone 
 proxy segment. But overall the algorithm manages very well, never carrying out the collection in more than 111 moves and averaging at 90 moves $\pm$ 6.7. Execution times averaged at 103ms.
 
 \section{Class Documentation}
-
-\subsection{Quicklinks}
-
-\subsection{Documentation}
-
 
 \input{"javadoc-extractor/doc.tex"}
 

@@ -23,6 +23,7 @@ import uk.ac.ed.inf.aqmaps.simulation.planning.ConstrainedTreeGraph;
 import uk.ac.ed.inf.aqmaps.simulation.planning.path.SimplePathPlanner;
 import uk.ac.ed.inf.aqmaps.testUtilities.TestUtilities;
 
+@SuppressWarnings("all")
 public class SimplePathPlannerIT {
 
 

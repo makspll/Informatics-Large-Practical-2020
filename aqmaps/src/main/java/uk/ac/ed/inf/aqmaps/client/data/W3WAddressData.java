@@ -15,6 +15,7 @@ public class W3WAddressData {
     }
 
     /**
+     * Create a new W3WAddressData object from the given address information
      * @param country
      * @param square
      * @param nearestPlace

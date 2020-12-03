@@ -705,7 +705,7 @@ public class fullIT {
 
     private static double TOLERANCE = 0.00000000001d;
     
-    private static final Polygon boundary = GeometryUtilities.geometryFactory.createPolygon(
+    private static final Polygon boundary = GeometryFactorySingleton.getGeometryFactory().createPolygon(
         new Coordinate[]{
             new Coordinate(-3.192473d, 55.946233d),
             new Coordinate(-3.184319d, 55.946233d),

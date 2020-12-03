@@ -2,16 +2,13 @@ package uk.ac.ed.inf.aqmaps.unitTests.simulation.planning.collectionOrder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import uk.ac.ed.inf.aqmaps.pathfinding.Obstacle;
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
 import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.BaseCollectionOrderPlanner;
 
@@ -21,13 +18,11 @@ public abstract class CollectionOrderPlannerTest {
 
     private static Set<Sensor> mockSensors;
     private static Sensor startSensor;
-    private static Collection<Obstacle> obstacles;
 
 
 
     @BeforeEach
     private void setup(){
-        obstacles = new LinkedList<Obstacle>();
         mockSensors = setupOtherSensors();
         startSensor = setupStartSensor();
         planner = setupTestInstance();

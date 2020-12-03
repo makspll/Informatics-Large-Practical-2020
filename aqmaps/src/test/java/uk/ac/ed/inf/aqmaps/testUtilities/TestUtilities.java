@@ -2,7 +2,6 @@ package uk.ac.ed.inf.aqmaps.testUtilities;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Deque;
@@ -40,7 +39,6 @@ public class TestUtilities {
             return;
 
         int currCoordinateIdx = 0;
-        int pathSegmentsLeft = path.size();
         PathSegment lastSegment = null;
         boolean foundAll = false;
         

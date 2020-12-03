@@ -1,415 +1,857 @@
-\subsubsection{ uk.ac.ed.inf.aqmaps.visualisation }
-\cbox{ enum MarkerSymbol } { Available symbols for use with geojson
+\subsubsection*{ uk.ac.ed.inf.aqmaps.visualisation }
+\cbox{ class AQMapGenerator } {\scriptsize Visualiser of sensor data collections, portrays the flight path as a geojsonline string, and shows each sensor's reading using a combination of marker colour and symbol
  
+\vspace*{4pt} \hrule \vspace*{3pt}
+Implements \textbf{ SensorCollectionVisualiser }
+\vspace*{-5pt}\tcbsubtitle[before skip=\baselineskip]{Members} 
+\begin{tabularx}{\linewidth}{X|m{0.5\textwidth}}
+\label{tab:AQMapGenerator}
+\begin{raggedleft}public  \textbf{\hyperref[tab:AQMapGenerator]{\color{blue}{AQMapGenerator}} }(\newline \hfill 
+\hspace*{ 5pt} \textbf{AttributeMap$<$Float, String$>$} colourMap , \newline
+ \hspace*{ 5pt} \textbf{AttributeMap$<$Float, MarkerSymbol$>$} symbolMap  )
+\end{raggedleft} &
+ Create an \hyperref[tab:AQMapGenerator]{\color{blue}{AQMapGenerator}} with the default low battery and non{-}visited symbol/colour values\\ \hline 
+\begin{raggedleft}public  \textbf{\hyperref[tab:AQMapGenerator]{\color{blue}{AQMapGenerator}} }(\newline \hfill 
+\hspace*{ 5pt} \textbf{AttributeMap$<$Float, String$>$} colourMap , \newline
+ \hspace*{ 5pt} \textbf{AttributeMap$<$Float, MarkerSymbol$>$} symbolMap , \newline
+ \hspace*{ 5pt} \textbf{String} lowBatteryColour , \newline
+ \hspace*{ 5pt} \textbf{\hyperref[tab:MarkerSymbol]{\color{blue}{MarkerSymbol}}} lowBatterySymbol , \newline
+ \hspace*{ 5pt} \textbf{String} notVisitedColour , \newline
+ \hspace*{ 5pt} \textbf{\hyperref[tab:MarkerSymbol]{\color{blue}{MarkerSymbol}}} notVisitedSymbol  )
+\end{raggedleft} &
+ Create an \hyperref[tab:AQMapGenerator]{\color{blue}{AQMapGenerator}} specyfing all its parameters\\ \hline 
+\begin{raggedleft}public com.mapbox.geojson.FeatureCollection \textbf{plotMap }(\newline \hfill 
+\hspace*{ 5pt} \textbf{Deque$<$PathSegment$>$} flightPath , \newline
+ \hspace*{ 5pt} \textbf{Collection$<$Sensor$>$} sensorsToBeVisited  )
+\end{raggedleft} &
+ Creates a FeatureCollection containing the line string of the flight path, and markers for each sensor given {-} styled accordint to its readings\\\end{tabularx}
 }
-\cbox{ class UniformAttributeMap } { A general attribute map which maps a range of values from a (min,max) range to attribute buckets of size (max{-}min)/buckets number uniformly.
+\cbox{ enum MarkerSymbol } {\scriptsize Available symbols for use with geojson, the toString methods are overriden to conform to the geojson marker list
+ 
+\label{tab:MarkerSymbol}
+}
+\cbox{ class OutputFormatter } {\scriptsize Formats and writes the flight path and geojson visualisation to a file
+ 
+\vspace*{-5pt}\tcbsubtitle[before skip=\baselineskip]{Members} 
+\begin{tabularx}{\linewidth}{X|m{0.5\textwidth}}
+\label{tab:OutputFormatter}
+\begin{raggedleft}public  \textbf{\hyperref[tab:OutputFormatter]{\color{blue}{OutputFormatter}}}()
+\end{raggedleft} &
+ \\ \hline 
+\begin{raggedleft}public static void \textbf{writePath }(\newline \hfill 
+\hspace*{ 5pt} \textbf{Deque$<$PathSegment$>$} flightPath , \newline
+ \hspace*{ 5pt} \textbf{OutputStream} file  )
+\end{raggedleft} &
+ Write flight path to given file\\ \hline 
+\begin{raggedleft}public static void \textbf{writeReadingsMap }(\newline \hfill 
+\hspace*{ 5pt} \textbf{com.mapbox.geojson.FeatureCollection} readingsMap , \newline
+ \hspace*{ 5pt} \textbf{OutputStream} file  )
+\end{raggedleft} &
+ Write geojson readings visualisation to the given file\\\end{tabularx}
+}
+\cbox{ class UniformAttributeMap } {\scriptsize A general attribute map which maps a range of values from a (min,max) range to attribute buckets of size (max{-}min)/buckets number uniformly.
  
 \vspace*{4pt} \hrule \vspace*{3pt}
 Implements \textbf{ AttributeMap }
-\tcbsubtitle[before skip=\baselineskip]{Members}\begin{tabular}{ p{3in}|m{3.4in}}
-\textbf{public UniformAttributeMap } (\\ \hspace*{ 5pt} Float min,\\\hspace*{ 5pt} Float max,\\\hspace*{ 5pt} C... attributes) & \\ \hline 
-\textbf{public C getFor } (\\ \hspace*{ 5pt} Float value) & Retrieve attribute for the given input\\ \hline 
-\end{tabular}
+\vspace*{-5pt}\tcbsubtitle[before skip=\baselineskip]{Members} 
+\begin{tabularx}{\linewidth}{X|m{0.5\textwidth}}
+\label{tab:UniformAttributeMap}
+\begin{raggedleft}public  \textbf{\hyperref[tab:UniformAttributeMap]{\color{blue}{UniformAttributeMap}} }(\newline \hfill 
+\hspace*{ 5pt} \textbf{Float} min , \newline
+ \hspace*{ 5pt} \textbf{Float} max , \newline
+ \hspace*{ 5pt} \textbf{C...} attributes  )
+\end{raggedleft} &
+ Create a new map with the given minimum and maximum range of values for input, values will be mapped to the list of attributes uniformly\\ \hline 
+\begin{raggedleft}public C \textbf{getFor }(\hspace*{ 5pt} \textbf{Float} value  )
+\end{raggedleft} &
+ Retrieve attribute for the given input\\\end{tabularx}
 }
-\subsubsection{ uk.ac.ed.inf.aqmaps.utilities }
-\cbox{ class BVHNode } { Bounding Volume Hierarchy Node. This class forms a tree of AABB (Axis aligned bounding boxes) for internal nodes\newline%
+\subsubsection*{ uk.ac.ed.inf.aqmaps.utilities }
+\cbox{ class BVHNode } {\scriptsize Bounding Volume Hierarchy Node. This class forms a tree of AABB (Axis aligned bounding boxes) for internal nodes\newline%
  and of any shapes at the leaf nodes. Allows for quick broad phase collision checks between objects. Will never return a false negative but might return\newline%
  false positives. I.e. this structure only tells you which objects are possibly colliding (whose AABB's intersect).
  
-\tcbsubtitle[before skip=\baselineskip]{Members}\begin{tabular}{ p{3in}|m{3.4in}}
-\textbf{public BVHNode } (\\ \hspace*{ 5pt} Collection$<$T$>$ shapes) & Construct a new bvh hierarchy with the given shapes at the leaf nodes\\ \hline 
-\textbf{public Collection$<$T$>$ getPossibleCollisions } (\\ \hspace*{ 5pt} org.locationtech.jts.geom.Geometry other) & Retrieves all possibly coliding objects (their bounding boxes intersect) from within the tree.\\ \hline 
-\end{tabular}
+\vspace*{4pt} \hrule \vspace*{3pt}
+Extends \textbf{ Shape }
+\vspace*{-5pt}\tcbsubtitle[before skip=\baselineskip]{Members} 
+\begin{tabularx}{\linewidth}{X|m{0.5\textwidth}}
+\label{tab:BVHNode}
+\begin{raggedleft}public  \textbf{\hyperref[tab:BVHNode]{\color{blue}{BVHNode}} }(\hspace*{ 5pt} \textbf{Collection$<$T$>$} shapes  )
+\end{raggedleft} &
+ Construct a new bvh hierarchy with the given shapes at the leaf nodes\\ \hline 
+\begin{raggedleft}public Collection$<$T$>$ \textbf{getPossibleCollisions }(\hspace*{ 5pt} \textbf{org.locationtech.jts.geom.Geometry} other  )
+\end{raggedleft} &
+ Retrieves all possibly coliding objects with the geometry given.\\\end{tabularx}
 }
-\cbox{ class GeometryFactorySingleton } { The geometry factory containing the precision model to be used when generating geometries with JTS
+\cbox{ class GeometryFactorySingleton } {\scriptsize The geometry factory containing the precision model to be used when generating geometries with JTS
  
-\tcbsubtitle[before skip=\baselineskip]{Members}\begin{tabular}{ p{3in}|m{3.4in}}
-\textbf{public GeometryFactorySingleton} () & \\ \hline 
-\textbf{public static org.locationtech.jts.geom.GeometryFactory getGeometryFactory} () & Retrieve the geometry factory, containing the precision model\\ \hline 
-\end{tabular}
+\vspace*{-5pt}\tcbsubtitle[before skip=\baselineskip]{Members} 
+\begin{tabularx}{\linewidth}{X|m{0.5\textwidth}}
+\label{tab:GeometryFactorySingleton}
+\begin{raggedleft}public  \textbf{\hyperref[tab:GeometryFactorySingleton]{\color{blue}{GeometryFactorySingleton}}}()
+\end{raggedleft} &
+ \\ \hline 
+\begin{raggedleft}public static org.locationtech.jts.geom.GeometryFactory \textbf{getGeometryFactory}()
+\end{raggedleft} &
+ Retrieve the geometry factory, containing the precision model\\\end{tabularx}
 }
-\cbox{ class GeometryUtilities } { A collection of utility geometry methods
+\cbox{ class GeometryUtilities } {\scriptsize A collection of utility geometry methods
  
-\tcbsubtitle[before skip=\baselineskip]{Members}\begin{tabular}{ p{3in}|m{3.4in}}
-\textbf{public GeometryUtilities} () & \\ \hline 
-\textbf{public static org.locationtech.jts.geom.Coordinate MapboxPointToJTSCoordinate } (\\ \hspace*{ 5pt} com.mapbox.geojson.Point p) & Convert a mapbox point to a jts coordinate\\ \hline 
-\textbf{public static com.mapbox.geojson.Point JTSCoordinateToMapboxPoint } (\\ \hspace*{ 5pt} org.locationtech.jts.geom.Coordinate p) & Convert a jts cooridnate to a mapbox point\\ \hline 
-\textbf{public static org.locationtech.jts.geom.Polygon MapboxPolygonToJTSPolygon } (\\ \hspace*{ 5pt} com.mapbox.geojson.Polygon p) & Convert mapbox polygon to jts polygon\\ \hline 
-\end{tabular}
+\vspace*{-5pt}\tcbsubtitle[before skip=\baselineskip]{Members} 
+\begin{tabularx}{\linewidth}{X|m{0.5\textwidth}}
+\label{tab:GeometryUtilities}
+\begin{raggedleft}public  \textbf{\hyperref[tab:GeometryUtilities]{\color{blue}{GeometryUtilities}}}()
+\end{raggedleft} &
+ \\ \hline 
+\begin{raggedleft}public static org.locationtech.jts.geom.Coordinate \textbf{MapboxPointToJTSCoordinate }(\hspace*{ 5pt} \textbf{com.mapbox.geojson.Point} p  )
+\end{raggedleft} &
+ Convert a mapbox point to a jts coordinate\\ \hline 
+\begin{raggedleft}public static com.mapbox.geojson.Point \textbf{JTSCoordinateToMapboxPoint }(\hspace*{ 5pt} \textbf{org.locationtech.jts.geom.Coordinate} p  )
+\end{raggedleft} &
+ Convert a jts cooridnate to a mapbox point\\ \hline 
+\begin{raggedleft}public static org.locationtech.jts.geom.Polygon \textbf{MapboxPolygonToJTSPolygon }(\hspace*{ 5pt} \textbf{com.mapbox.geojson.Polygon} p  )
+\end{raggedleft} &
+ Convert mapbox polygon to jts polygon\\\end{tabularx}
 }
-\cbox{ class MathUtilities } { 
+\cbox{ class MathUtilities } {\scriptsize Collection of general methods for dealing with angles and floating point comparisons
  
-\tcbsubtitle[before skip=\baselineskip]{Members}\begin{tabular}{ p{3in}|m{3.4in}}
-\textbf{public MathUtilities} () & \\ \hline 
-\textbf{public static double angleFromEast } (\\ \hspace*{ 5pt} org.locationtech.jts.math.Vector2D a) & returns the angle from the eastern direction clockwise between 0 and 360 of the vector\\ \hline 
-\textbf{public static double oppositeAngleFromEast } (\\ \hspace*{ 5pt} double angle) & Return the angle representing the given angle incremented by 180 degrees (but witin 360 degrees)\\ \hline 
-\textbf{public static org.locationtech.jts.math.Vector2D getHeadingVector } (\\ \hspace*{ 5pt} double angle) & gets unit vector in the direction of angle\\ \hline 
-\textbf{public static boolean thresholdEquals } (\\ \hspace*{ 5pt} double a,\\\hspace*{ 5pt} double b,\\\hspace*{ 5pt} double epsilon) & Returns true if the given values are within a threshold of each other\\ \hline 
-\textbf{public static boolean thresholdEquals } (\\ \hspace*{ 5pt} double a,\\\hspace*{ 5pt} double b) & Returns true if the given values are within a threshold of each other. Uses default epsilon\\ \hline 
-\textbf{public static boolean thresholdEquals } (\\ \hspace*{ 5pt} org.locationtech.jts.geom.Coordinate a,\\\hspace*{ 5pt} org.locationtech.jts.geom.Coordinate b,\\\hspace*{ 5pt} double epsilon) & Returns true if the given coordinates are within a threshold of each other\\ \hline 
-\textbf{public static boolean thresholdEquals } (\\ \hspace*{ 5pt} org.locationtech.jts.geom.Coordinate a,\\\hspace*{ 5pt} org.locationtech.jts.geom.Coordinate b) & Returns true if the given coordinates are within a threshold of each other. uses default epsilon\\ \hline 
-\end{tabular}
+\vspace*{-5pt}\tcbsubtitle[before skip=\baselineskip]{Members} 
+\begin{tabularx}{\linewidth}{X|m{0.5\textwidth}}
+\label{tab:MathUtilities}
+\begin{raggedleft}public  \textbf{\hyperref[tab:MathUtilities]{\color{blue}{MathUtilities}}}()
+\end{raggedleft} &
+ \\ \hline 
+\begin{raggedleft}public static double \textbf{angleFromEast }(\hspace*{ 5pt} \textbf{org.locationtech.jts.math.Vector2D} a  )
+\end{raggedleft} &
+ returns the angle from the eastern direction clockwise between 0 and 360 of the vector\\ \hline 
+\begin{raggedleft}public static double \textbf{oppositeAngleFromEast }(\hspace*{ 5pt} \textbf{double} angle  )
+\end{raggedleft} &
+ Return the angle representing the given angle incremented by 180 degrees (but witin 360 degrees)\\ \hline 
+\begin{raggedleft}public static org.locationtech.jts.math.Vector2D \textbf{getHeadingVector }(\hspace*{ 5pt} \textbf{double} angle  )
+\end{raggedleft} &
+ gets unit vector in the direction of angle\\ \hline 
+\begin{raggedleft}public static boolean \textbf{thresholdEquals }(\newline \hfill 
+\hspace*{ 5pt} \textbf{double} a , \newline
+ \hspace*{ 5pt} \textbf{double} b , \newline
+ \hspace*{ 5pt} \textbf{double} epsilon  )
+\end{raggedleft} &
+ Returns true if the given values are within a threshold of each other\\ \hline 
+\begin{raggedleft}public static boolean \textbf{thresholdEquals }(\newline \hfill 
+\hspace*{ 5pt} \textbf{double} a , \newline
+ \hspace*{ 5pt} \textbf{double} b  )
+\end{raggedleft} &
+ Returns true if the given values are within a threshold of each other. Uses default epsilon\\ \hline 
+\begin{raggedleft}public static boolean \textbf{thresholdEquals }(\newline \hfill 
+\hspace*{ 5pt} \textbf{org.locationtech.jts.geom.Coordinate} a , \newline
+ \hspace*{ 5pt} \textbf{org.locationtech.jts.geom.Coordinate} b , \newline
+ \hspace*{ 5pt} \textbf{double} epsilon  )
+\end{raggedleft} &
+ Returns true if the given coordinates are within a threshold of each other\\ \hline 
+\begin{raggedleft}public static boolean \textbf{thresholdEquals }(\newline \hfill 
+\hspace*{ 5pt} \textbf{org.locationtech.jts.geom.Coordinate} a , \newline
+ \hspace*{ 5pt} \textbf{org.locationtech.jts.geom.Coordinate} b  )
+\end{raggedleft} &
+ Returns true if the given coordinates are within a threshold of each other. uses default epsilon\\\end{tabularx}
 }
-\subsubsection{ uk.ac.ed.inf.aqmaps.simulation.planning.path }
-\cbox{ class BasePathPlanner } { Base class for planners with a limited number of maximum moves and a\newline%
+\subsubsection*{ uk.ac.ed.inf.aqmaps.simulation.planning.path }
+\cbox{ class BasePathPlanner } {\scriptsize Base class for planners with a limited number of maximum moves and a\newline%
  minimum reading range. All inheriting path planners must make sure that each sensor is read at the endpoint of some path segment\newline%
  and that that sensor is within reading range of the endpoint. They also must make sure that the path is under the maximum move limit
  
 \vspace*{4pt} \hrule \vspace*{3pt}
 Implements \textbf{ PathPlanner }
-\tcbsubtitle[before skip=\baselineskip]{Members}\begin{tabular}{ p{3in}|m{3.4in}}
-\textbf{public BasePathPlanner } (\\ \hspace*{ 5pt} double readingRange,\\\hspace*{ 5pt} int maxMoves,\\\hspace*{ 5pt} PathfindingAlgorithm$<$DirectedSearchNode$>$ algorithm) & \\ \hline 
-\textbf{public Deque$<$PathSegment$>$ planPath } (\\ \hspace*{ 5pt} org.locationtech.jts.geom.Coordinate startCoordinate,\\\hspace*{ 5pt} Deque$<$Sensor$>$ route,\\\hspace*{ 5pt} ConstrainedTreeGraph graph,\\\hspace*{ 5pt} boolean formLoop) & Plans the exact path required to reach all the given sensors, the specific constraints on placed on the route are decided\newline%
+\vspace*{-5pt}\tcbsubtitle[before skip=\baselineskip]{Members} 
+\begin{tabularx}{\linewidth}{X|m{0.5\textwidth}}
+\label{tab:BasePathPlanner}
+\begin{raggedleft}public  \textbf{\hyperref[tab:BasePathPlanner]{\color{blue}{BasePathPlanner}} }(\newline \hfill 
+\hspace*{ 5pt} \textbf{double} readingRange , \newline
+ \hspace*{ 5pt} \textbf{int} maxMoves , \newline
+ \hspace*{ 5pt} \textbf{PathfindingAlgorithm$<$DirectedSearchNode$>$} algorithm  )
+\end{raggedleft} &
+ Create a new path planner with the given constraints, and using the given pathfinding algorithm\\ \hline 
+\begin{raggedleft}public Deque$<$PathSegment$>$ \textbf{planPath }(\newline \hfill 
+\hspace*{ 5pt} \textbf{org.locationtech.jts.geom.Coordinate} startCoordinate , \newline
+ \hspace*{ 5pt} \textbf{Deque$<$Sensor$>$} route , \newline
+ \hspace*{ 5pt} \textbf{\hyperref[tab:ConstrainedTreeGraph]{\color{blue}{ConstrainedTreeGraph}}} graph , \newline
+ \hspace*{ 5pt} \textbf{boolean} formLoop  )
+\end{raggedleft} &
+ Plans the exact path required to reach all the given sensors, the specific constraints on placed on the route are decided\newline%
  by the specific implementation of the planner itself.\newline%
- The ConstrainedPathPlanner class adds a maximum move,reading range and also the move sequence constraint to the path planning problem, a valid path will allow the collector\newline%
- to come within READING\_RANGE of each sensor (the distance between each sensor and the collector at some path segment's endpoint will be less than or equal to READING\_RANGE).\newline%
- The number of segments returned will always be $<$= MAX\_MOVES. The move sequence in each path segment requires that a sensor be read at the end of each path segment only, i.e. the collector must move before collecting\newline%
- any reading, and only one reading must be made per path segment.\\ \hline 
-\textbf{protected abstract Deque$<$PathSegment$>$ pathPointsToSegmentsStrategy } (\\ \hspace*{ 5pt} Deque$<$DirectedSearchNode$>$ pathPoints,\\\hspace*{ 5pt} Deque$<$PathfindingGoal$>$ goalsRoute,\\\hspace*{ 5pt} Deque$<$Sensor$>$ sensorRoute,\\\hspace*{ 5pt} ConstrainedTreeGraph graph) & The main defining characteristic of a constrained path planner. Converts a path of points to a path of path segments\newline%
+ Plans the path starting from the given start coordinate, reaching all the given sensors and forming a loop back if the form loop argument is given\\ \hline 
+\begin{raggedleft}protected abstract Deque$<$PathSegment$>$ \textbf{pathPointsToSegmentsStrategy }(\newline \hfill 
+\hspace*{ 5pt} \textbf{Deque$<$DirectedSearchNode$>$} pathPoints , \newline
+ \hspace*{ 5pt} \textbf{Deque$<$PathfindingGoal$>$} goalsRoute , \newline
+ \hspace*{ 5pt} \textbf{Deque$<$Sensor$>$} sensorRoute , \newline
+ \hspace*{ 5pt} \textbf{\hyperref[tab:ConstrainedTreeGraph]{\color{blue}{ConstrainedTreeGraph}}} graph  )
+\end{raggedleft} &
+ The main defining characteristic of a constrained path planner. Converts a path of points to a path of path segments\newline%
  needs to make sure that each pathfinding goal is visited only in the end segment of some path segment in range.\newline%
- the passed deque arguments will be consumed\\ \hline 
-\end{tabular}
+ the passed deque arguments will be consumed\\\end{tabularx}
 }
-\cbox{ class PathSegment } { represents a singular move made by the sensor data collector\newline%
- each move follows the pattern of: move{-}$>$collect reading, \newline%
+\cbox{ class PathSegment } {\scriptsize represents a singular move made by the sensor data collector\newline%
+ each move follows the pattern of: move and then collect reading, \newline%
  we cannot collect a reading in a move unless we have moved
  
-\tcbsubtitle[before skip=\baselineskip]{Members}\begin{tabular}{ p{3in}|m{3.4in}}
-\textbf{public PathSegment } (\\ \hspace*{ 5pt} org.locationtech.jts.geom.Coordinate startPoint,\\\hspace*{ 5pt} int direction,\\\hspace*{ 5pt} org.locationtech.jts.geom.Coordinate endPoint,\\\hspace*{ 5pt} Sensor sensorRead) & Creates a path segment from the start and end points, the direction of movement and the sensor read if any\\ \hline 
-\textbf{public org.locationtech.jts.geom.Coordinate getStartPoint} () & \\ \hline 
-\textbf{public int getDirection} () & \\ \hline 
-\textbf{public org.locationtech.jts.geom.Coordinate getEndPoint} () & \\ \hline 
-\textbf{public Sensor getSensorRead} () & \\ \hline 
-\textbf{public String toString} () & \\ \hline 
-\end{tabular}
+\vspace*{-5pt}\tcbsubtitle[before skip=\baselineskip]{Members} 
+\begin{tabularx}{\linewidth}{X|m{0.5\textwidth}}
+\label{tab:PathSegment}
+\begin{raggedleft}public  \textbf{\hyperref[tab:PathSegment]{\color{blue}{PathSegment}} }(\newline \hfill 
+\hspace*{ 5pt} \textbf{org.locationtech.jts.geom.Coordinate} startPoint , \newline
+ \hspace*{ 5pt} \textbf{int} direction , \newline
+ \hspace*{ 5pt} \textbf{org.locationtech.jts.geom.Coordinate} endPoint , \newline
+ \hspace*{ 5pt} \textbf{\hyperref[tab:Sensor]{\color{blue}{Sensor}}} sensorRead  )
+\end{raggedleft} &
+ Creates a path segment from the start and end points, the direction of movement and the sensor read if any\\ \hline 
+\begin{raggedleft}public org.locationtech.jts.geom.Coordinate \textbf{getStartPoint}()
+\end{raggedleft} &
+ returns the start point of the segment\\ \hline 
+\begin{raggedleft}public int \textbf{getDirection}()
+\end{raggedleft} &
+ returns the direction between the start and end point\\ \hline 
+\begin{raggedleft}public org.locationtech.jts.geom.Coordinate \textbf{getEndPoint}()
+\end{raggedleft} &
+ returns the end point of the segment\\ \hline 
+\begin{raggedleft}public \hyperref[tab:Sensor]{\color{blue}{Sensor}} \textbf{getSensorRead}()
+\end{raggedleft} &
+ returns the sensor read at the end point of this segment\\\end{tabularx}
 }
-\cbox{ class SimplePathPlanner } { This path planner will apply some simple optimisations in order to produce a smaller number of path segments than the naive implementation.
+\cbox{ class SimplePathPlanner } {\scriptsize This path planner will apply some simple optimisations in order to produce a smaller number of path segments than the naive implementation.
  
 \vspace*{4pt} \hrule \vspace*{3pt}
 Implements \textbf{ PathPlanner }
-\tcbsubtitle[before skip=\baselineskip]{Members}\begin{tabular}{ p{3in}|m{3.4in}}
-\textbf{public SimplePathPlanner } (\\ \hspace*{ 5pt} double readingRange,\\\hspace*{ 5pt} int maxMoves,\\\hspace*{ 5pt} PathfindingAlgorithm$<$DirectedSearchNode$>$ algorithm) & \\ \hline 
-\textbf{protected Deque$<$PathSegment$>$ pathPointsToSegmentsStrategy } (\\ \hspace*{ 5pt} Deque$<$DirectedSearchNode$>$ pathPoints,\\\hspace*{ 5pt} Deque$<$PathfindingGoal$>$ goalsRoute,\\\hspace*{ 5pt} Deque$<$Sensor$>$ sensorRoute,\\\hspace*{ 5pt} ConstrainedTreeGraph graph) & The main defining characteristic of a constrained path planner. Converts a path of points to a path of path segments\newline%
+Extends \textbf{ \hyperref[tab:BasePathPlanner]{\color{blue}{BasePathPlanner}} }
+\vspace*{-5pt}\tcbsubtitle[before skip=\baselineskip]{Members} 
+\begin{tabularx}{\linewidth}{X|m{0.5\textwidth}}
+\label{tab:SimplePathPlanner}
+\begin{raggedleft}public  \textbf{\hyperref[tab:SimplePathPlanner]{\color{blue}{SimplePathPlanner}} }(\newline \hfill 
+\hspace*{ 5pt} \textbf{double} readingRange , \newline
+ \hspace*{ 5pt} \textbf{int} maxMoves , \newline
+ \hspace*{ 5pt} \textbf{PathfindingAlgorithm$<$DirectedSearchNode$>$} algorithm  )
+\end{raggedleft} &
+ \\ \hline 
+\begin{raggedleft}protected Deque$<$PathSegment$>$ \textbf{pathPointsToSegmentsStrategy }(\newline \hfill 
+\hspace*{ 5pt} \textbf{Deque$<$DirectedSearchNode$>$} pathPoints , \newline
+ \hspace*{ 5pt} \textbf{Deque$<$PathfindingGoal$>$} goalsRoute , \newline
+ \hspace*{ 5pt} \textbf{Deque$<$Sensor$>$} sensorRoute , \newline
+ \hspace*{ 5pt} \textbf{\hyperref[tab:ConstrainedTreeGraph]{\color{blue}{ConstrainedTreeGraph}}} graph  )
+\end{raggedleft} &
+ The main defining characteristic of a constrained path planner. Converts a path of points to a path of path segments\newline%
  needs to make sure that each pathfinding goal is visited only in the end segment of some path segment in range.\newline%
  the passed deque arguments will be consumed. This planner will try to perform some simple optimisations in order to shorten the route.\newline%
  In order to produce a valid route this planner will introduce proxy segments which go back and forth between the nearest neighbour\newline%
  whenever a sensor is read at the start point of a segment or if more than one sensor is read at the endpoint. The optimisations currently include:\newline%
   \newline%
  1) if the current segment does not read anything at the end point and the next reads a sensor at its start point, we "absorb" that sensor into\newline%
- the current segment.\\ \hline 
-\end{tabular}
+ the current segment.\\\end{tabularx}
 }
-\subsubsection{ uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.optimisers }
-\cbox{ class Optimiser2Opt } { An optimiser which performs the 2{-}opt algorithm to remove crossings in the path
+\subsubsection*{ uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.optimisers }
+\cbox{ class Optimiser2Opt } {\scriptsize An optimiser which performs the 2{-}opt algorithm to remove crossings in the path
  
 \vspace*{4pt} \hrule \vspace*{3pt}
 Implements \textbf{ CollectionOrderOptimiser }
-\tcbsubtitle[before skip=\baselineskip]{Members}\begin{tabular}{ p{3in}|m{3.4in}}
-\textbf{public Optimiser2Opt } (\\ \hspace*{ 5pt} double epsilon) & Construct a 2 opt optimiser with the given epsilon threshold. The threshold determines the minimum decrease in path cost required for the optimiser to keep optimising each loop.\\ \hline 
-\textbf{public void optimise } (\\ \hspace*{ 5pt} DistanceMatrix distanceMatrix,\\\hspace*{ 5pt} int{[}{]} path) & \\ \hline 
-\end{tabular}
+\vspace*{-5pt}\tcbsubtitle[before skip=\baselineskip]{Members} 
+\begin{tabularx}{\linewidth}{X|m{0.5\textwidth}}
+\label{tab:Optimiser2Opt}
+\begin{raggedleft}public  \textbf{\hyperref[tab:Optimiser2Opt]{\color{blue}{Optimiser2Opt}} }(\hspace*{ 5pt} \textbf{double} epsilon  )
+\end{raggedleft} &
+ Construct a 2 opt optimiser with the given epsilon threshold. The threshold determines the minimum decrease in path cost required for the optimiser to keep optimising each loop.\\ \hline 
+\begin{raggedleft}public void \textbf{optimise }(\newline \hfill 
+\hspace*{ 5pt} \textbf{\hyperref[tab:DistanceMatrix]{\color{blue}{DistanceMatrix}}} distanceMatrix , \newline
+ \hspace*{ 5pt} \textbf{int{[}{]}} path  )
+\end{raggedleft} &
+ \\\end{tabularx}
 }
-\subsubsection{ uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder }
-\cbox{ class BaseCollectionOrderPlanner } { Collection order planners generate good traversal orders between the given set of sensors,\newline%
+\subsubsection*{ uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder }
+\cbox{ class BaseCollectionOrderPlanner } {\scriptsize Collection order planners generate good traversal orders between the given set of sensors,\newline%
  where "good" criteria are defined by each implementation of the collection planner.
  
-\tcbsubtitle[before skip=\baselineskip]{Members}\begin{tabular}{ p{3in}|m{3.4in}}
-\textbf{public BaseCollectionOrderPlanner } (\\ \hspace*{ 5pt} Collection$<$CollectionOrderOptimiser$>$ optimisers,\\\hspace*{ 5pt} DistanceMatrix distMat) & Creates a collection order planner with the given opimisers and distance matrix method\\ \hline 
-\textbf{public Deque$<$Sensor$>$ planRoute } (\\ \hspace*{ 5pt} Sensor startSensor,\\\hspace*{ 5pt} Set$<$Sensor$>$ sensors,\\\hspace*{ 5pt} boolean formLoop) & Generates a collection order over the sensors.\\ \hline 
-\textbf{protected abstract int{[}{]} planInitialRoute } (\\ \hspace*{ 5pt} int startSensorIdx,\\\hspace*{ 5pt} Sensor{[}{]} sensors,\\\hspace*{ 5pt} DistanceMatrix distanceMatrix,\\\hspace*{ 5pt} boolean formLoop) & Drafts a route between the given sensors, using the given matrix. If form loop is true then the route will also begin and end on the same sensor\\ \hline 
-\end{tabular}
+\vspace*{-5pt}\tcbsubtitle[before skip=\baselineskip]{Members} 
+\begin{tabularx}{\linewidth}{X|m{0.5\textwidth}}
+\label{tab:BaseCollectionOrderPlanner}
+\begin{raggedleft}public  \textbf{\hyperref[tab:BaseCollectionOrderPlanner]{\color{blue}{BaseCollectionOrderPlanner}} }(\newline \hfill 
+\hspace*{ 5pt} \textbf{Collection$<$CollectionOrderOptimiser$>$} optimisers , \newline
+ \hspace*{ 5pt} \textbf{\hyperref[tab:DistanceMatrix]{\color{blue}{DistanceMatrix}}} distMat  )
+\end{raggedleft} &
+ Creates a collection order planner with the given opimisers and distance matrix method\\ \hline 
+\begin{raggedleft}public Deque$<$Sensor$>$ \textbf{planRoute }(\newline \hfill 
+\hspace*{ 5pt} \textbf{\hyperref[tab:Sensor]{\color{blue}{Sensor}}} startSensor , \newline
+ \hspace*{ 5pt} \textbf{Set$<$Sensor$>$} sensors , \newline
+ \hspace*{ 5pt} \textbf{boolean} formLoop  )
+\end{raggedleft} &
+ Generates a collection order over the sensors.\\ \hline 
+\begin{raggedleft}protected abstract int{[}{]} \textbf{planInitialRoute }(\newline \hfill 
+\hspace*{ 5pt} \textbf{int} startSensorIdx , \newline
+ \hspace*{ 5pt} \textbf{Sensor{[}{]}} sensors , \newline
+ \hspace*{ 5pt} \textbf{\hyperref[tab:DistanceMatrix]{\color{blue}{DistanceMatrix}}} distanceMatrix , \newline
+ \hspace*{ 5pt} \textbf{boolean} formLoop  )
+\end{raggedleft} &
+ Drafts a route between the given sensors, using the given matrix. If form loop is true then the route will also begin and end on the same sensor\\\end{tabularx}
 }
-\cbox{ class GreedyCollectionOrderPlanner } { Plans a collection of sensor data in a greedy order and in a way that forms a loop, \newline%
+\cbox{ class GreedyCollectionOrderPlanner } {\scriptsize Plans a collection of sensor data in a greedy order\newline%
  i.e. by picking the closest sensor at each step.
  
-\tcbsubtitle[before skip=\baselineskip]{Members}\begin{tabular}{ p{3in}|m{3.4in}}
-\textbf{public GreedyCollectionOrderPlanner } (\\ \hspace*{ 5pt} Collection$<$CollectionOrderOptimiser$>$ optimiser,\\\hspace*{ 5pt} DistanceMatrix distMat) & \\ \hline 
-\textbf{protected int{[}{]} planInitialRoute } (\\ \hspace*{ 5pt} int startSensorIdx,\\\hspace*{ 5pt} Sensor{[}{]} sensors,\\\hspace*{ 5pt} DistanceMatrix distanceMatrix,\\\hspace*{ 5pt} boolean formLoop) & Description copied from class:~BaseCollectionOrderPlanner\\ \hline 
-\end{tabular}
+\vspace*{4pt} \hrule \vspace*{3pt}
+Extends \textbf{ \hyperref[tab:BaseCollectionOrderPlanner]{\color{blue}{BaseCollectionOrderPlanner}} }
+\vspace*{-5pt}\tcbsubtitle[before skip=\baselineskip]{Members} 
+\begin{tabularx}{\linewidth}{X|m{0.5\textwidth}}
+\label{tab:GreedyCollectionOrderPlanner}
+\begin{raggedleft}public  \textbf{\hyperref[tab:GreedyCollectionOrderPlanner]{\color{blue}{GreedyCollectionOrderPlanner}} }(\newline \hfill 
+\hspace*{ 5pt} \textbf{Collection$<$CollectionOrderOptimiser$>$} optimiser , \newline
+ \hspace*{ 5pt} \textbf{\hyperref[tab:DistanceMatrix]{\color{blue}{DistanceMatrix}}} distMat  )
+\end{raggedleft} &
+ Creates a new Greedy planner with the given optimisers and distance matrix\\ \hline 
+\begin{raggedleft}protected int{[}{]} \textbf{planInitialRoute }(\newline \hfill 
+\hspace*{ 5pt} \textbf{int} startSensorIdx , \newline
+ \hspace*{ 5pt} \textbf{Sensor{[}{]}} sensors , \newline
+ \hspace*{ 5pt} \textbf{\hyperref[tab:DistanceMatrix]{\color{blue}{DistanceMatrix}}} distanceMatrix , \newline
+ \hspace*{ 5pt} \textbf{boolean} formLoop  )
+\end{raggedleft} &
+ Drafts a route between the given sensors, using the given matrix. If form loop is true then the route will also begin and end on the same sensor\\\end{tabularx}
 }
-\cbox{ class NearestInsertionCollectionOrderPlanner } { Collection order planner which employs the nearest insertion method to try and pick the best route.
+\cbox{ class NearestInsertionCollectionOrderPlanner } {\scriptsize Collection order planner which employs the nearest insertion method to try and pick the best route.
  
-\tcbsubtitle[before skip=\baselineskip]{Members}\begin{tabular}{ p{3in}|m{3.4in}}
-\textbf{public NearestInsertionCollectionOrderPlanner } (\\ \hspace*{ 5pt} Collection$<$CollectionOrderOptimiser$>$ optimisers,\\\hspace*{ 5pt} DistanceMatrix distMat) & \\ \hline 
-\textbf{protected int{[}{]} planInitialRoute } (\\ \hspace*{ 5pt} int startSensorIdx,\\\hspace*{ 5pt} Sensor{[}{]} sensors,\\\hspace*{ 5pt} DistanceMatrix distanceMatrix,\\\hspace*{ 5pt} boolean formLoop) & Drafts a route between the given sensors, using the given matrix. If form loop is true then the route will also begin and end on the same sensor. The route is planned using the nearest insertion heuristic.\\ \hline 
-\end{tabular}
+\vspace*{4pt} \hrule \vspace*{3pt}
+Extends \textbf{ \hyperref[tab:BaseCollectionOrderPlanner]{\color{blue}{BaseCollectionOrderPlanner}} }
+\vspace*{-5pt}\tcbsubtitle[before skip=\baselineskip]{Members} 
+\begin{tabularx}{\linewidth}{X|m{0.5\textwidth}}
+\label{tab:NearestInsertionCollectionOrderPlanner}
+\begin{raggedleft}public  \textbf{\hyperref[tab:NearestInsertionCollectionOrderPlanner]{\color{blue}{NearestInsertionCollectionOrderPlanner}} }(\newline \hfill 
+\hspace*{ 5pt} \textbf{Collection$<$CollectionOrderOptimiser$>$} optimisers , \newline
+ \hspace*{ 5pt} \textbf{\hyperref[tab:DistanceMatrix]{\color{blue}{DistanceMatrix}}} distMat  )
+\end{raggedleft} &
+ Constructs a new NI planner with the given optimisers and distance matrix\\ \hline 
+\begin{raggedleft}protected int{[}{]} \textbf{planInitialRoute }(\newline \hfill 
+\hspace*{ 5pt} \textbf{int} startSensorIdx , \newline
+ \hspace*{ 5pt} \textbf{Sensor{[}{]}} sensors , \newline
+ \hspace*{ 5pt} \textbf{\hyperref[tab:DistanceMatrix]{\color{blue}{DistanceMatrix}}} distanceMatrix , \newline
+ \hspace*{ 5pt} \textbf{boolean} formLoop  )
+\end{raggedleft} &
+ Drafts a route between the given sensors, using the given matrix. If form loop is true then the route will also begin and end on the same sensor\\\end{tabularx}
 }
-\subsubsection{ uk.ac.ed.inf.aqmaps.simulation.planning }
-\cbox{ class ConstrainedTreeGraph } { A graph which imposes angle, move length and boundary (+ obstacle) constraints for the nodes, and does not keep track of already produced nodes (tree search) i.e. a new node is returned each time
+\subsubsection*{ uk.ac.ed.inf.aqmaps.simulation.planning }
+\cbox{ class ConstrainedTreeGraph } {\scriptsize A graph which imposes angle, move length and boundary (+ obstacle) constraints for the nodes, and does not keep track of already produced nodes (tree search) i.e. a new node is returned each time.\newline%
+ The angle system needs to allow for each possible angle to have a "complement angle" which takes\newline%
+ you back to where you started if you moved in its direction after steping in any possible angle.\newline%
+ the min and max angle need to cover a range of 360 degrees {-} the angle increment .
  
 \vspace*{4pt} \hrule \vspace*{3pt}
 Implements \textbf{ SearchGraph }
-\tcbsubtitle[before skip=\baselineskip]{Members}\begin{tabular}{ p{3in}|m{3.4in}}
-\textbf{public ConstrainedTreeGraph } (\\ \hspace*{ 5pt} int minAngle,\\\hspace*{ 5pt} int maxAngle,\\\hspace*{ 5pt} int angleIncrement,\\\hspace*{ 5pt} double moveLength,\\\hspace*{ 5pt} Collection$<$Obstacle$>$ obstacles,\\\hspace*{ 5pt} org.locationtech.jts.geom.Polygon boundary) & The angle system needs to allow for each possible angle to have a "complement angle" which takes\newline%
- you back to where you started if you moved in its direction after steping in any possible angle.\newline%
- the min and max angle need to cover a range of 360 degrees {-} the angle increment .\\ \hline 
-\textbf{public ConstrainedTreeGraph } (\\ \hspace*{ 5pt} int minAngle,\\\hspace*{ 5pt} int maxAngle,\\\hspace*{ 5pt} int angleIncrement,\\\hspace*{ 5pt} double moveLength,\\\hspace*{ 5pt} Collection$<$Obstacle$>$ obstacles) & The angle system needs to allow for each possible angle to have a "complement angle" which takes\newline%
- you back to where you started if you moved in its direction after steping in any possible angle.\newline%
- the min and max angle need to cover a range of 360 degrees {-} the angle increment .\\ \hline 
-\textbf{public Collection$<$Obstacle$>$ getObstacles} () & Retrieve the obstacles present on the map\\ \hline 
-\textbf{public org.locationtech.jts.geom.Polygon getBoundary} () & Retrieve the bounds of the map\\ \hline 
-\textbf{public double getMoveLength} () & get the distance between a node and its neighbour\\ \hline 
-\textbf{public List$<$DirectedSearchNode$>$ getNeighbouringNodes } (\\ \hspace*{ 5pt} DirectedSearchNode node) & Returns the neighbours of the given node within the graph\\ \hline 
-\textbf{public int getClosestValidAngle } (\\ \hspace*{ 5pt} double direction) & returns the closest valid angle in this graph to the given double\\ \hline 
-\textbf{public int{[}{]} getValidDirectionsBetween } (\\ \hspace*{ 5pt} int lowAngle,\\\hspace*{ 5pt} int highAngle) & Retrieves all valid directions between the given low and high angle\\ \hline 
-\end{tabular}
+\vspace*{-5pt}\tcbsubtitle[before skip=\baselineskip]{Members} 
+\begin{tabularx}{\linewidth}{X|m{0.5\textwidth}}
+\label{tab:ConstrainedTreeGraph}
+\begin{raggedleft}public  \textbf{\hyperref[tab:ConstrainedTreeGraph]{\color{blue}{ConstrainedTreeGraph}} }(\newline \hfill 
+\hspace*{ 5pt} \textbf{int} minAngle , \newline
+ \hspace*{ 5pt} \textbf{int} maxAngle , \newline
+ \hspace*{ 5pt} \textbf{int} angleIncrement , \newline
+ \hspace*{ 5pt} \textbf{double} moveLength , \newline
+ \hspace*{ 5pt} \textbf{Collection$<$Obstacle$>$} obstacles , \newline
+ \hspace*{ 5pt} \textbf{org.locationtech.jts.geom.Polygon} boundary  )
+\end{raggedleft} &
+ Constructs new tree graph with the given angle and move constraints and obstacles, and the bounds of the zone outside of which coordinates are not produced\\ \hline 
+\begin{raggedleft}public  \textbf{\hyperref[tab:ConstrainedTreeGraph]{\color{blue}{ConstrainedTreeGraph}} }(\newline \hfill 
+\hspace*{ 5pt} \textbf{int} minAngle , \newline
+ \hspace*{ 5pt} \textbf{int} maxAngle , \newline
+ \hspace*{ 5pt} \textbf{int} angleIncrement , \newline
+ \hspace*{ 5pt} \textbf{double} moveLength , \newline
+ \hspace*{ 5pt} \textbf{Collection$<$Obstacle$>$} obstacles  )
+\end{raggedleft} &
+ Constructs new tree graph with the given angle and move constraints and obstacles\\ \hline 
+\begin{raggedleft}public Collection$<$Obstacle$>$ \textbf{getObstacles}()
+\end{raggedleft} &
+ Retrieve the obstacles present on the graph\\ \hline 
+\begin{raggedleft}public org.locationtech.jts.geom.Polygon \textbf{getBoundary}()
+\end{raggedleft} &
+ Retrieve the bounds of the graph\\ \hline 
+\begin{raggedleft}public double \textbf{getMoveLength}()
+\end{raggedleft} &
+ get the distance between a node and each of its neighbours\\ \hline 
+\begin{raggedleft}public List$<$DirectedSearchNode$>$ \textbf{getNeighbouringNodes }(\hspace*{ 5pt} \textbf{\hyperref[tab:DirectedSearchNode]{\color{blue}{DirectedSearchNode}}} node  )
+\end{raggedleft} &
+ Returns the neighbours of the given node within the graph\\ \hline 
+\begin{raggedleft}public int \textbf{getClosestValidAngle }(\hspace*{ 5pt} \textbf{double} direction  )
+\end{raggedleft} &
+ returns the closest valid angle in this graph to the given angle\\\end{tabularx}
 }
-\cbox{ class DistanceMatrix } { Class which stores distance information between sensors
+\cbox{ class DistanceMatrix } {\scriptsize Class which stores distance information between sensors
  
-\tcbsubtitle[before skip=\baselineskip]{Members}\begin{tabular}{ p{3in}|m{3.4in}}
-\textbf{public DistanceMatrix} () & Creates new blank distance matrix\\ \hline 
-\textbf{public void setupDistanceMatrix } (\\ \hspace*{ 5pt} Sensor{[}{]} sensors) & Fills in the distance matrix with distance data for the given sensors\\ \hline 
-\textbf{public double distanceBetween } (\\ \hspace*{ 5pt} int a,\\\hspace*{ 5pt} int b) & returs the distance from sensor a to sensor b at the given indices in the sensor list\\ \hline 
-\textbf{public double totalDistance } (\\ \hspace*{ 5pt} int{[}{]} route,\\\hspace*{ 5pt} int startIdx,\\\hspace*{ 5pt} int endIdx) & calculates the total distance of the subpath specified with start and end indices within the given path of sensor indices.\\ \hline 
-\textbf{public double totalDistance } (\\ \hspace*{ 5pt} int{[}{]} route) & \\ \hline 
-\textbf{protected abstract double distanceMetric } (\\ \hspace*{ 5pt} Sensor a,\\\hspace*{ 5pt} Sensor b) & the specific distance measure used to calculate distances. Does NOT have to be symmetric\\ \hline 
-\end{tabular}
+\vspace*{-5pt}\tcbsubtitle[before skip=\baselineskip]{Members} 
+\begin{tabularx}{\linewidth}{X|m{0.5\textwidth}}
+\label{tab:DistanceMatrix}
+\begin{raggedleft}public  \textbf{\hyperref[tab:DistanceMatrix]{\color{blue}{DistanceMatrix}}}()
+\end{raggedleft} &
+ Creates new blank distance matrix\\ \hline 
+\begin{raggedleft}public void \textbf{setupDistanceMatrix }(\hspace*{ 5pt} \textbf{Sensor{[}{]}} sensors  )
+\end{raggedleft} &
+ Fills in the distance matrix with distance data for the given sensors, each sensor is referred to by its index in the sensors array given later.\\ \hline 
+\begin{raggedleft}public double \textbf{distanceBetween }(\newline \hfill 
+\hspace*{ 5pt} \textbf{int} a , \newline
+ \hspace*{ 5pt} \textbf{int} b  )
+\end{raggedleft} &
+ returs the distance from sensor a to sensor b at the given indices in the sensor list\\ \hline 
+\begin{raggedleft}public double \textbf{totalDistance }(\newline \hfill 
+\hspace*{ 5pt} \textbf{int{[}{]}} route , \newline
+ \hspace*{ 5pt} \textbf{int} startIdx , \newline
+ \hspace*{ 5pt} \textbf{int} endIdx  )
+\end{raggedleft} &
+ calculates the total distance of the subpath specified with start and end indices within the given path of sensor indices.\\ \hline 
+\begin{raggedleft}public double \textbf{totalDistance }(\hspace*{ 5pt} \textbf{int{[}{]}} route  )
+\end{raggedleft} &
+ Calculates the total length of the given path (not including looping back)\\ \hline 
+\begin{raggedleft}protected abstract double \textbf{distanceMetric }(\newline \hfill 
+\hspace*{ 5pt} \textbf{\hyperref[tab:Sensor]{\color{blue}{Sensor}}} a , \newline
+ \hspace*{ 5pt} \textbf{\hyperref[tab:Sensor]{\color{blue}{Sensor}}} b  )
+\end{raggedleft} &
+ the specific distance measure used to calculate distances. Does NOT have to be symmetric\\\end{tabularx}
 }
-\cbox{ class EuclidianDistanceMatrix } { Distance matrix using euclidian distance as the value for distances
+\cbox{ class EuclidianDistanceMatrix } {\scriptsize Distance matrix using euclidian distance as the value for distances
  
-\tcbsubtitle[before skip=\baselineskip]{Members}\begin{tabular}{ p{3in}|m{3.4in}}
-\textbf{public EuclidianDistanceMatrix} () & \\ \hline 
-\textbf{protected double distanceMetric } (\\ \hspace*{ 5pt} Sensor a,\\\hspace*{ 5pt} Sensor b) & Description copied from class:~DistanceMatrix\\ \hline 
-\end{tabular}
+\vspace*{4pt} \hrule \vspace*{3pt}
+Extends \textbf{ \hyperref[tab:DistanceMatrix]{\color{blue}{DistanceMatrix}} }
+\vspace*{-5pt}\tcbsubtitle[before skip=\baselineskip]{Members} 
+\begin{tabularx}{\linewidth}{X|m{0.5\textwidth}}
+\label{tab:EuclidianDistanceMatrix}
+\begin{raggedleft}public  \textbf{\hyperref[tab:EuclidianDistanceMatrix]{\color{blue}{EuclidianDistanceMatrix}}}()
+\end{raggedleft} &
+ \\ \hline 
+\begin{raggedleft}protected double \textbf{distanceMetric }(\newline \hfill 
+\hspace*{ 5pt} \textbf{\hyperref[tab:Sensor]{\color{blue}{Sensor}}} a , \newline
+ \hspace*{ 5pt} \textbf{\hyperref[tab:Sensor]{\color{blue}{Sensor}}} b  )
+\end{raggedleft} &
+ the specific distance measure used to calculate distances. Does NOT have to be symmetric\\\end{tabularx}
 }
-\cbox{ class GreatestAvoidanceDistanceMatrix } { Distance matrix using the greatest avoidance distance as the distance metric. This distance is calculated by forming a minimum bounding circle around all obstacles\newline%
- between any two sensors and calculating the length of the path which "wraps" around the circle (approximated as a triangle)
+\cbox{ class GreatestAvoidanceDistanceMatrix } {\scriptsize Distance matrix using the greatest avoidance distance as the distance metric. This distance is calculated by forming a minimum bounding circle around all obstacles\newline%
+ between any two sensors and calculating the length of the path which "wraps" around the circle
  
-\tcbsubtitle[before skip=\baselineskip]{Members}\begin{tabular}{ p{3in}|m{3.4in}}
-\textbf{public GreatestAvoidanceDistanceMatrix } (\\ \hspace*{ 5pt} Collection$<$Obstacle$>$ obstacles) & initialize blank distance matrix with the given obstacles\\ \hline 
-\textbf{protected double distanceMetric } (\\ \hspace*{ 5pt} Sensor a,\\\hspace*{ 5pt} Sensor b) & Description copied from class:~DistanceMatrix\\ \hline 
-\end{tabular}
+\vspace*{4pt} \hrule \vspace*{3pt}
+Extends \textbf{ \hyperref[tab:DistanceMatrix]{\color{blue}{DistanceMatrix}} }
+\vspace*{-5pt}\tcbsubtitle[before skip=\baselineskip]{Members} 
+\begin{tabularx}{\linewidth}{X|m{0.5\textwidth}}
+\label{tab:GreatestAvoidanceDistanceMatrix}
+\begin{raggedleft}public  \textbf{\hyperref[tab:GreatestAvoidanceDistanceMatrix]{\color{blue}{GreatestAvoidanceDistanceMatrix}} }(\hspace*{ 5pt} \textbf{Collection$<$Obstacle$>$} obstacles  )
+\end{raggedleft} &
+ initialize blank distance matrix with the given obstacles\\ \hline 
+\begin{raggedleft}protected double \textbf{distanceMetric }(\newline \hfill 
+\hspace*{ 5pt} \textbf{\hyperref[tab:Sensor]{\color{blue}{Sensor}}} a , \newline
+ \hspace*{ 5pt} \textbf{\hyperref[tab:Sensor]{\color{blue}{Sensor}}} b  )
+\end{raggedleft} &
+ the specific distance measure used to calculate distances. Does NOT have to be symmetric\\\end{tabularx}
 }
-\subsubsection{ uk.ac.ed.inf.aqmaps.simulation.collection }
-\cbox{ class BaseDataCollector } { Each data collector follows the same pattern, it uses a path planner to find a way between two points, as well as a collection order planner which\newline%
- sets out the route around all the sensors. Each collector may use this data differently, for example it may discard the path given by a path planner under certain circumstances,\newline%
- or change the route mid{-}way.
+\subsubsection*{ uk.ac.ed.inf.aqmaps.simulation.collection }
+\cbox{ class BaseDataCollector } {\scriptsize Each data collector follows the same pattern, it uses a path planner to find a way between two points, as well as a collection order planner which\newline%
+ sets out the route around all the sensors. Each collector may use this data differently, for example it may discard the path given by a path planner under certain circumstances, or change the route mid{-}way.
  
 \vspace*{4pt} \hrule \vspace*{3pt}
 Implements \textbf{ SensorDataCollector }
-\tcbsubtitle[before skip=\baselineskip]{Members}\begin{tabular}{ p{3in}|m{3.4in}}
-\textbf{public BaseDataCollector } (\\ \hspace*{ 5pt} PathPlanner fp,\\\hspace*{ 5pt} BaseCollectionOrderPlanner rp) & \\ \hline 
-\end{tabular}
+\vspace*{-5pt}\tcbsubtitle[before skip=\baselineskip]{Members} 
+\begin{tabularx}{\linewidth}{X|m{0.5\textwidth}}
+\label{tab:BaseDataCollector}
+\begin{raggedleft}public  \textbf{\hyperref[tab:BaseDataCollector]{\color{blue}{BaseDataCollector}} }(\newline \hfill 
+\hspace*{ 5pt} \textbf{PathPlanner} fp , \newline
+ \hspace*{ 5pt} \textbf{\hyperref[tab:BaseCollectionOrderPlanner]{\color{blue}{BaseCollectionOrderPlanner}}} rp  )
+\end{raggedleft} &
+ Constructs a data collector with the given path planner and the given collection order planner\\\end{tabularx}
 }
-\cbox{ class Drone } { the drone collector is not constrained by the map layout, if the graph (or map) allows a node to be reached\newline%
+\cbox{ class Drone } {\scriptsize the drone collector is not constrained by the map layout, if the graph (or map) allows a node to be reached\newline%
  the drone can fly through it, the graph itself may impose constraints indirectly, but the drone assumes absolutely no restrictions in its movements.
  
 \vspace*{4pt} \hrule \vspace*{3pt}
 Implements \textbf{ SensorDataCollector }
-\tcbsubtitle[before skip=\baselineskip]{Members}\begin{tabular}{ p{3in}|m{3.4in}}
-\textbf{public Drone } (\\ \hspace*{ 5pt} PathPlanner fp,\\\hspace*{ 5pt} BaseCollectionOrderPlanner rp) & \\ \hline 
-\textbf{public Deque$<$PathSegment$>$ planCollection } (\\ \hspace*{ 5pt} org.locationtech.jts.geom.Coordinate startCoordinate,\\\hspace*{ 5pt} Set$<$Sensor$>$ sensors,\\\hspace*{ 5pt} ConstrainedTreeGraph graph,\\\hspace*{ 5pt} boolean formLoop,\\\hspace*{ 5pt} int randomSeed) & Description copied from interface:~SensorDataCollector\\ \hline 
-\end{tabular}
+Extends \textbf{ \hyperref[tab:BaseDataCollector]{\color{blue}{BaseDataCollector}} }
+\vspace*{-5pt}\tcbsubtitle[before skip=\baselineskip]{Members} 
+\begin{tabularx}{\linewidth}{X|m{0.5\textwidth}}
+\label{tab:Drone}
+\begin{raggedleft}public  \textbf{\hyperref[tab:Drone]{\color{blue}{Drone}} }(\newline \hfill 
+\hspace*{ 5pt} \textbf{PathPlanner} fp , \newline
+ \hspace*{ 5pt} \textbf{\hyperref[tab:BaseCollectionOrderPlanner]{\color{blue}{BaseCollectionOrderPlanner}}} rp  )
+\end{raggedleft} &
+ \\ \hline 
+\begin{raggedleft}public Deque$<$PathSegment$>$ \textbf{planCollection }(\newline \hfill 
+\hspace*{ 5pt} \textbf{org.locationtech.jts.geom.Coordinate} startCoordinate , \newline
+ \hspace*{ 5pt} \textbf{Set$<$Sensor$>$} sensors , \newline
+ \hspace*{ 5pt} \textbf{\hyperref[tab:ConstrainedTreeGraph]{\color{blue}{ConstrainedTreeGraph}}} graph , \newline
+ \hspace*{ 5pt} \textbf{boolean} formLoop , \newline
+ \hspace*{ 5pt} \textbf{int} randomSeed  )
+\end{raggedleft} &
+ Plans the best order of visiting sensors (best being defined by the collector itself)\newline%
+ and creates a detailed ordered path segment collection which when followed will allow a successful collection. \newline%
+ The sensors returned will have their state set to either\newline%
+ read or not read, depending on whether they are reached within the path or not\\\end{tabularx}
 }
-\subsubsection{ uk.ac.ed.inf.aqmaps.simulation }
-\cbox{ class Building } { An obstacle which has a polygonal shape
+\subsubsection*{ uk.ac.ed.inf.aqmaps.simulation }
+\cbox{ class Building } {\scriptsize An obstacle with a polygonal shape representing a building
  
 \vspace*{4pt} \hrule \vspace*{3pt}
 Implements \textbf{ Obstacle }
 Implements \textbf{ Shape }
-\tcbsubtitle[before skip=\baselineskip]{Members}\begin{tabular}{ p{3in}|m{3.4in}}
-\textbf{public Building } (\\ \hspace*{ 5pt} org.locationtech.jts.geom.Polygon shape) & initialize new building with the given shape\\ \hline 
-\textbf{public org.locationtech.jts.geom.Polygon getShape} () & Retrieve the shape of the obstacle\\ \hline 
-\textbf{public boolean intersectsPath } (\\ \hspace*{ 5pt} org.locationtech.jts.geom.Coordinate a,\\\hspace*{ 5pt} org.locationtech.jts.geom.Coordinate b) & Returns true if the line formed from a to b intersects this obstacle\\ \hline 
-\end{tabular}
+\vspace*{-5pt}\tcbsubtitle[before skip=\baselineskip]{Members} 
+\begin{tabularx}{\linewidth}{X|m{0.5\textwidth}}
+\label{tab:Building}
+\begin{raggedleft}public  \textbf{\hyperref[tab:Building]{\color{blue}{Building}} }(\hspace*{ 5pt} \textbf{org.locationtech.jts.geom.Polygon} shape  )
+\end{raggedleft} &
+ initialize new building with the given shape\\ \hline 
+\begin{raggedleft}public org.locationtech.jts.geom.Polygon \textbf{getShape}()
+\end{raggedleft} &
+ Retrieve the shape of the obstacle\\ \hline 
+\begin{raggedleft}public boolean \textbf{intersectsPath }(\newline \hfill 
+\hspace*{ 5pt} \textbf{org.locationtech.jts.geom.Coordinate} a , \newline
+ \hspace*{ 5pt} \textbf{org.locationtech.jts.geom.Coordinate} b  )
+\end{raggedleft} &
+ Returns true if the line formed from a to b intersects this obstacle\\\end{tabularx}
 }
-\cbox{ class DirectedSearchNode } { A data structure representing a tree search node for \newline%
+\cbox{ class DirectedSearchNode } {\scriptsize A data structure representing a tree search node for \newline%
  spatial pathfinding problems with integer angles.
  
-\tcbsubtitle[before skip=\baselineskip]{Members}\begin{tabular}{ p{3in}|m{3.4in}}
-\textbf{public DirectedSearchNode } (\\ \hspace*{ 5pt} org.locationtech.jts.geom.Coordinate location,\\\hspace*{ 5pt} DirectedSearchNode parent,\\\hspace*{ 5pt} int directionFromParent,\\\hspace*{ 5pt} double cost) & Creates a new spatial tree search node which is fully specified apart from\newline%
+\vspace*{4pt} \hrule \vspace*{3pt}
+Extends \textbf{ \hyperref[tab:SearchNode]{\color{blue}{SearchNode}} }
+\vspace*{-5pt}\tcbsubtitle[before skip=\baselineskip]{Members} 
+\begin{tabularx}{\linewidth}{X|m{0.5\textwidth}}
+\label{tab:DirectedSearchNode}
+\begin{raggedleft}public  \textbf{\hyperref[tab:DirectedSearchNode]{\color{blue}{DirectedSearchNode}} }(\newline \hfill 
+\hspace*{ 5pt} \textbf{org.locationtech.jts.geom.Coordinate} location , \newline
+ \hspace*{ 5pt} \textbf{\hyperref[tab:DirectedSearchNode]{\color{blue}{DirectedSearchNode}}} parent , \newline
+ \hspace*{ 5pt} \textbf{int} directionFromParent , \newline
+ \hspace*{ 5pt} \textbf{double} cost  )
+\end{raggedleft} &
+ Creates a new spatial tree search node which is fully specified apart from\newline%
  the heuristic value\\ \hline 
-\textbf{public DirectedSearchNode } (\\ \hspace*{ 5pt} org.locationtech.jts.geom.Coordinate location,\\\hspace*{ 5pt} DirectedSearchNode parent,\\\hspace*{ 5pt} int directionFromParent,\\\hspace*{ 5pt} double heuristic,\\\hspace*{ 5pt} double cost) & Creates fully specified tree search node\\ \hline 
-\textbf{public int getDirectionFromParent} () & \\ \hline 
-\end{tabular}
+\begin{raggedleft}public  \textbf{\hyperref[tab:DirectedSearchNode]{\color{blue}{DirectedSearchNode}} }(\newline \hfill 
+\hspace*{ 5pt} \textbf{org.locationtech.jts.geom.Coordinate} location , \newline
+ \hspace*{ 5pt} \textbf{\hyperref[tab:DirectedSearchNode]{\color{blue}{DirectedSearchNode}}} parent , \newline
+ \hspace*{ 5pt} \textbf{int} directionFromParent , \newline
+ \hspace*{ 5pt} \textbf{double} heuristic , \newline
+ \hspace*{ 5pt} \textbf{double} cost  )
+\end{raggedleft} &
+ Creates fully specified tree search node\\ \hline 
+\begin{raggedleft}public int \textbf{getDirectionFromParent}()
+\end{raggedleft} &
+ retrieves the direction between this node's parent and itself\\\end{tabularx}
 }
-\cbox{ class Sensor } { Sensors contain a reading value and a battery level as well as the what 3 words location and coordinates of the sensor.\newline%
+\cbox{ class Sensor } {\scriptsize Sensors contain a reading value and a battery level as well as the what 3 words location and coordinates of the sensor.\newline%
  This sensor will contain placeholder values for readings and battery status untill it is set to have been read.
  
 \vspace*{4pt} \hrule \vspace*{3pt}
 Implements \textbf{ PathfindingGoal }
-\tcbsubtitle[before skip=\baselineskip]{Members}\begin{tabular}{ p{3in}|m{3.4in}}
-\textbf{public Sensor } (\\ \hspace*{ 5pt} org.locationtech.jts.geom.Coordinate coordinates,\\\hspace*{ 5pt} float reading,\\\hspace*{ 5pt} float batteryLevel,\\\hspace*{ 5pt} String W3WLocation) & \\ \hline 
-\textbf{public boolean equals } (\\ \hspace*{ 5pt} Object o) & \\ \hline 
-\textbf{public int hashCode} () & \\ \hline 
-\textbf{public String toString} () & \\ \hline 
-\textbf{public void setHaveBeenRead } (\\ \hspace*{ 5pt} boolean read) & Sets the sensor state to "read". If the sensor is not set to have been read, asking it for readings and battery levels will return placeholder values\\ \hline 
-\textbf{public org.locationtech.jts.geom.Coordinate getCoordinates} () & Return the coordinates of the sensor\\ \hline 
-\textbf{public float getReading} () & Return the reading at this sensor. Will return NaN untill the setHaveBeenRead(true) has been called\\ \hline 
-\textbf{public float getBatteryLevel} () & Return the battery level at this sensor. Will return NaN untill the setHaveBeenRead(true) has been called\\ \hline 
-\textbf{public boolean hasBeenRead} () & Returns true if this sensor has been read (i.e. setHaveBeenRead(true) has been called on this object)\\ \hline 
-\textbf{public String getW3WLocation} () & Retrieves the 3 word address (w3w) of this sensor\\ \hline 
-\end{tabular}
+\vspace*{-5pt}\tcbsubtitle[before skip=\baselineskip]{Members} 
+\begin{tabularx}{\linewidth}{X|m{0.5\textwidth}}
+\label{tab:Sensor}
+\begin{raggedleft}public  \textbf{\hyperref[tab:Sensor]{\color{blue}{Sensor}} }(\newline \hfill 
+\hspace*{ 5pt} \textbf{org.locationtech.jts.geom.Coordinate} coordinates , \newline
+ \hspace*{ 5pt} \textbf{float} reading , \newline
+ \hspace*{ 5pt} \textbf{float} batteryLevel , \newline
+ \hspace*{ 5pt} \textbf{String} W3WLocation  )
+\end{raggedleft} &
+ \\ \hline 
+\begin{raggedleft}public void \textbf{setHaveBeenRead }(\hspace*{ 5pt} \textbf{boolean} read  )
+\end{raggedleft} &
+ Sets the sensor state to "read". If the sensor is not set to have been read, asking it for readings and battery levels will return placeholder values\\ \hline 
+\begin{raggedleft}public org.locationtech.jts.geom.Coordinate \textbf{getCoordinates}()
+\end{raggedleft} &
+ Return the coordinates of the sensor\\ \hline 
+\begin{raggedleft}public float \textbf{getReading}()
+\end{raggedleft} &
+ Return the reading at this sensor. Will return NaN untill the setHaveBeenRead(true) has been called\\ \hline 
+\begin{raggedleft}public float \textbf{getBatteryLevel}()
+\end{raggedleft} &
+ Return the battery level at this sensor. Will return NaN untill the setHaveBeenRead(true) has been called\\ \hline 
+\begin{raggedleft}public boolean \textbf{hasBeenRead}()
+\end{raggedleft} &
+ Returns true if this sensor has been read (i.e. setHaveBeenRead(true) has been called on this object)\\ \hline 
+\begin{raggedleft}public String \textbf{getW3WLocation}()
+\end{raggedleft} &
+ Retrieves the 3 word address (w3w) of this sensor\\\end{tabularx}
 }
-\cbox{ class SensorDataCollectorFactory } { A utility class for instantiating sensor data collectors with correct parameter values in one call
+\cbox{ class SensorDataCollectorFactory } {\scriptsize A utility class for instantiating sensor data collectors with correct parameter values in one call
  
-\tcbsubtitle[before skip=\baselineskip]{Members}\begin{tabular}{ p{3in}|m{3.4in}}
-\textbf{public SensorDataCollectorFactory} () & \\ \hline 
-\textbf{public static SensorDataCollector createCollector } (\\ \hspace*{ 5pt} ConstrainedTreeGraph g,\\\hspace*{ 5pt} double readingRange,\\\hspace*{ 5pt} int maxMoves,\\\hspace*{ 5pt} SensorDataCollectorFactory.CollectorType collectorType,\\\hspace*{ 5pt} SensorDataCollectorFactory.PathfindingHeuristicType heuristicType,\\\hspace*{ 5pt} SensorDataCollectorFactory.CollectionOrderPlannerType plannerType,\\\hspace*{ 5pt} SensorDataCollectorFactory.DistanceMatrixType matrixType) & Create a new collector within the given domain and with the given parameters.\\ \hline 
-\textbf{public static SensorDataCollector createCollector } (\\ \hspace*{ 5pt} ConstrainedTreeGraph g,\\\hspace*{ 5pt} double readingRange,\\\hspace*{ 5pt} int maxMoves,\\\hspace*{ 5pt} SensorDataCollectorFactory.CollectorType collectorType,\\\hspace*{ 5pt} SensorDataCollectorFactory.PathfindingHeuristicType heuristicType,\\\hspace*{ 5pt} SensorDataCollectorFactory.CollectionOrderPlannerType plannerType,\\\hspace*{ 5pt} SensorDataCollectorFactory.DistanceMatrixType matrixType,\\\hspace*{ 5pt} float relaxationFactor,\\\hspace*{ 5pt} double hashingGridWidth,\\\hspace*{ 5pt} double opt2Epsilon) & Create a new collector within the given domain and with the given parameters\\ \hline 
-\end{tabular}
+\vspace*{-5pt}\tcbsubtitle[before skip=\baselineskip]{Members} 
+\begin{tabularx}{\linewidth}{X|m{0.5\textwidth}}
+\label{tab:SensorDataCollectorFactory}
+\begin{raggedleft}public  \textbf{\hyperref[tab:SensorDataCollectorFactory]{\color{blue}{SensorDataCollectorFactory}}}()
+\end{raggedleft} &
+ \\ \hline 
+\begin{raggedleft}public static SensorDataCollector \textbf{createCollector }(\newline \hfill 
+\hspace*{ 5pt} \textbf{\hyperref[tab:ConstrainedTreeGraph]{\color{blue}{ConstrainedTreeGraph}}} g , \newline
+ \hspace*{ 5pt} \textbf{double} readingRange , \newline
+ \hspace*{ 5pt} \textbf{int} maxMoves , \newline
+ \hspace*{ 5pt} \textbf{\hyperref[tab:SensorDataCollectorFactory.CollectorType]{\color{blue}{CollectorType}}} collectorType , \newline
+ \hspace*{ 5pt} \textbf{\hyperref[tab:SensorDataCollectorFactory.PathfindingHeuristicType]{\color{blue}{PathfindingHeuristicType}}} heuristicType , \newline
+ \hspace*{ 5pt} \textbf{\hyperref[tab:SensorDataCollectorFactory.CollectionOrderPlannerType]{\color{blue}{CollectionOrderPlannerType}}} plannerType , \newline
+ \hspace*{ 5pt} \textbf{\hyperref[tab:SensorDataCollectorFactory.DistanceMatrixType]{\color{blue}{DistanceMatrixType}}} matrixType  )
+\end{raggedleft} &
+ Create a new collector within the given domain and with the given parameters, filling in missing parameters with optimal values.\\ \hline 
+\begin{raggedleft}public static SensorDataCollector \textbf{createCollector }(\newline \hfill 
+\hspace*{ 5pt} \textbf{\hyperref[tab:ConstrainedTreeGraph]{\color{blue}{ConstrainedTreeGraph}}} g , \newline
+ \hspace*{ 5pt} \textbf{double} readingRange , \newline
+ \hspace*{ 5pt} \textbf{int} maxMoves , \newline
+ \hspace*{ 5pt} \textbf{\hyperref[tab:SensorDataCollectorFactory.CollectorType]{\color{blue}{CollectorType}}} collectorType , \newline
+ \hspace*{ 5pt} \textbf{\hyperref[tab:SensorDataCollectorFactory.PathfindingHeuristicType]{\color{blue}{PathfindingHeuristicType}}} heuristicType , \newline
+ \hspace*{ 5pt} \textbf{\hyperref[tab:SensorDataCollectorFactory.CollectionOrderPlannerType]{\color{blue}{CollectionOrderPlannerType}}} plannerType , \newline
+ \hspace*{ 5pt} \textbf{\hyperref[tab:SensorDataCollectorFactory.DistanceMatrixType]{\color{blue}{DistanceMatrixType}}} matrixType , \newline
+ \hspace*{ 5pt} \textbf{float} relaxationFactor , \newline
+ \hspace*{ 5pt} \textbf{double} hashingGridWidth , \newline
+ \hspace*{ 5pt} \textbf{double} opt2Epsilon  )
+\end{raggedleft} &
+ Create a new collector within the given domain and with the given parameters\\\end{tabularx}
 }
-\cbox{ enum SensorDataCollectorFactory.CollectionOrderPlannerType } { 
+\cbox{ enum SensorDataCollectorFactory.CollectionOrderPlannerType } {\scriptsize The type of the collection order planner to use
  
+\label{tab:SensorDataCollectorFactory.CollectionOrderPlannerType}
 }
-\cbox{ enum SensorDataCollectorFactory.CollectorType } { 
+\cbox{ enum SensorDataCollectorFactory.CollectorType } {\scriptsize The type of sensor data collector to use
  
+\label{tab:SensorDataCollectorFactory.CollectorType}
 }
-\cbox{ enum SensorDataCollectorFactory.DistanceMatrixType } { 
+\cbox{ enum SensorDataCollectorFactory.DistanceMatrixType } {\scriptsize The type of distance matrix to use for the TSP solver
  
+\label{tab:SensorDataCollectorFactory.DistanceMatrixType}
 }
-\cbox{ enum SensorDataCollectorFactory.PathfindingHeuristicType } { 
+\cbox{ enum SensorDataCollectorFactory.PathfindingHeuristicType } {\scriptsize The type of pathfinding heuristic to use
  
+\label{tab:SensorDataCollectorFactory.PathfindingHeuristicType}
 }
-\subsubsection{ uk.ac.ed.inf.aqmaps.pathfinding.heuristics }
-\cbox{ class StraightLineDistance } { The simplest heuristic, uses the euclidian distance between the node and its goal as the value of its heuristic.
+\subsubsection*{ uk.ac.ed.inf.aqmaps.pathfinding.heuristics }
+\cbox{ class StraightLineDistance } {\scriptsize The simplest heuristic, uses the euclidian distance between the node and its goal as the value of its heuristic.
  
 \vspace*{4pt} \hrule \vspace*{3pt}
 Implements \textbf{ PathfindingHeuristic }
-\tcbsubtitle[before skip=\baselineskip]{Members}\begin{tabular}{ p{3in}|m{3.4in}}
-\textbf{public StraightLineDistance} () & Initializes a new instance of the straight line heuristic with a relaxation factor of 1 (i.e. no relaxation)\\ \hline 
-\textbf{public StraightLineDistance } (\\ \hspace*{ 5pt} double relaxationFactor) & Initializes a new instance of the straight line heuristic with the given relaxation factor. Some pathfinding algorithms such as Astar will run much faster \newline%
+\vspace*{-5pt}\tcbsubtitle[before skip=\baselineskip]{Members} 
+\begin{tabularx}{\linewidth}{X|m{0.5\textwidth}}
+\label{tab:StraightLineDistance}
+\begin{raggedleft}public  \textbf{\hyperref[tab:StraightLineDistance]{\color{blue}{StraightLineDistance}}}()
+\end{raggedleft} &
+ Initializes a new instance of the straight line heuristic with a relaxation factor of 1 (i.e. no relaxation)\\ \hline 
+\begin{raggedleft}public  \textbf{\hyperref[tab:StraightLineDistance]{\color{blue}{StraightLineDistance}} }(\hspace*{ 5pt} \textbf{double} relaxationFactor  )
+\end{raggedleft} &
+ Initializes a new instance of the straight line heuristic with the given relaxation factor. Some pathfinding algorithms such as Astar will run much faster \newline%
  with a relaxed heuristic, but the relaxed solution might not be optimal (path cost $<$= relaxationFactor * optimal path cost)\\ \hline 
-\textbf{public $<$T extends SearchNode$<$T$>$$>$ double heuristic } (\\ \hspace*{ 5pt} T a,\\\hspace*{ 5pt} PathfindingGoal b) & Returns the value of the heuristic between the given node and the goal. A heuristic must be \newline%
- a) admissible {-} i.e. never overestimate the real cost of reaching the goal\newline%
- b) consistent {-} i.e. follow the triangle inequality\newline%
- Otherwise pathfinding algorithms might struggle to find a good solution or to even find one at all\\ \hline 
-\end{tabular}
+\begin{raggedleft}public $<$T extends SearchNode$<$T$>$$>$ double \textbf{heuristic }(\newline \hfill 
+\hspace*{ 5pt} \textbf{T} a , \newline
+ \hspace*{ 5pt} \textbf{PathfindingGoal} b  )
+\end{raggedleft} &
+ Returns the straight line distance between the nodes multiplied by the relaxation factor\\\end{tabularx}
 }
-\subsubsection{ uk.ac.ed.inf.aqmaps.pathfinding.hashing }
-\cbox{ class GridSnappingSpatialHash } { hashes real coordinates by scaling them and "snapping" them to a grid..
+\subsubsection*{ uk.ac.ed.inf.aqmaps.pathfinding.hashing }
+\cbox{ class GridSnappingSpatialHash } {\scriptsize hashes real coordinates by scaling them and "snapping" them to a grid..
  
 \vspace*{4pt} \hrule \vspace*{3pt}
 Implements \textbf{ SpatialHash }
-\tcbsubtitle[before skip=\baselineskip]{Members}\begin{tabular}{ p{3in}|m{3.4in}}
-\textbf{public GridSnappingSpatialHash } (\\ \hspace*{ 5pt} double gridSize,\\\hspace*{ 5pt} org.locationtech.jts.geom.Coordinate gridCenter) & Create new instance of grid snapping hash\\ \hline 
-\textbf{public int getHash } (\\ \hspace*{ 5pt} org.locationtech.jts.geom.Coordinate a) & Returns a hash for the given coordinate. A good hash will be equal for points which are near each other\newline%
- according to some metric, and different for ones that are not.\\ \hline 
-\end{tabular}
+\vspace*{-5pt}\tcbsubtitle[before skip=\baselineskip]{Members} 
+\begin{tabularx}{\linewidth}{X|m{0.5\textwidth}}
+\label{tab:GridSnappingSpatialHash}
+\begin{raggedleft}public  \textbf{\hyperref[tab:GridSnappingSpatialHash]{\color{blue}{GridSnappingSpatialHash}} }(\newline \hfill 
+\hspace*{ 5pt} \textbf{double} gridSize , \newline
+ \hspace*{ 5pt} \textbf{org.locationtech.jts.geom.Coordinate} gridCenter  )
+\end{raggedleft} &
+ Create new instance of grid snapping hash\\ \hline 
+\begin{raggedleft}public int \textbf{getHash }(\hspace*{ 5pt} \textbf{org.locationtech.jts.geom.Coordinate} a  )
+\end{raggedleft} &
+ Returns a hash for the given coordinate. A good hash will be equal for points which are near each other\newline%
+ according to some metric, and different for ones that are not.\\\end{tabularx}
 }
-\subsubsection{ uk.ac.ed.inf.aqmaps.pathfinding.goals }
-\cbox{ class PointGoal } { A point goal is the simplest kind of goal, a single location in space.
+\subsubsection*{ uk.ac.ed.inf.aqmaps.pathfinding.goals }
+\cbox{ class PointGoal } {\scriptsize A point goal is the simplest kind of goal, a single location in space.
  
 \vspace*{4pt} \hrule \vspace*{3pt}
 Implements \textbf{ PathfindingGoal }
-\tcbsubtitle[before skip=\baselineskip]{Members}\begin{tabular}{ p{3in}|m{3.4in}}
-\textbf{public PointGoal } (\\ \hspace*{ 5pt} org.locationtech.jts.geom.Coordinate goal) & Creates a new point goal\\ \hline 
-\textbf{public org.locationtech.jts.geom.Coordinate getCoordinates} () & \\ \hline 
-\end{tabular}
+\vspace*{-5pt}\tcbsubtitle[before skip=\baselineskip]{Members} 
+\begin{tabularx}{\linewidth}{X|m{0.5\textwidth}}
+\label{tab:PointGoal}
+\begin{raggedleft}public  \textbf{\hyperref[tab:PointGoal]{\color{blue}{PointGoal}} }(\hspace*{ 5pt} \textbf{org.locationtech.jts.geom.Coordinate} goal  )
+\end{raggedleft} &
+ Creates a new point goal\\ \hline 
+\begin{raggedleft}public org.locationtech.jts.geom.Coordinate \textbf{getCoordinates}()
+\end{raggedleft} &
+ \\\end{tabularx}
 }
-\subsubsection{ uk.ac.ed.inf.aqmaps.pathfinding }
-\cbox{ class AstarTreeSearch } { Classic pathfinding algorithm, modified BFS which uses both the cost to reach a node and the predicted cost from that node to the goal\newline%
+\subsubsection*{ uk.ac.ed.inf.aqmaps.pathfinding }
+\cbox{ class AstarTreeSearch } {\scriptsize Classic pathfinding algorithm, modified BFS which uses both the cost to reach a node and the predicted cost from that node to the goal\newline%
  to chose the nodes to be expanded next. This version of Astar treats the search as a tree search and so uses a hashing function to determine if a node has been visited yet.
  
-\tcbsubtitle[before skip=\baselineskip]{Members}\begin{tabular}{ p{3in}|m{3.4in}}
-\textbf{public AstarTreeSearch } (\\ \hspace*{ 5pt} PathfindingHeuristic heuristic,\\\hspace*{ 5pt} SpatialHash hash) & Creates a new instance of Astar search with the given heuristic and spatial hashing function.\\ \hline 
-\textbf{public void findPath } (\\ \hspace*{ 5pt} SearchGraph$<$T$>$ g,\\\hspace*{ 5pt} PathfindingGoal goal,\\\hspace*{ 5pt} T start,\\\hspace*{ 5pt} double goalThreshold,\\\hspace*{ 5pt} Deque$<$T$>$ output) & Description copied from class:~PathfindingAlgorithm\\ \hline 
-\end{tabular}
+\vspace*{4pt} \hrule \vspace*{3pt}
+Extends \textbf{ \hyperref[tab:SearchNode]{\color{blue}{SearchNode}} }
+\vspace*{-5pt}\tcbsubtitle[before skip=\baselineskip]{Members} 
+\begin{tabularx}{\linewidth}{X|m{0.5\textwidth}}
+\label{tab:AstarTreeSearch}
+\begin{raggedleft}public  \textbf{\hyperref[tab:AstarTreeSearch]{\color{blue}{AstarTreeSearch}} }(\newline \hfill 
+\hspace*{ 5pt} \textbf{PathfindingHeuristic} heuristic , \newline
+ \hspace*{ 5pt} \textbf{SpatialHash} hash  )
+\end{raggedleft} &
+ Creates a new instance of Astar search with the given heuristic and spatial hashing function.\\ \hline 
+\begin{raggedleft}public void \textbf{findPath }(\newline \hfill 
+\hspace*{ 5pt} \textbf{SearchGraph$<$T$>$} g , \newline
+ \hspace*{ 5pt} \textbf{PathfindingGoal} goal , \newline
+ \hspace*{ 5pt} \textbf{T} start , \newline
+ \hspace*{ 5pt} \textbf{double} goalThreshold , \newline
+ \hspace*{ 5pt} \textbf{Deque$<$T$>$} output  )
+\end{raggedleft} &
+ Description copied from class:~PathfindingAlgorithm\\\end{tabularx}
 }
-\cbox{ class PathfindingAlgorithm } { Pathfinding algorithms operate over any valid search nodes and graph definitions. The graph defines the transition function between one node and its neighbours while the search nodes are used as \newline%
+\cbox{ class PathfindingAlgorithm } {\scriptsize Pathfinding algorithms operate over any valid search nodes and graph definitions. The graph defines the transition function between one node and its neighbours while the search nodes are used as \newline%
  the path constructing object. Any number of pathfinding algorithms can be defines in these terms, both tree and graph searches are possible with the correct set of graph and node definitions.
  
-\tcbsubtitle[before skip=\baselineskip]{Members}\begin{tabular}{ p{3in}|m{3.4in}}
-\textbf{public PathfindingAlgorithm} () & \\ \hline 
-\textbf{public abstract void findPath } (\\ \hspace*{ 5pt} SearchGraph$<$T$>$ g,\\\hspace*{ 5pt} PathfindingGoal goal,\\\hspace*{ 5pt} T start,\\\hspace*{ 5pt} double goalThreshold,\\\hspace*{ 5pt} Deque$<$T$>$ output) & Finds a path from the start to the goal node and outputs the result into the provided deque.\newline%
+\vspace*{4pt} \hrule \vspace*{3pt}
+Extends \textbf{ \hyperref[tab:SearchNode]{\color{blue}{SearchNode}} }
+\vspace*{-5pt}\tcbsubtitle[before skip=\baselineskip]{Members} 
+\begin{tabularx}{\linewidth}{X|m{0.5\textwidth}}
+\label{tab:PathfindingAlgorithm}
+\begin{raggedleft}public  \textbf{\hyperref[tab:PathfindingAlgorithm]{\color{blue}{PathfindingAlgorithm}}}()
+\end{raggedleft} &
+ \\ \hline 
+\begin{raggedleft}public abstract void \textbf{findPath }(\newline \hfill 
+\hspace*{ 5pt} \textbf{SearchGraph$<$T$>$} g , \newline
+ \hspace*{ 5pt} \textbf{PathfindingGoal} goal , \newline
+ \hspace*{ 5pt} \textbf{T} start , \newline
+ \hspace*{ 5pt} \textbf{double} goalThreshold , \newline
+ \hspace*{ 5pt} \textbf{Deque$<$T$>$} output  )
+\end{raggedleft} &
+ Finds a path from the start to the goal node and outputs the result into the provided deque.\newline%
  If a path doesn't exist no nodes will be added to the output, if it does at least one node will be added. The nodes will have their goalsReached deque's set\newline%
  to the corresponding goals that can be reached from their locations within the goal threshold. One node can reach multiple nodes\\ \hline 
-\textbf{public Deque$<$T$>$ findPath } (\\ \hspace*{ 5pt} SearchGraph$<$T$>$ g,\\\hspace*{ 5pt} Deque$<$PathfindingGoal$>$ route,\\\hspace*{ 5pt} T start,\\\hspace*{ 5pt} double goalThreshold) & Finds a path from the start node through the provided route. Modifies the goal nodes' locations to accomodate for the goal threshold.\newline%
- if at any point there exists no path between the given goals, the route will halt before that segment (so might be empty).\\ \hline 
-\textbf{protected boolean isAtGoal } (\\ \hspace*{ 5pt} double threshold,\\\hspace*{ 5pt} T node,\\\hspace*{ 5pt} PathfindingGoal goal) & Checks whether the given node is within a threshold away from the goal\\ \hline 
-\textbf{protected void reconstructPathUpToIncluding } (\\ \hspace*{ 5pt} T node,\\\hspace*{ 5pt} Deque$<$T$>$ out,\\\hspace*{ 5pt} T limitNode) & reconstructs the path to node and deposits it in the given queue\\ \hline 
-\end{tabular}
+\begin{raggedleft}public Deque$<$T$>$ \textbf{findPath }(\newline \hfill 
+\hspace*{ 5pt} \textbf{SearchGraph$<$T$>$} g , \newline
+ \hspace*{ 5pt} \textbf{Deque$<$PathfindingGoal$>$} route , \newline
+ \hspace*{ 5pt} \textbf{T} start , \newline
+ \hspace*{ 5pt} \textbf{double} goalThreshold  )
+\end{raggedleft} &
+ Finds a path from the start node through the provided route. if at any point there exists no path between the given goals, the route will halt before that segment (so might be empty).\\ \hline 
+\begin{raggedleft}protected boolean \textbf{isAtGoal }(\newline \hfill 
+\hspace*{ 5pt} \textbf{double} threshold , \newline
+ \hspace*{ 5pt} \textbf{T} node , \newline
+ \hspace*{ 5pt} \textbf{PathfindingGoal} goal  )
+\end{raggedleft} &
+ Checks whether the given node is within a threshold away from the goal\\ \hline 
+\begin{raggedleft}protected void \textbf{reconstructPathUpToIncluding }(\newline \hfill 
+\hspace*{ 5pt} \textbf{T} node , \newline
+ \hspace*{ 5pt} \textbf{Deque$<$T$>$} out , \newline
+ \hspace*{ 5pt} \textbf{T} limitNode  )
+\end{raggedleft} &
+ reconstructs the path to node and deposits it in the given queue\\\end{tabularx}
 }
-\cbox{ class SearchNode } { Search Nodes are used to hold the path information in pathfinding algorithms including heuristic, cost and parent node values. Search nodes also contain information about which\newline%
+\cbox{ class SearchNode } {\scriptsize Search Nodes are used to hold the path information in pathfinding algorithms including heuristic, cost and parent node values. Search nodes also contain information about which\newline%
  pathfinding goals can be achieved from their position (can be multiple).
  
-\tcbsubtitle[before skip=\baselineskip]{Members}\begin{tabular}{ p{3in}|m{3.4in}}
-\textbf{public SearchNode } (\\ \hspace*{ 5pt} org.locationtech.jts.geom.Coordinate location,\\\hspace*{ 5pt} T parent,\\\hspace*{ 5pt} double cost) & Creates a new spatial tree search node which is fully specified apart from\newline%
+\vspace*{-5pt}\tcbsubtitle[before skip=\baselineskip]{Members} 
+\begin{tabularx}{\linewidth}{X|m{0.5\textwidth}}
+\label{tab:SearchNode}
+\begin{raggedleft}public  \textbf{\hyperref[tab:SearchNode]{\color{blue}{SearchNode}} }(\newline \hfill 
+\hspace*{ 5pt} \textbf{org.locationtech.jts.geom.Coordinate} location , \newline
+ \hspace*{ 5pt} \textbf{T} parent , \newline
+ \hspace*{ 5pt} \textbf{double} cost  )
+\end{raggedleft} &
+ Creates a new  search node which is fully specified apart from\newline%
  the heuristic value\\ \hline 
-\textbf{public SearchNode } (\\ \hspace*{ 5pt} org.locationtech.jts.geom.Coordinate location,\\\hspace*{ 5pt} T parent,\\\hspace*{ 5pt} double heuristic,\\\hspace*{ 5pt} double cost) & Creates a fully specified search node\\ \hline 
-\textbf{public Deque$<$PathfindingGoal$>$ getGoalsReached} () & Retrieve the deque of goals achievable from this search node's position\\ \hline 
-\textbf{public void setGoalsReached } (\\ \hspace*{ 5pt} Deque$<$PathfindingGoal$>$ goalReached) & Set the goals achievable from this search node's position\\ \hline 
-\textbf{public void addGoalReached } (\\ \hspace*{ 5pt} PathfindingGoal goalReached) & Add a goal achievable from this node's position to the tail of its deque\\ \hline 
-\textbf{public int getNumberOfGoalsReached} () & \\ \hline 
-\textbf{public void removeGoalReached } (\\ \hspace*{ 5pt} PathfindingGoal goalReached) & pop the first goal achievable at this node's position from its deque\\ \hline 
-\textbf{public double getHeuristic} () & Retrieve the heuristic value of this node\\ \hline 
-\textbf{public org.locationtech.jts.geom.Coordinate getCoordinates} () & Retrieve the coordinates in space of this node\\ \hline 
-\textbf{public void setHeuristic } (\\ \hspace*{ 5pt} double heuristic) & Set the heuristic value of this node\\ \hline 
-\textbf{public double getCost} () & Retrieve the cost of reaching this search node\\ \hline 
-\textbf{public T getParentNode} () & Retrieve the parent node of this node\\ \hline 
-\textbf{public int hashCode} () & \\ \hline 
-\textbf{public String toString} () & \\ \hline 
-\end{tabular}
+\begin{raggedleft}public  \textbf{\hyperref[tab:SearchNode]{\color{blue}{SearchNode}} }(\newline \hfill 
+\hspace*{ 5pt} \textbf{org.locationtech.jts.geom.Coordinate} location , \newline
+ \hspace*{ 5pt} \textbf{T} parent , \newline
+ \hspace*{ 5pt} \textbf{double} heuristic , \newline
+ \hspace*{ 5pt} \textbf{double} cost  )
+\end{raggedleft} &
+ Creates a fully specified search node\\\end{tabularx}
 }
-\subsubsection{ uk.ac.ed.inf.aqmaps.client.data }
-\cbox{ class SensorData } { Object representing the reading, battery and location data of a sensor
+\subsubsection*{ uk.ac.ed.inf.aqmaps.client.data }
+\cbox{ class SensorData } {\scriptsize Object representing the reading, battery and location data of a sensor
  
-\tcbsubtitle[before skip=\baselineskip]{Members}\begin{tabular}{ p{3in}|m{3.4in}}
-\textbf{public SensorData} () & Empty constructor, necessary for proper de{-}serialization\\ \hline 
-\textbf{public SensorData } (\\ \hspace*{ 5pt} String W3WLocation,\\\hspace*{ 5pt} float battery,\\\hspace*{ 5pt} float reading) & Constructs a new sensor data object\\ \hline 
-\textbf{public String getW3WLocation} () & Returns the w3w location of this sensor\\ \hline 
-\textbf{public Float getBattery} () & Returns the battery level of the sensor, always a normal float value\\ \hline 
-\textbf{public float getReading} () & Returns the reading value of the sensor, can be NaN or a float\\ \hline 
-\textbf{public boolean equals } (\\ \hspace*{ 5pt} Object o) & \\ \hline 
-\textbf{public int hashCode} () & \\ \hline 
-\textbf{public String toString} () & \\ \hline 
-\end{tabular}
+\vspace*{-5pt}\tcbsubtitle[before skip=\baselineskip]{Members} 
+\begin{tabularx}{\linewidth}{X|m{0.5\textwidth}}
+\label{tab:SensorData}
+\begin{raggedleft}public  \textbf{\hyperref[tab:SensorData]{\color{blue}{SensorData}}}()
+\end{raggedleft} &
+ Empty constructor, necessary for proper de{-}serialization\\ \hline 
+\begin{raggedleft}public  \textbf{\hyperref[tab:SensorData]{\color{blue}{SensorData}} }(\newline \hfill 
+\hspace*{ 5pt} \textbf{String} W3WLocation , \newline
+ \hspace*{ 5pt} \textbf{float} battery , \newline
+ \hspace*{ 5pt} \textbf{float} reading  )
+\end{raggedleft} &
+ Constructs a new sensor data object\\\end{tabularx}
 }
-\cbox{ class W3WAddressData } { An object containing information about a what{-}3{-}word square including it's coordinates and meta{-}data
+\cbox{ class W3WAddressData } {\scriptsize An object containing information about a what{-}3{-}word square including it's coordinates and meta{-}data
  
-\tcbsubtitle[before skip=\baselineskip]{Members}\begin{tabular}{ p{3in}|m{3.4in}}
-\textbf{public W3WAddressData} () & Empty constructor, necessary for proper de{-}serialization\\ \hline 
-\textbf{public W3WAddressData } (\\ \hspace*{ 5pt} String country,\\\hspace*{ 5pt} W3WSquareData square,\\\hspace*{ 5pt} String nearestPlace,\\\hspace*{ 5pt} com.mapbox.geojson.Point coordinates,\\\hspace*{ 5pt} String words,\\\hspace*{ 5pt} String language,\\\hspace*{ 5pt} String map) & \\ \hline 
-\textbf{public String getCountry} () & \\ \hline 
-\textbf{public W3WSquareData getSquare} () & \\ \hline 
-\textbf{public String getNearestPlace} () & \\ \hline 
-\textbf{public com.mapbox.geojson.Point getCoordinates} () & \\ \hline 
-\textbf{public String getWords} () & \\ \hline 
-\textbf{public String getLanguage} () & \\ \hline 
-\textbf{public String getMap} () & \\ \hline 
-\textbf{public boolean equals } (\\ \hspace*{ 5pt} Object o) & \\ \hline 
-\textbf{public int hashCode} () & \\ \hline 
-\textbf{public String toString} () & \\ \hline 
-\end{tabular}
+\vspace*{-5pt}\tcbsubtitle[before skip=\baselineskip]{Members} 
+\begin{tabularx}{\linewidth}{X|m{0.5\textwidth}}
+\label{tab:W3WAddressData}
+\begin{raggedleft}public  \textbf{\hyperref[tab:W3WAddressData]{\color{blue}{W3WAddressData}}}()
+\end{raggedleft} &
+ Empty constructor, necessary for proper de{-}serialization\\ \hline 
+\begin{raggedleft}public  \textbf{\hyperref[tab:W3WAddressData]{\color{blue}{W3WAddressData}} }(\newline \hfill 
+\hspace*{ 5pt} \textbf{String} country , \newline
+ \hspace*{ 5pt} \textbf{\hyperref[tab:W3WSquareData]{\color{blue}{W3WSquareData}}} square , \newline
+ \hspace*{ 5pt} \textbf{String} nearestPlace , \newline
+ \hspace*{ 5pt} \textbf{com.mapbox.geojson.Point} coordinates , \newline
+ \hspace*{ 5pt} \textbf{String} words , \newline
+ \hspace*{ 5pt} \textbf{String} language , \newline
+ \hspace*{ 5pt} \textbf{String} map  )
+\end{raggedleft} &
+ Create a new \hyperref[tab:W3WAddressData]{\color{blue}{W3WAddressData}} object from the given address information\\\end{tabularx}
 }
-\cbox{ class W3WSquareData } { Object representing information about a what{-}3{-}words square's coordinates.
+\cbox{ class W3WSquareData } {\scriptsize Object representing information about a what{-}3{-}words square's coordinates.
  
-\tcbsubtitle[before skip=\baselineskip]{Members}\begin{tabular}{ p{3in}|m{3.4in}}
-\textbf{public W3WSquareData} () & Empty constructor, necessary for proper de{-}serialization\\ \hline 
-\textbf{public W3WSquareData } (\\ \hspace*{ 5pt} com.mapbox.geojson.Point southwest,\\\hspace*{ 5pt} com.mapbox.geojson.Point northeast) & Create a new w3w square from two opposite corners\\ \hline 
-\textbf{public com.mapbox.geojson.Point getSouthwest} () & \\ \hline 
-\textbf{public com.mapbox.geojson.Point getNorthwest} () & \\ \hline 
-\textbf{public boolean equals } (\\ \hspace*{ 5pt} Object o) & \\ \hline 
-\textbf{public int hashCode} () & \\ \hline 
-\textbf{public String toString} () & \\ \hline 
-\end{tabular}
+\vspace*{-5pt}\tcbsubtitle[before skip=\baselineskip]{Members} 
+\begin{tabularx}{\linewidth}{X|m{0.5\textwidth}}
+\label{tab:W3WSquareData}
+\begin{raggedleft}public  \textbf{\hyperref[tab:W3WSquareData]{\color{blue}{W3WSquareData}}}()
+\end{raggedleft} &
+ Empty constructor, necessary for proper de{-}serialization\\ \hline 
+\begin{raggedleft}public  \textbf{\hyperref[tab:W3WSquareData]{\color{blue}{W3WSquareData}} }(\newline \hfill 
+\hspace*{ 5pt} \textbf{com.mapbox.geojson.Point} southwest , \newline
+ \hspace*{ 5pt} \textbf{com.mapbox.geojson.Point} northeast  )
+\end{raggedleft} &
+ Create a new \hyperref[tab:W3WSquareData]{\color{blue}{W3WSquareData}} object from the diagonal corners of a square\\\end{tabularx}
 }
-\subsubsection{ uk.ac.ed.inf.aqmaps.client }
-\cbox{ class AQWebServerClient } { \{The web server client communicates with a server which contains the necessary information and retrieves it\}
+\subsubsection*{ uk.ac.ed.inf.aqmaps.client }
+\cbox{ class AQSensor } {\scriptsize An implementation of the \hyperref[tab:Sensor]{\color{blue}{Sensor}} interface for consumption in the simulation module. Conveniently can be formed from sensor and address data \newline%
+ corresponding to the data received via API client.
+ 
+\vspace*{4pt} \hrule \vspace*{3pt}
+Implements \textbf{ PathfindingGoal }
+Extends \textbf{ \hyperref[tab:Sensor]{\color{blue}{Sensor}} }
+\vspace*{-5pt}\tcbsubtitle[before skip=\baselineskip]{Members} 
+\begin{tabularx}{\linewidth}{X|m{0.5\textwidth}}
+\label{tab:AQSensor}
+\begin{raggedleft}public  \textbf{\hyperref[tab:AQSensor]{\color{blue}{AQSensor}} }(\newline \hfill 
+\hspace*{ 5pt} \textbf{\hyperref[tab:SensorData]{\color{blue}{SensorData}}} sensorData , \newline
+ \hspace*{ 5pt} \textbf{\hyperref[tab:W3WAddressData]{\color{blue}{W3WAddressData}}} w3WAddressData  )
+\end{raggedleft} &
+ Construct new AQ sensor from sensor data representing the sensor's readings and battery information, and with the address data containing \newline%
+ the w3w address words and coordinates of the sensor\\\end{tabularx}
+}
+\cbox{ class AQWebServerClient } {\scriptsize The web server client communicates with a server which contains the necessary information and retrieves it
  
 \vspace*{4pt} \hrule \vspace*{3pt}
 Implements \textbf{ ClientService }
-\tcbsubtitle[before skip=\baselineskip]{Members}\begin{tabular}{ p{3in}|m{3.4in}}
-\textbf{public AQWebServerClient } (\\ \hspace*{ 5pt} HttpClient client,\\\hspace*{ 5pt} URI APIBaseURI) & \\ \hline 
-\textbf{public List$<$SensorData$>$ fetchSensorsForDate } (\\ \hspace*{ 5pt} LocalDate date) & \\ \hline 
-\textbf{public W3WAddressData fetchW3WAddress } (\\ \hspace*{ 5pt} String wordAddress) & \\ \hline 
-\textbf{public W3WAddressData fetchW3WAddress } (\\ \hspace*{ 5pt} String w1,\\\hspace*{ 5pt} String w2,\\\hspace*{ 5pt} String w3) & \\ \hline 
-\textbf{public com.mapbox.geojson.FeatureCollection fetchBuildings} () & \\ \hline 
-\end{tabular}
+\vspace*{-5pt}\tcbsubtitle[before skip=\baselineskip]{Members} 
+\begin{tabularx}{\linewidth}{X|m{0.5\textwidth}}
+\label{tab:AQWebServerClient}
+\begin{raggedleft}public  \textbf{\hyperref[tab:AQWebServerClient]{\color{blue}{AQWebServerClient}} }(\newline \hfill 
+\hspace*{ 5pt} \textbf{HttpClient} client , \newline
+ \hspace*{ 5pt} \textbf{URI} APIBaseURI  )
+\end{raggedleft} &
+ Create a new web server client, if the base api uri is localhost then the base api would be : http://localhost\\ \hline 
+\begin{raggedleft}public List$<$SensorData$>$ \textbf{fetchSensorsForDate }(\hspace*{ 5pt} \textbf{LocalDate} date  )
+\end{raggedleft} &
+ Retrieves all \hyperref[tab:SensorData]{\color{blue}{SensorData}} for sensors to be collected on the given date\\ \hline 
+\begin{raggedleft}public \hyperref[tab:W3WAddressData]{\color{blue}{W3WAddressData}} \textbf{fetchW3WAddress }(\hspace*{ 5pt} \textbf{String} wordAddress  )
+\end{raggedleft} &
+ Retrieves detail information about a what{-}3{-}words address (i.e. word.word.word)\\ \hline 
+\begin{raggedleft}public \hyperref[tab:W3WAddressData]{\color{blue}{W3WAddressData}} \textbf{fetchW3WAddress }(\newline \hfill 
+\hspace*{ 5pt} \textbf{String} w1 , \newline
+ \hspace*{ 5pt} \textbf{String} w2 , \newline
+ \hspace*{ 5pt} \textbf{String} w3  )
+\end{raggedleft} &
+ Convenience method, accepts a split w3w address\\ \hline 
+\begin{raggedleft}public com.mapbox.geojson.FeatureCollection \textbf{fetchBuildings}()
+\end{raggedleft} &
+ Retrieves all te no fly{-}zones i.e. the buildings present\\\end{tabularx}
 }
-\cbox{ class HTTPException } { An exception thrown whenever an unexpected http status is returned
+\cbox{ class HTTPException } {\scriptsize An exception thrown whenever an unexpected http status is returned
  
 \vspace*{4pt} \hrule \vspace*{3pt}
 Implements \textbf{ Serializable }
-\tcbsubtitle[before skip=\baselineskip]{Members}\begin{tabular}{ p{3in}|m{3.4in}}
-\textbf{public HTTPException } (\\ \hspace*{ 5pt} int errorStatusCode,\\\hspace*{ 5pt} String message) & \\ \hline 
-\end{tabular}
-}
-\subsubsection{ uk.ac.ed.inf.aqmaps }
-\cbox{ class App } { Sensor data pick up path planner and visualiser
- 
-\tcbsubtitle[before skip=\baselineskip]{Members}\begin{tabular}{ p{3in}|m{3.4in}}
-\textbf{public App} () & \\ \hline 
-\textbf{public static void main } (\\ \hspace*{ 5pt} String{[}{]} args) & \\ \hline 
-\end{tabular}
+Extends \textbf{ IOException }
+\vspace*{-5pt}\tcbsubtitle[before skip=\baselineskip]{Members} 
+\begin{tabularx}{\linewidth}{X|m{0.5\textwidth}}
+\label{tab:HTTPException}
+\begin{raggedleft}public  \textbf{\hyperref[tab:HTTPException]{\color{blue}{HTTPException}} }(\newline \hfill 
+\hspace*{ 5pt} \textbf{int} errorStatusCode , \newline
+ \hspace*{ 5pt} \textbf{String} message  )
+\end{raggedleft} &
+ \\\end{tabularx}
 }

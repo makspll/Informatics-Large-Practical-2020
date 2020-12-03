@@ -1,7 +1,6 @@
 package uk.ac.ed.inf.aqmaps.unitTests.simulation;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import static org.mockito.Mockito.mock;
 
 import java.util.Arrays;
@@ -16,6 +15,7 @@ import uk.ac.ed.inf.aqmaps.simulation.Sensor;
 import uk.ac.ed.inf.aqmaps.simulation.planning.path.PathSegment;
 import uk.ac.ed.inf.aqmaps.testUtilities.TestUtilities;
 
+@SuppressWarnings("all")
 public class BuildingTest {
 
     GeometryFactory gf = new GeometryFactory();

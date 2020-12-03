@@ -16,7 +16,7 @@ public class SearchNode<T extends SearchNode<T>> {
 
 
     /**
-     * Creates a new spatial tree search node which is fully specified apart from
+     * Creates a new  search node which is fully specified apart from
      * the heuristic value
      * @param location the location of the new node
      * @param parent the parent of the given node (if null the node is considered to be the starting node)
@@ -73,6 +73,10 @@ public class SearchNode<T extends SearchNode<T>> {
         this.goalsReached.add(goalReached);
     }
 
+    /**
+     * Retrieves the number of goals reached from this node
+     * @return
+     */
     public int getNumberOfGoalsReached(){
         return this.goalsReached.size();
     }

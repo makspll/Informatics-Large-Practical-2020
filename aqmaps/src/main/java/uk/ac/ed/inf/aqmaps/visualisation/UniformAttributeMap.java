@@ -5,6 +5,12 @@ package uk.ac.ed.inf.aqmaps.visualisation;
  */
 public class UniformAttributeMap<C> implements AttributeMap<Float,C>{
 
+    /**
+     * Create a new map with the given minimum and maximum range of values for input, values will be mapped to the list of attributes uniformly
+     * @param min
+     * @param max
+     * @param attributes
+     */
     @SuppressWarnings("unchecked")    
     public UniformAttributeMap(Float min, Float max, C ... attributes){
         this.min = min;

@@ -3,6 +3,9 @@ package uk.ac.ed.inf.aqmaps.utilities;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.math.Vector2D;
 
+/**
+ * Collection of general methods for dealing with angles and floating point comparisons
+ */
 public class MathUtilities {
     /**
      * returns the angle from the eastern direction clockwise between 0 and 360 of the vector

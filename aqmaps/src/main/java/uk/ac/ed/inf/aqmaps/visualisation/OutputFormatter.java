@@ -13,7 +13,7 @@ import uk.ac.ed.inf.aqmaps.simulation.Sensor;
 import uk.ac.ed.inf.aqmaps.simulation.planning.path.PathSegment;
 
 /**
- * The output formatter formats and writes the given flight path and visualisation to a file
+ * Formats and writes the flight path and geojson visualisation to a file
  */
 public class OutputFormatter {
 

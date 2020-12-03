@@ -74,14 +74,9 @@ public class GeometryUtilities {
     }
 
     /**
-     * The general precision model to use in geometry generation
-     */
-    public final static PrecisionModel precisionModel = new PrecisionModel(PrecisionModel.maximumPreciseValue);
-
-    /**
      * The geometry factory to use in generating jts geometries
      */
-    public final static GeometryFactory geometryFactory = new GeometryFactory(precisionModel);
+    private final static GeometryFactory geometryFactory = GeometryFactorySingleton.getGeometryFactory();
 
 
 }

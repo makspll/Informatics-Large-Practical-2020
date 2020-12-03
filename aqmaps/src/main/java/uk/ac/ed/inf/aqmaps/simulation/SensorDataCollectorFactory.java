@@ -23,7 +23,7 @@ import uk.ac.ed.inf.aqmaps.simulation.planning.path.SimplePathPlanner;
 public class SensorDataCollectorFactory {
     
     /**
-     * Create a new collector within the given domain and with the given parameters.
+     * Create a new collector within the given domain and with the given parameters, filling in missing parameters with optimal values.
      * @param g the graph defining the movement capabilities
      * @param readingRange the minimum distance between the collector and the sensor required for a reading to be taken
      * @param maxMoves the maximum number of path segments returned by the collector
@@ -106,19 +106,30 @@ public class SensorDataCollectorFactory {
         return collector;
     }
 
+    /**
+     * The type of sensor data collector to use
+     */
     public enum CollectorType{
         DRONE
     }
 
+    /**
+     * The type of distance matrix to use for the TSP solver
+     */
     public enum DistanceMatrixType{
         EUCLIDIAN,GREATEST_AVOIDANCE
     }
 
-
+    /**
+     * The type of the collection order planner to use 
+     */
     public enum CollectionOrderPlannerType{
         GREEDY,NEAREST_INSERTION
     }
 
+    /**
+     * The type of pathfinding heuristic to use
+     */
     public enum PathfindingHeuristicType{
         STRAIGHT_LINE
     }

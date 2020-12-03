@@ -20,6 +20,12 @@ import uk.ac.ed.inf.aqmaps.simulation.planning.ConstrainedTreeGraph;
  */
 public abstract class BasePathPlanner implements PathPlanner {
 
+    /**
+     * Create a new path planner with the given constraints, and using the given pathfinding algorithm
+     * @param readingRange
+     * @param maxMoves
+     * @param algorithm
+     */
     public BasePathPlanner(double readingRange, int maxMoves, PathfindingAlgorithm<DirectedSearchNode> algorithm) {
         this.READING_RANGE = readingRange;
         this.MAX_MOVES = maxMoves;
@@ -28,10 +34,7 @@ public abstract class BasePathPlanner implements PathPlanner {
 
     /**
      * {@inheritDoc}
-     * The ConstrainedPathPlanner class adds a maximum move,reading range and also the move sequence constraint to the path planning problem, a valid path will allow the collector
-     * to come within READING_RANGE of each sensor (the distance between each sensor and the collector at some path segment's endpoint will be less than or equal to READING_RANGE).
-     * The number of segments returned will always be <= MAX_MOVES. The move sequence in each path segment requires that a sensor be read at the end of each path segment only, i.e. the collector must move before collecting
-     * any reading, and only one reading must be made per path segment. 
+     * Plans the path starting from the given start coordinate, reaching all the given sensors and forming a loop back if the form loop argument is given
      */
     @Override
     public Deque<PathSegment> planPath(Coordinate startCoordinate, Deque<Sensor> route,
@@ -66,7 +69,6 @@ public abstract class BasePathPlanner implements PathPlanner {
             // remove the goal reached for the loopback segment as 
             // these should only contain sensors
 
-            //TODO: this might need fixin
             if(path.size() != 0){
                 path.getLast().removeGoalReached(loopBackGoal);
             }

@@ -11,6 +11,11 @@ import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.optimisers.Collec
  */
 public class NearestInsertionCollectionOrderPlanner extends BaseCollectionOrderPlanner {
 
+    /**
+     * Constructs a new NI planner with the given optimisers and distance matrix
+     * @param optimisers
+     * @param distMat
+     */
     public NearestInsertionCollectionOrderPlanner(Collection<CollectionOrderOptimiser> optimisers,
             DistanceMatrix distMat) {
         super(optimisers, distMat);
@@ -19,7 +24,7 @@ public class NearestInsertionCollectionOrderPlanner extends BaseCollectionOrderP
 
 
     /**
-     * {@inheritDoc}. The route is planned using the nearest insertion heuristic.
+     * {@inheritDoc}
      */
     @Override
     protected int[] planInitialRoute(int startSensorIdx, Sensor[] sensors, DistanceMatrix distanceMatrix,

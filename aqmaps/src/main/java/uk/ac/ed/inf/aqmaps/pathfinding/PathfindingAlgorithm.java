@@ -32,8 +32,7 @@ public abstract class PathfindingAlgorithm<T extends SearchNode<T>>{
 
 
     /**
-     * Finds a path from the start node through the provided route. Modifies the goal nodes' locations to accomodate for the goal threshold.
-     * if at any point there exists no path between the given goals, the route will halt before that segment (so might be empty).
+     * Finds a path from the start node through the provided route. if at any point there exists no path between the given goals, the route will halt before that segment (so might be empty).
      * 
      * @param g the graph which will build the traversal tree
      * @param route the goal nodes *location will be modified if the goal threshold is not zero*

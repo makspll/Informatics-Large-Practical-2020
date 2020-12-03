@@ -1,0 +1,19 @@
+\usepackage[hidelinks]{hyperref}
+\usepackage{tcolorbox}
+\usepackage{array}
+\usepackage{tabularx}
+\AtBeginEnvironment{tabularx}{\scriptsize}
+\renewcommand{\tabularxcolumn}[1]{m{#1}}
+\setlist{nolistsep}
+\setlist{nosep}
+\newcommand{\cbox}[2]{
+    \begin{tcolorbox}[title=#1,
+        colback=red!5!white,
+        colframe=red!50!black,
+        size=fbox,
+        % left=2mm,
+        % right=3mm,
+        fonttitle=\bfseries]
+        #2
+    \end{tcolorbox}
+}

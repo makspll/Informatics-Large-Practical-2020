@@ -5,10 +5,11 @@ import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Polygon;
 
 import uk.ac.ed.inf.aqmaps.pathfinding.Obstacle;
+import uk.ac.ed.inf.aqmaps.utilities.GeometryFactorySingleton;
 import uk.ac.ed.inf.aqmaps.utilities.GeometryUtilities;
 
 /**
- * An obstacle which has a polygonal shape
+ * An obstacle with a polygonal shape representing a building
  */
 public class Building implements Obstacle {
 
@@ -34,7 +35,7 @@ public class Building implements Obstacle {
      */
     @Override
     public boolean intersectsPath(Coordinate a, Coordinate b) {
-        LineString ls = GeometryUtilities.geometryFactory
+        LineString ls = GeometryFactorySingleton.getGeometryFactory()
             .createLineString(
                 new Coordinate[]{a,b});
 

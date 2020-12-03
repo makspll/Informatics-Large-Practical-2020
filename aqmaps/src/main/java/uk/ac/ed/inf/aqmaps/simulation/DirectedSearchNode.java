@@ -44,10 +44,14 @@ public class DirectedSearchNode extends SearchNode<DirectedSearchNode>{
         super(location, parent, heuristic, cost);
         this.directionFromParent = directionFromParent;
     }
-
+    
+    /**
+     * retrieves the direction between this node's parent and itself 
+     */
     public int getDirectionFromParent() {
         return this.directionFromParent;
     }
+
 
     private int directionFromParent = -1;
 

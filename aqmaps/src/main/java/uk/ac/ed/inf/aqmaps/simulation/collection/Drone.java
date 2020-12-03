@@ -21,6 +21,9 @@ public class Drone extends BaseDataCollector {
         super(fp,rp);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Deque<PathSegment> planCollection(Coordinate startCoordinate,
         Set<Sensor> sensors,

@@ -40,5 +40,9 @@ submitcw2:
 	@cd ${SERVER_JAR_DIR} && java -jar ${SERVER_JAR} . ${SERVER_PORT}&
 	mvn clean package -Dmaven.test.skip=true ${MVNFLAGS_CW2};
 	./preparecw2.sh;
-
+makedocscw2:
+	@mvn javadoc:javadoc -Dmaven.test.skip=true ${MVNFLAGS_CW2};
+	python report/javadoc-extractor/classes_to_tex.py aqmaps/target/site/apidocs;
+	mv doc.tex report/javadoc-extractor/doc.tex;
+	rm paste-me-directly.tex
 

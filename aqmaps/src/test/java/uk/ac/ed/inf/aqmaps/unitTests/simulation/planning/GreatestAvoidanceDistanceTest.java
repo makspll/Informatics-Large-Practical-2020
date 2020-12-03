@@ -18,6 +18,7 @@ import uk.ac.ed.inf.aqmaps.simulation.Sensor;
 import uk.ac.ed.inf.aqmaps.simulation.planning.GreatestAvoidanceDistanceMatrix;
 import uk.ac.ed.inf.aqmaps.testUtilities.TestUtilities;
 
+@SuppressWarnings("all")
 public class GreatestAvoidanceDistanceTest {
     GreatestAvoidanceDistanceMatrix testUnit;
     Obstacle mockObstacle = mock(Obstacle.class);

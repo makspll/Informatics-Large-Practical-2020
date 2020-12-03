@@ -20,6 +20,7 @@ import uk.ac.ed.inf.aqmaps.simulation.planning.path.BasePathPlanner;
 import uk.ac.ed.inf.aqmaps.simulation.planning.path.PathSegment;
 import uk.ac.ed.inf.aqmaps.testUtilities.TestUtilities;
 
+@SuppressWarnings("all")
 
 public abstract class PathPlannerTestBase {
     private BasePathPlanner planner;

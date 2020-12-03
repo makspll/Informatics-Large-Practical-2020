@@ -7,16 +7,24 @@ import uk.ac.ed.inf.aqmaps.simulation.planning.DistanceMatrix;
 import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.optimisers.CollectionOrderOptimiser;
 
 /**
- * Plans a collection of sensor data in a greedy order and in a way that forms a loop, 
+ * Plans a collection of sensor data in a greedy order
  * i.e. by picking the closest sensor at each step.
  */
 public class GreedyCollectionOrderPlanner extends BaseCollectionOrderPlanner {
 
 
+    /**
+     * Creates a new Greedy planner with the given optimisers and distance matrix
+     * @param optimiser
+     * @param distMat
+     */
     public GreedyCollectionOrderPlanner(Collection<CollectionOrderOptimiser> optimiser, DistanceMatrix distMat) {
         super(optimiser, distMat);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected int[] planInitialRoute(int startSensorIdx, Sensor[] sensors, DistanceMatrix distanceMatrix,
             boolean formLoop) {

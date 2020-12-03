@@ -16,7 +16,7 @@ public class W3WSquareData {
     }
 
     /**
-     * Create a new w3w square from two opposite corners
+     * Create a new W3WSquareData object from the diagonal corners of a square
      * @param southwest
      * @param northeast
      */

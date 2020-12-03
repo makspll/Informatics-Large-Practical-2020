@@ -13,7 +13,7 @@ public abstract class DistanceMatrix {
     public DistanceMatrix(){}
 
     /**
-     * Fills in the distance matrix with distance data for the given sensors
+     * Fills in the distance matrix with distance data for the given sensors, each sensor is referred to by its index in the sensors array given later.
      * @param sensors the list of sensors
      */
     public void setupDistanceMatrix(Sensor[] sensors){
@@ -69,6 +69,11 @@ public abstract class DistanceMatrix {
         return distance;
     }
 
+    /**
+     * Calculates the total length of the given path (not including looping back)
+     * @param route
+     * @return
+     */
     public double totalDistance(int[] route){
         return totalDistance(route,0, route.length);
     }

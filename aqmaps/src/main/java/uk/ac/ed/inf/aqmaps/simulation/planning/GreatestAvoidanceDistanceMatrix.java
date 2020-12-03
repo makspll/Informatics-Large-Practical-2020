@@ -11,11 +11,12 @@ import org.locationtech.jts.math.Vector2D;
 import uk.ac.ed.inf.aqmaps.pathfinding.Obstacle;
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
 import uk.ac.ed.inf.aqmaps.utilities.BVHNode;
+import uk.ac.ed.inf.aqmaps.utilities.GeometryFactorySingleton;
 import uk.ac.ed.inf.aqmaps.utilities.GeometryUtilities;
 
 /**
  * Distance matrix using the greatest avoidance distance as the distance metric. This distance is calculated by forming a minimum bounding circle around all obstacles
- * between any two sensors and calculating the length of the path which "wraps" around the circle (approximated as a triangle)
+ * between any two sensors and calculating the length of the path which "wraps" around the circle 
  */
 public class GreatestAvoidanceDistanceMatrix extends DistanceMatrix {
 
@@ -24,10 +25,12 @@ public class GreatestAvoidanceDistanceMatrix extends DistanceMatrix {
      * @param obstacles
      */
     public GreatestAvoidanceDistanceMatrix(Collection<Obstacle> obstacles){
-        this.obstacles = obstacles;
         this.obstacleBVHTree = new BVHNode<Obstacle>(obstacles);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected double distanceMetric(Sensor a, Sensor b) {
         return greatestAvoidanceDistance(a, b);
@@ -39,7 +42,7 @@ public class GreatestAvoidanceDistanceMatrix extends DistanceMatrix {
         Coordinate posB = b.getCoordinates();
         
    
-        var line = GeometryUtilities.geometryFactory.createLineString(new Coordinate[]{
+        var line = GeometryFactorySingleton.getGeometryFactory().createLineString(new Coordinate[]{
             posA,posB
         });
 
@@ -56,7 +59,7 @@ public class GreatestAvoidanceDistanceMatrix extends DistanceMatrix {
             return posA.distance(posB);
 
         //form a minimum bounding circle around all found obstacles
-        var mergedGeometry = GeometryUtilities.geometryFactory.buildGeometry(obstaclesOnTheWay);
+        var mergedGeometry = GeometryFactorySingleton.getGeometryFactory().buildGeometry(obstaclesOnTheWay);
         var minimumBoundingCircle = new MinimumBoundingCircle(mergedGeometry);
         
         // form the points of the maximum avoidance triangle
@@ -79,6 +82,5 @@ public class GreatestAvoidanceDistanceMatrix extends DistanceMatrix {
             + (circleCenter.distance(posB) - circleRadius);
     }
 
-    private final Collection<Obstacle> obstacles;
     private final BVHNode<Obstacle> obstacleBVHTree;
 }

@@ -1,7 +1,7 @@
 package uk.ac.ed.inf.aqmaps.visualisation;
 
 /**
- * Available symbols for use with geojson
+ * Available symbols for use with geojson, the toString methods are overriden to conform to the geojson marker list
  */
 public enum MarkerSymbol {
     LIGHTHOUSE{

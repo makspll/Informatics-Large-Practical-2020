@@ -37,7 +37,7 @@ public class BVHNode<T extends Shape>{
     }
 
     /**
-     * Retrieves all possibly coliding objects (their bounding boxes intersect) from within the tree.
+     * Retrieves all possibly coliding objects with the geometry given.
      * @param other
      * @return
      */
@@ -98,7 +98,7 @@ public class BVHNode<T extends Shape>{
             shapes[i] = shapeEnvelopePairs.get(i).SHAPE.getShape();
         }
 
-        return GeometryUtilities.geometryFactory
+        return GeometryFactorySingleton.getGeometryFactory()
                 .createGeometryCollection(shapes)
                 .getEnvelopeInternal();
 

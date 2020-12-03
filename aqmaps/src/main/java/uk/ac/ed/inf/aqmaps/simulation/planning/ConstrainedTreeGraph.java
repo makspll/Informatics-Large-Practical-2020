@@ -14,18 +14,20 @@ import uk.ac.ed.inf.aqmaps.pathfinding.SearchGraph;
 import uk.ac.ed.inf.aqmaps.simulation.DirectedSearchNode;
 import uk.ac.ed.inf.aqmaps.pathfinding.Obstacle;
 import uk.ac.ed.inf.aqmaps.utilities.BVHNode;
+import uk.ac.ed.inf.aqmaps.utilities.GeometryFactorySingleton;
 import uk.ac.ed.inf.aqmaps.utilities.GeometryUtilities;
 import uk.ac.ed.inf.aqmaps.utilities.MathUtilities;
 
 /**
- * A graph which imposes angle, move length and boundary (+ obstacle) constraints for the nodes, and does not keep track of already produced nodes (tree search) i.e. a new node is returned each time
+ * A graph which imposes angle, move length and boundary (+ obstacle) constraints for the nodes, and does not keep track of already produced nodes (tree search) i.e. a new node is returned each time.
+ * The angle system needs to allow for each possible angle to have a "complement angle" which takes
+ * you back to where you started if you moved in its direction after steping in any possible angle.
+ * the min and max angle need to cover a range of 360 degrees - the angle increment .
  */
 public class ConstrainedTreeGraph implements SearchGraph<DirectedSearchNode> {
 
     /**
-     * The angle system needs to allow for each possible angle to have a "complement angle" which takes
-     * you back to where you started if you moved in its direction after steping in any possible angle.
-     * the min and max angle need to cover a range of 360 degrees - the angle increment .
+     * Constructs new tree graph with the given angle and move constraints and obstacles, and the bounds of the zone outside of which coordinates are not produced
      * @param minAngle the highest angle (angles will loop around this value)
      * @param maxAngle the smallest angle
      * @param angleIncrement the size of the smallest angle increment in the graph (needs to divide into 180)
@@ -39,9 +41,7 @@ public class ConstrainedTreeGraph implements SearchGraph<DirectedSearchNode> {
     }
 
     /**
-     * The angle system needs to allow for each possible angle to have a "complement angle" which takes
-     * you back to where you started if you moved in its direction after steping in any possible angle.
-     * the min and max angle need to cover a range of 360 degrees - the angle increment .
+     * Constructs new tree graph with the given angle and move constraints and obstacles
      * @param minAngle the highest angle (angles will loop around this value)
      * @param maxAngle the smallest angle
      * @param angleIncrement the size of the smallest angle increment in the graph (needs to divide into 180)
@@ -75,21 +75,21 @@ public class ConstrainedTreeGraph implements SearchGraph<DirectedSearchNode> {
     }
 
     /**
-     * Retrieve the obstacles present on the map
+     * Retrieve the obstacles present on the graph
      */
     public Collection<Obstacle> getObstacles(){
         return obstacles;
     }
 
     /**
-     * Retrieve the bounds of the map
+     * Retrieve the bounds of the graph
      */
     public Polygon getBoundary(){
         return boundary;
     }
 
     /**
-     * get the distance between a node and its neighbour
+     * get the distance between a node and each of its neighbours
      */
     public double getMoveLength(){
         return MOVE_LENGTH;
@@ -110,7 +110,7 @@ public class ConstrainedTreeGraph implements SearchGraph<DirectedSearchNode> {
         // that the the bounding box of move length width is not coliding with anything else
         var nodeLocation = node.getCoordinates();
 
-        Geometry boundingBox = GeometryUtilities.geometryFactory.createPolygon(
+        Geometry boundingBox = GeometryFactorySingleton.getGeometryFactory().createPolygon(
             new Coordinate[]{
                 new Coordinate(nodeLocation.getX() - MOVE_LENGTH, nodeLocation.getY() - MOVE_LENGTH),
                 new Coordinate(nodeLocation.getX() - MOVE_LENGTH, nodeLocation.getY() + MOVE_LENGTH),
@@ -140,7 +140,7 @@ public class ConstrainedTreeGraph implements SearchGraph<DirectedSearchNode> {
 
             Coordinate neighbourCoordinate = stepInDirection(dir, currentPoint);
 
-            Point neighbourPoint = GeometryUtilities.geometryFactory.createPoint(neighbourCoordinate);
+            Point neighbourPoint = GeometryFactorySingleton.getGeometryFactory().createPoint(neighbourCoordinate);
 
             // bounds check
             if(boundary != null && !neighbourPoint.coveredBy(boundary))
@@ -191,43 +191,11 @@ public class ConstrainedTreeGraph implements SearchGraph<DirectedSearchNode> {
     }
 
     /**
-     * returns the closest valid angle in this graph to the given double
+     * returns the closest valid angle in this graph to the given angle
      * @param direction
      */
     public int getClosestValidAngle(double direction){
         return ((int)Math.round(direction / ANGLE_INCREMENT) * ANGLE_INCREMENT) % (MAX_ANGLE+1);
-    }
-
-
-    /**
-     * Retrieves all valid directions between the given low and high angle
-     * @param lowAngle the low angle
-     * @param highAngle the high angle
-     */
-    public int[] getValidDirectionsBetween(int lowAngle, int highAngle){
-        
-        assert lowAngle >= MIN_ANGLE && highAngle <= MAX_ANGLE;
-
-        // get valid low and high bounds
-        int lowBound = getClosestValidAngle(lowAngle);
-        int highBound = getClosestValidAngle(highAngle);
-
-
-
-        // find index of low bound
-        int idxLow = lowBound / ANGLE_INCREMENT;
-        int idxHigh = highBound / ANGLE_INCREMENT;
-        int n = idxHigh - idxLow + 1;
-
-        // find number of valid angles between low and high bound
-        int[] output = new int[n];
-
-        // fill in values 
-        for (int i = 0; i < n; i++) {
-            output[i] = allDirections[idxLow + i];
-        }
-
-        return output;
     }
 
     /**

@@ -16,7 +16,7 @@ import uk.ac.ed.inf.aqmaps.simulation.planning.path.PathSegment;
 import uk.ac.ed.inf.aqmaps.utilities.GeometryUtilities;
 
 /**
- * A visualiser which produces a geojson representation of the collection
+ * Visualiser of sensor data collections, portrays the flight path as a geojsonline string, and shows each sensor's reading using a combination of marker colour and symbol
  */
 public class AQMapGenerator implements SensorCollectionVisualiser {
 
@@ -50,6 +50,9 @@ public class AQMapGenerator implements SensorCollectionVisualiser {
         this.notVisitedMarkerSymbol = notVisitedSymbol;
     }
 
+    /**
+     * Creates a FeatureCollection containing the line string of the flight path, and markers for each sensor given - styled accordint to its readings
+     */
     @Override
     public FeatureCollection plotMap(Deque<PathSegment> flightPath, Collection<Sensor> sensorsToBeVisited) 
         throws IOException, InterruptedException  {

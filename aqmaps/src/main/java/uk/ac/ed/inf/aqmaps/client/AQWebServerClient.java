@@ -28,15 +28,23 @@ import java.lang.reflect.Type;
 
 
 /**
- * {The web server client communicates with a server which contains the necessary information and retrieves it}
+ * The web server client communicates with a server which contains the necessary information and retrieves it
  */
 public class AQWebServerClient implements ClientService{
 
+    /**
+     * Create a new web server client, if the base api uri is localhost then the base api would be : http://localhost
+     * @param client
+     * @param APIBaseURI
+     */
     public AQWebServerClient(HttpClient client,URI APIBaseURI){
         this.APIBaseURI = APIBaseURI;
         this.client = client;
     }
 
+    /**
+     * Retrieves all SensorData for sensors to be collected on the given date
+     */
     public List<SensorData> fetchSensorsForDate(LocalDate date) throws IOException, InterruptedException {
 
         //// work out the relative api uri in the /maps/yyyy/mm/dd/air-quality-data.json format
@@ -82,12 +90,24 @@ public class AQWebServerClient implements ClientService{
 
     }
     
+    /**
+     * Retrieves detail information about a what-3-words address (i.e. word.word.word)
+     */
     public W3WAddressData fetchW3WAddress(String wordAddress) throws IOException, InterruptedException {
         String[] words = wordAddress.split("\\.");
         assert words.length == 3;
         return fetchW3WAddress(words[0],words[1],words[2]);
     }
 
+    /**
+     * Convenience method, accepts a split w3w address 
+     * @param w1
+     * @param w2
+     * @param w3
+     * @return
+     * @throws IOException
+     * @throws InterruptedException
+     */
     public W3WAddressData fetchW3WAddress(String w1, String w2, String w3) throws IOException, InterruptedException {
         //// work out the relative api uri in the /words/word1/word2/word3/details.json format
         var requestURI = getFullAPIURI(
@@ -124,6 +144,9 @@ public class AQWebServerClient implements ClientService{
         return address;
     }
 
+    /**
+     * Retrieves all te no fly-zones i.e. the buildings present
+     */
     public FeatureCollection fetchBuildings() throws IOException, InterruptedException {
         //// work out the relative api uri in the /buildings/no-fly-zones.geojson format
         var requestURI = getFullAPIURI(

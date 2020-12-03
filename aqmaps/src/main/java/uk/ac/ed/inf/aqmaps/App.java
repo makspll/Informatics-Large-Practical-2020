@@ -31,6 +31,7 @@ import uk.ac.ed.inf.aqmaps.simulation.SensorDataCollectorFactory.CollectorType;
 import uk.ac.ed.inf.aqmaps.simulation.SensorDataCollectorFactory.DistanceMatrixType;
 import uk.ac.ed.inf.aqmaps.simulation.SensorDataCollectorFactory.PathfindingHeuristicType;
 import uk.ac.ed.inf.aqmaps.simulation.planning.ConstrainedTreeGraph;
+import uk.ac.ed.inf.aqmaps.utilities.GeometryFactorySingleton;
 import uk.ac.ed.inf.aqmaps.utilities.GeometryUtilities;
 import uk.ac.ed.inf.aqmaps.visualisation.AQMapGenerator;
 import uk.ac.ed.inf.aqmaps.visualisation.AttributeMap;
@@ -325,7 +326,7 @@ public class App {
     /**
      * the confinement area of the sensor collector
      */
-    private static final Polygon boundary = GeometryUtilities.geometryFactory.createPolygon(
+    private static final Polygon boundary = GeometryFactorySingleton.getGeometryFactory().createPolygon(
         new Coordinate[]{
             new Coordinate(-3.192473d, 55.946233d),
             new Coordinate(-3.184319d, 55.946233d),

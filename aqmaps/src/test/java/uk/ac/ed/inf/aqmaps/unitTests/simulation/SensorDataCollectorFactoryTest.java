@@ -17,6 +17,7 @@ import uk.ac.ed.inf.aqmaps.simulation.SensorDataCollectorFactory.PathfindingHeur
 import uk.ac.ed.inf.aqmaps.simulation.planning.ConstrainedTreeGraph;
 import uk.ac.ed.inf.aqmaps.testUtilities.TestUtilities;
 
+@SuppressWarnings("all")
 public class SensorDataCollectorFactoryTest {
     
     SensorDataCollectorFactory testUnit;

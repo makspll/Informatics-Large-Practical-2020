@@ -37,9 +37,9 @@ class class_info:
         self.href = href
         self.path = path
         self.implements = []
-        self.extends = ""
+        self.extends = None
         self.methods = []
-        self.description = "" 
+        self.description = None 
 
     def __str__(self):
         return str(self.c_type) +" " + str(self.name)

@@ -1,17 +1,15 @@
 package uk.ac.ed.inf.aqmaps.simulation.planning.path;
 
-import java.util.Objects;
 
 import org.locationtech.jts.geom.Coordinate;
 
 import uk.ac.ed.inf.aqmaps.simulation.Sensor;
 import uk.ac.ed.inf.aqmaps.utilities.GeometryFactorySingleton;
-import uk.ac.ed.inf.aqmaps.utilities.GeometryUtilities;
 
 
 /**
  * represents a singular move made by the sensor data collector
- * each move follows the pattern of: move->collect reading, 
+ * each move follows the pattern of: move and then collect reading, 
  * we cannot collect a reading in a move unless we have moved
  */
 public class PathSegment {
@@ -34,18 +32,33 @@ public class PathSegment {
         GeometryFactorySingleton.getGeometryFactory().getPrecisionModel().makePrecise(this.endPoint);
     }
 
+    /**
+     * returns the start point of the segment
+     */
     public Coordinate getStartPoint() {
         return this.startPoint;
     }
 
+    /**
+     * returns the direction between the start and end point
+     */
     public int getDirection() {
         return this.direction;
     }
 
+    /**
+     * returns the end point of the segment
+     * @return
+     */
     public Coordinate getEndPoint() {
         return this.endPoint;
     }
 
+
+    /**
+     * returns the sensor read at the end point of this segment
+     * @return
+     */
     public Sensor getSensorRead() {
         return this.sensorRead;
     }

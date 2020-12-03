@@ -25,7 +25,7 @@ public class StraightLineDistance implements PathfindingHeuristic{
     }
 
     /**
-     * {@inheritDoc}
+     * Returns the straight line distance between the nodes multiplied by the relaxation factor 
      */
     @Override
     public <T extends SearchNode<T>> double heuristic(T a, PathfindingGoal b) {

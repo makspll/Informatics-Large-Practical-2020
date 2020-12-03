@@ -13,6 +13,7 @@ import org.mockito.stubbing.Answer;
 import uk.ac.ed.inf.aqmaps.simulation.planning.DistanceMatrix;
 import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.optimisers.Optimiser2Opt;
 
+@SuppressWarnings("all")
 public class Optimiser2OptTest {
 
     DistanceMatrix mockDistanceMatrix = mock(DistanceMatrix.class);

@@ -30,7 +30,7 @@ import uk.ac.ed.inf.aqmaps.visualisation.MarkerSymbol;
 import uk.ac.ed.inf.aqmaps.visualisation.UniformAttributeMap;
 
 import static java.util.Map.entry;    
-
+@SuppressWarnings("all")
 public class AQMapGeneratorAndColourMapsIT {
 
     String[] colours = new String[]{

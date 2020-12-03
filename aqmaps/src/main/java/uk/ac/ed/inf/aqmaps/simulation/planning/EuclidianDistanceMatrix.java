@@ -7,6 +7,9 @@ import uk.ac.ed.inf.aqmaps.simulation.Sensor;
  */
 public class EuclidianDistanceMatrix extends DistanceMatrix {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected double distanceMetric(Sensor a, Sensor b) {
         return a.getCoordinates().distance(b.getCoordinates());
