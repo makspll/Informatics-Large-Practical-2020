@@ -12,69 +12,18 @@
 \contentsline {section}{\numberline {3}Class Documentation}{10}{section.3}%
 \contentsline {subsection}{\numberline {3.1}Quicklinks}{10}{subsection.3.1}%
 \contentsline {subsection}{\numberline {3.2}Documentation}{10}{subsection.3.2}%
-\contentsline {subsubsection}{\numberline {3.2.1} .ac.ed.inf.aqmaps.visualisation }{10}{subsubsection.3.2.1}%
-\contentsline {subparagraph}{ AttributeMap }{10}{section*.2}%
-\contentsline {subparagraph}{ MarkerSymbol }{10}{section*.3}%
-\contentsline {subparagraph}{ SensorCollectionVisualiser }{10}{section*.4}%
-\contentsline {subparagraph}{ UniformAttributeMap }{10}{section*.5}%
-\contentsline {subsubsection}{\numberline {3.2.2} .ac.ed.inf.aqmaps.utilities }{10}{subsubsection.3.2.2}%
-\contentsline {subparagraph}{ BVHNode }{10}{section*.6}%
-\contentsline {subparagraph}{ GeometryFactorySingleton }{11}{section*.7}%
-\contentsline {subparagraph}{ GeometryUtilities }{11}{section*.8}%
-\contentsline {subparagraph}{ MathUtilities }{11}{section*.9}%
-\contentsline {subparagraph}{ Shape }{11}{section*.10}%
-\contentsline {subsubsection}{\numberline {3.2.3} .ac.ed.inf.aqmaps.simulation.planning.path }{11}{subsubsection.3.2.3}%
-\contentsline {subparagraph}{ BasePathPlanner }{11}{section*.11}%
-\contentsline {subparagraph}{ PathPlanner }{11}{section*.12}%
-\contentsline {subparagraph}{ PathSegment }{11}{section*.13}%
-\contentsline {subparagraph}{ SimplePathPlanner }{12}{section*.14}%
-\contentsline {subsubsection}{\numberline {3.2.4} .ac.ed.inf.aqmaps.simulation.planning.collectionOrder.optimisers }{12}{subsubsection.3.2.4}%
-\contentsline {subparagraph}{ CollectionOrderOptimiser }{12}{section*.15}%
-\contentsline {subparagraph}{ Optimiser2Opt }{12}{section*.16}%
-\contentsline {subsubsection}{\numberline {3.2.5} .ac.ed.inf.aqmaps.simulation.planning.collectionOrder }{12}{subsubsection.3.2.5}%
-\contentsline {subparagraph}{ BaseCollectionOrderPlanner }{12}{section*.17}%
-\contentsline {subparagraph}{ GreedyCollectionOrderPlanner }{12}{section*.18}%
-\contentsline {subparagraph}{ NearestInsertionCollectionOrderPlanner }{12}{section*.19}%
-\contentsline {subsubsection}{\numberline {3.2.6} .ac.ed.inf.aqmaps.simulation.planning }{13}{subsubsection.3.2.6}%
-\contentsline {subparagraph}{ ConstrainedTreeGraph }{13}{section*.20}%
-\contentsline {subparagraph}{ DistanceMatrix }{13}{section*.21}%
-\contentsline {subparagraph}{ EuclidianDistanceMatrix }{13}{section*.22}%
-\contentsline {subparagraph}{ GreatestAvoidanceDistanceMatrix }{13}{section*.23}%
-\contentsline {subsubsection}{\numberline {3.2.7} .ac.ed.inf.aqmaps.simulation.collection }{13}{subsubsection.3.2.7}%
-\contentsline {subparagraph}{ BaseDataCollector }{13}{section*.24}%
-\contentsline {subparagraph}{ Drone }{13}{section*.25}%
-\contentsline {subparagraph}{ SensorDataCollector }{13}{section*.26}%
-\contentsline {subsubsection}{\numberline {3.2.8} .ac.ed.inf.aqmaps.simulation }{14}{subsubsection.3.2.8}%
-\contentsline {subparagraph}{ Building }{14}{section*.27}%
-\contentsline {subparagraph}{ DirectedSearchNode }{14}{section*.28}%
-\contentsline {subparagraph}{ Sensor }{14}{section*.29}%
-\contentsline {subparagraph}{ SensorDataCollectorFactory }{14}{section*.30}%
-\contentsline {subparagraph}{ SensorDataCollectorFactory.CollectionOrderPlannerType }{14}{section*.31}%
-\contentsline {subparagraph}{ SensorDataCollectorFactory.CollectorType }{14}{section*.32}%
-\contentsline {subparagraph}{ SensorDataCollectorFactory.DistanceMatrixType }{14}{section*.33}%
-\contentsline {subparagraph}{ SensorDataCollectorFactory.PathfindingHeuristicType }{14}{section*.34}%
-\contentsline {subsubsection}{\numberline {3.2.9} .ac.ed.inf.aqmaps.pathfinding.heuristics }{14}{subsubsection.3.2.9}%
-\contentsline {subparagraph}{ PathfindingHeuristic }{14}{section*.35}%
-\contentsline {subparagraph}{ StraightLineDistance }{14}{section*.36}%
-\contentsline {subsubsection}{\numberline {3.2.10} .ac.ed.inf.aqmaps.pathfinding.hashing }{15}{subsubsection.3.2.10}%
-\contentsline {subparagraph}{ GridSnappingSpatialHash }{15}{section*.37}%
-\contentsline {subparagraph}{ SpatialHash }{15}{section*.38}%
-\contentsline {subsubsection}{\numberline {3.2.11} .ac.ed.inf.aqmaps.pathfinding.goals }{15}{subsubsection.3.2.11}%
-\contentsline {subparagraph}{ PathfindingGoal }{15}{section*.39}%
-\contentsline {subparagraph}{ PointGoal }{15}{section*.40}%
-\contentsline {subsubsection}{\numberline {3.2.12} .ac.ed.inf.aqmaps.pathfinding }{15}{subsubsection.3.2.12}%
-\contentsline {subparagraph}{ AstarTreeSearch }{15}{section*.41}%
-\contentsline {subparagraph}{ Obstacle }{15}{section*.42}%
-\contentsline {subparagraph}{ PathfindingAlgorithm }{15}{section*.43}%
-\contentsline {subparagraph}{ SearchGraph }{15}{section*.44}%
-\contentsline {subparagraph}{ SearchNode }{16}{section*.45}%
-\contentsline {subsubsection}{\numberline {3.2.13} .ac.ed.inf.aqmaps.client.data }{16}{subsubsection.3.2.13}%
-\contentsline {subparagraph}{ SensorData }{16}{section*.46}%
-\contentsline {subparagraph}{ W3WAddressData }{16}{section*.47}%
-\contentsline {subparagraph}{ W3WSquareData }{16}{section*.48}%
-\contentsline {subsubsection}{\numberline {3.2.14} .ac.ed.inf.aqmaps.client }{16}{subsubsection.3.2.14}%
-\contentsline {subparagraph}{ AQWebServerClient }{16}{section*.49}%
-\contentsline {subparagraph}{ ClientService }{16}{section*.50}%
-\contentsline {subparagraph}{ HTTPException }{16}{section*.51}%
-\contentsline {subsubsection}{\numberline {3.2.15} .ac.ed.inf.aqmaps }{16}{subsubsection.3.2.15}%
-\contentsline {subparagraph}{ App }{16}{section*.52}%
+\contentsline {subsubsection}{\numberline {3.2.1} uk.ac.ed.inf.aqmaps.visualisation }{10}{subsubsection.3.2.1}%
+\contentsline {subsubsection}{\numberline {3.2.2} uk.ac.ed.inf.aqmaps.utilities }{11}{subsubsection.3.2.2}%
+\contentsline {subsubsection}{\numberline {3.2.3} uk.ac.ed.inf.aqmaps.simulation.planning.path }{12}{subsubsection.3.2.3}%
+\contentsline {subsubsection}{\numberline {3.2.4} uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.optimisers }{13}{subsubsection.3.2.4}%
+\contentsline {subsubsection}{\numberline {3.2.5} uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder }{13}{subsubsection.3.2.5}%
+\contentsline {subsubsection}{\numberline {3.2.6} uk.ac.ed.inf.aqmaps.simulation.planning }{14}{subsubsection.3.2.6}%
+\contentsline {subsubsection}{\numberline {3.2.7} uk.ac.ed.inf.aqmaps.simulation.collection }{15}{subsubsection.3.2.7}%
+\contentsline {subsubsection}{\numberline {3.2.8} uk.ac.ed.inf.aqmaps.simulation }{16}{subsubsection.3.2.8}%
+\contentsline {subsubsection}{\numberline {3.2.9} uk.ac.ed.inf.aqmaps.pathfinding.heuristics }{18}{subsubsection.3.2.9}%
+\contentsline {subsubsection}{\numberline {3.2.10} uk.ac.ed.inf.aqmaps.pathfinding.hashing }{18}{subsubsection.3.2.10}%
+\contentsline {subsubsection}{\numberline {3.2.11} uk.ac.ed.inf.aqmaps.pathfinding.goals }{18}{subsubsection.3.2.11}%
+\contentsline {subsubsection}{\numberline {3.2.12} uk.ac.ed.inf.aqmaps.pathfinding }{19}{subsubsection.3.2.12}%
+\contentsline {subsubsection}{\numberline {3.2.13} uk.ac.ed.inf.aqmaps.client.data }{20}{subsubsection.3.2.13}%
+\contentsline {subsubsection}{\numberline {3.2.14} uk.ac.ed.inf.aqmaps.client }{21}{subsubsection.3.2.14}%
+\contentsline {subsubsection}{\numberline {3.2.15} uk.ac.ed.inf.aqmaps }{21}{subsubsection.3.2.15}%

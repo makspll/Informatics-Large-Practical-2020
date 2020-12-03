@@ -65,9 +65,8 @@ def get_class_infos(root_path,soup):
         href = a["href"]
         path = get_path_from_href(root_path,"",href)
         title =  a["title"].split("in uk",1)
-        module = title[-1].strip()
+        module = "uk"+title[-1].strip()
         c_type = title[0].strip()
-
         info = class_info(name,c_type,module,href,path)
 
         # get detail info
@@ -121,7 +120,7 @@ def load_class_detail(info,root_path):
 
     for region in [constructor_region,method_region]:
         if region is not None:
-            method_list = region.find("ul").find("ul").find_all("li")
+            method_list = [ul.find("li") for ul in region.find("ul").find_all("ul")]
             for m in method_list:
                 info.methods.append(get_method_info(m))
 
