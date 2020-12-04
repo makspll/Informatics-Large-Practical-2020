@@ -39,38 +39,38 @@ public class DiscreteStepAndAngleGraphTest {
         testGraph = new ConstrainedTreeGraph(MIN_ANGLE, MAX_ANGLE, 10, 1, obstacles);
     }
 
-    @Test
-    public void allPossibleAnglesTest(){
+    // @Test
+    // public void allPossibleAnglesTest(){
 
-        var angles = testGraph.getValidDirectionsBetween(MIN_ANGLE, MAX_ANGLE);
+    //     var angles = testGraph.getValidDirectionsBetween(MIN_ANGLE, MAX_ANGLE);
 
-        assertEquals(36, angles.length);
+    //     assertEquals(36, angles.length);
 
-        var correctOut = new int[]{
-            0,10,20,30,40,50,60,70,80,90,
-            100,110,120,130,140,150,160,170,180,190,
-            200,210,220,230,240,250,260,270,280,290,
-            300,310,320,330,340,350};
+    //     var correctOut = new int[]{
+    //         0,10,20,30,40,50,60,70,80,90,
+    //         100,110,120,130,140,150,160,170,180,190,
+    //         200,210,220,230,240,250,260,270,280,290,
+    //         300,310,320,330,340,350};
 
-        for (int i = 0; i < correctOut.length; i++) {
-            assertEquals(correctOut[i],angles[i]);
-        }
-    }
+    //     for (int i = 0; i < correctOut.length; i++) {
+    //         assertEquals(correctOut[i],angles[i]);
+    //     }
+    // }
 
-    @Test
-    public void someAnglesTest(){
+    // @Test
+    // public void someAnglesTest(){
 
-        var angles = testGraph.getValidDirectionsBetween(30,60);
+    //     var angles = testGraph.getValidDirectionsBetween(30,60);
 
-        assertEquals(4, angles.length);
+    //     assertEquals(4, angles.length);
 
-        var correctOut = new int[]{
-            30,40,50,60};
+    //     var correctOut = new int[]{
+    //         30,40,50,60};
 
-        for (int i = 0; i < correctOut.length; i++) {
-            assertEquals(correctOut[i],angles[i]);
-        }
-    }
+    //     for (int i = 0; i < correctOut.length; i++) {
+    //         assertEquals(correctOut[i],angles[i]);
+    //     }
+    // }
     @Test
     public void allNeighboursTest(){
 
