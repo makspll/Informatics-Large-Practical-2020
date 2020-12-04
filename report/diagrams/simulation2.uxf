@@ -1,0 +1,59 @@
+<diagram program="umletino" version="14.4.0-SNAPSHOT"><zoom_level>10</zoom_level><help_text>Space for diagram notes</help_text><element><id>UMLPackage</id><coordinates><x>0</x><y>40</y><w>1150</w><h>630</h></coordinates><panel_attributes>simulation
+--
+bg=black
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>590</x><y>260</y><w>40</w><h>80</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>20;60;16;10</additional_attributes></element><element><id>UMLInterface</id><coordinates><x>86</x><y>290</y><w>200</w><h>130</h></coordinates><panel_attributes>CollectionOrderPlanner
+--
++ planRoute(startSensor: Sensor,
+Set&lt;Sensor&gt;,
+obstacles:Collection&lt;Obstacle&gt;)
+:Deque&lt;Sensor&gt;</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLInterface</id><coordinates><x>510</x><y>310</y><w>200</w><h>150</h></coordinates><panel_attributes>PathPlanner
+--
++planFlight(startPoint: Coordinate,
+route: Deque&lt;Sensor&gt;,
+graph: ConstrainedTreeGraph,
+formLoop : boolean)
+: Deque&lt;PathSegment&gt;</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLInterface</id><coordinates><x>876</x><y>300</y><w>240</w><h>130</h></coordinates><panel_attributes>SensorDataCollector
+--
++planCollection(startPosition:Coordinate,
+sensors:Set&lt;Sensor&gt;,
+obstacles:Collection&lt;Obstacle&gt;)
+:Deque&lt;PathSegment&gt;</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>440</x><y>90</y><w>320</w><h>180</h></coordinates><panel_attributes>/BasePathPlanner/
+--
+#readingRange : double
+#maxMoves : int
+#algorithm : PathfindingAlgorithm&lt;DirectedSearchNode&gt;
+/#pathPointsToSegmentsStrategy(/
+    pathPoints: Deque&lt;DirectedSearchNode&gt;,
+    goalPoints : Deque&lt;PathfindingGoal&gt;,
+    sensorRoute : Deque&lt;Sensor&gt;, 
+    graph : ConstrainedTreeGraph) 
+: Deque&lt;PathSegment&gt;
+style=wordwrap
+style=autoresize</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>28</x><y>90</y><w>290</w><h>150</h></coordinates><panel_attributes>/BaseCollectionOrderPlanner/
+--
+-optimisers : Collection&lt;CollectionOrderOptimisers&gt; 
+-distanceMatrix : DistanceMatrix
+/#planInitialRoute(startSensorIdx : int,/
+   sensors : Sensor[],
+   distanceMatrix : DistanceMatrix,
+   formLoop : boolean
+) : int[]
+style=wordwrap
+style=autoresize</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>910</x><y>120</y><w>160</w><h>70</h></coordinates><panel_attributes>/BaseDataCollector/
+--
+-pathPlanner:PathPlanner
+-routePlanner:RoutePlanner
+style=wordwrap
+style=autoresize</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>60</x><y>490</y><w>300</w><h>150</h></coordinates><panel_attributes>/DistanceMatrix/
+--
+/#distanceMetric(a : Sensor, b : Sensor) : double/
++setupDistanceMatrix(sensors : sensor[])
++distanceBetween(sensorA : int, sensorB : int): double
++totalDistance(
+     route : int[],
+     startIdx : int,
+     endIdx: int): double
+style=wordwrap
+style=autoresize</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLInterface</id><coordinates><x>560</x><y>510</y><w>240</w><h>90</h></coordinates><panel_attributes>CollectionOrderOptimiser
+--
++optimise(dm : DistanceMatrix, route: int[])</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>990</x><y>180</y><w>30</w><h>150</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>10;130;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>170</x><y>230</y><w>30</w><h>90</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>10;70;10;10</additional_attributes></element></diagram>

@@ -1,58 +1,23 @@
-<diagram program="umletino" version="14.4.0-SNAPSHOT"><zoom_level>10</zoom_level><help_text>Space for diagram notes</help_text><element><id>UMLPackage</id><coordinates><x>60</x><y>0</y><w>830</w><h>1060</h></coordinates><panel_attributes>simulation
+<diagram program="umletino" version="14.4.0-SNAPSHOT"><zoom_level>10</zoom_level><help_text>Space for diagram notes</help_text><element><id>UMLPackage</id><coordinates><x>34</x><y>270</y><w>980</w><h>220</h></coordinates><panel_attributes>simulation
 --
-bg=yellow
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>410</x><y>870</y><w>130</w><h>100</h></coordinates><panel_attributes>PathSegment
+bg=black
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>824</x><y>310</y><w>130</w><h>100</h></coordinates><panel_attributes>PathSegment
 --
 -startPoint:Coordinate
 -direction:int
 -endPoint:Coordinate
 -sensorRead:Sensor
 style=wordwrap
-style=autoresize</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>230</x><y>610</y><w>40</w><h>80</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>20;60;16;10</additional_attributes></element><element><id>UMLInterface</id><coordinates><x>106</x><y>290</y><w>280</w><h>120</h></coordinates><panel_attributes>CollectionOrderPlanner
+style=autoresize</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>34</x><y>510</y><w>960</w><h>110</h></coordinates><panel_attributes>Pathfinding
 --
-+ planRoute(startSensor: Sensor,
-Set&lt;Sensor&gt;,
-obstacles:Collection&lt;Obstacle&gt;):Deque&lt;Sensor&gt;</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLInterface</id><coordinates><x>120</x><y>660</y><w>260</w><h>130</h></coordinates><panel_attributes>PathPlanner
---
-+planFlight(startPoint: Coordinate,
-route: Deque&lt;Sensor&gt;,
-graph: ConstrainedTreeGraph,
-formLoop : boolean): Deque&lt;PathSegment&gt;</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLInterface</id><coordinates><x>506</x><y>660</y><w>320</w><h>120</h></coordinates><panel_attributes>SensorDataCollector
---
-+planCollection(startPosition:Coordinate,
-sensors:Set&lt;Sensor&gt;,
-obstacles:Collection&lt;Obstacle&gt;):Deque&lt;PathSegment&gt;</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>80</x><y>440</y><w>320</w><h>180</h></coordinates><panel_attributes>/BasePathPlanner/
---
-#readingRange : double
-#maxMoves : int
-#algorithm : PathfindingAlgorithm&lt;DirectedSearchNode&gt;
-/#pathPointsToSegmentsStrategy(/
-    pathPoints: Deque&lt;DirectedSearchNode&gt;,
-    goalPoints : Deque&lt;PathfindingGoal&gt;,
-    sensorRoute : Deque&lt;Sensor&gt;, 
-    graph : ConstrainedTreeGraph) 
-: Deque&lt;PathSegment&gt;
-style=wordwrap
-style=autoresize</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>88</x><y>50</y><w>290</w><h>150</h></coordinates><panel_attributes>/BaseCollectionOrderPlanner/
---
--optimisers : Collection&lt;CollectionOrderOptimisers&gt; 
--distanceMatrix : DistanceMatrix
-/#planInitialRoute(startSensorIdx : int,/
-   sensors : Sensor[],
-   distanceMatrix : DistanceMatrix,
-   formLoop : boolean
-) : int[]
-style=wordwrap
-style=autoresize</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>60</x><y>1070</y><w>830</w><h>150</h></coordinates><panel_attributes>Pathfinding
---
-bg=orange</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLInterface</id><coordinates><x>610</x><y>1110</y><w>220</w><h>80</h></coordinates><panel_attributes>Graph&lt;N: SpatialTreeSearchNode&gt;
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>429</x><y>1120</y><w>100</w><h>40</h></coordinates><panel_attributes>/SearchNode/
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>710</x><y>1037</y><w>40</w><h>110</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>16;90;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>399</x><y>990</y><w>150</w><h>60</h></coordinates><panel_attributes>DirectedSearchNode
+bg=gray</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLInterface</id><coordinates><x>534</x><y>540</y><w>220</w><h>80</h></coordinates><panel_attributes>Graph&lt;N: SpatialTreeSearchNode&gt;
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>373</x><y>560</y><w>100</w><h>30</h></coordinates><panel_attributes>/SearchNode/
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>343</x><y>340</y><w>150</w><h>60</h></coordinates><panel_attributes>DirectedSearchNode
 --
 -directionFromParent : int
 style=wordwrap
-style=autoresize</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>469</x><y>1036</y><w>30</w><h>110</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;82;10;10</additional_attributes></element><element><id>UMLInterface</id><coordinates><x>148</x><y>1110</y><w>100</w><h>80</h></coordinates><panel_attributes>PathfindingGoal
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>99</x><y>920</y><w>200</w><h>130</h></coordinates><panel_attributes>/Sensor/
+style=autoresize</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>413</x><y>386</y><w>30</w><h>200</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;172;10;10</additional_attributes></element><element><id>UMLInterface</id><coordinates><x>122</x><y>540</y><w>100</w><h>80</h></coordinates><panel_attributes>PathfindingGoal
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>73</x><y>320</y><w>200</w><h>150</h></coordinates><panel_attributes>/Sensor/
 --
 +setHasBeenRead(read : boolean)
 +hasBeenRead() : boolean
@@ -61,24 +26,8 @@ style=autoresize</panel_attributes><additional_attributes></additional_attribute
 +getCoordinates : JTS::Coordinate
 +getW3WLocaion : String
 style=wordwrap
-style=autoresize</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>179</x><y>1044</y><w>40</w><h>100</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>16;72;20;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>600</x><y>530</y><w>160</w><h>70</h></coordinates><panel_attributes>/BaseDataCollector/
---
--pathPlanner:PathPlanner
--routePlanner:RoutePlanner
-style=wordwrap
-style=autoresize</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>470</x><y>260</y><w>300</w><h>150</h></coordinates><panel_attributes>/DistanceMatrix/
---
-/#distanceMetric(a : Sensor, b : Sensor) : double/
-+setupDistanceMatrix(sensors : sensor[])
-+distanceBetween(sensorA : int, sensorB : int): double
-+totalDistance(
-     route : int[],
-     startIdx : int,
-     endIdx: int): double
-style=wordwrap
-style=autoresize</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLInterface</id><coordinates><x>550</x><y>90</y><w>240</w><h>90</h></coordinates><panel_attributes>CollectionOrderOptimiser
---
-+optimise(dm : DistanceMatrix, route: int[])</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>610</x><y>930</y><w>200</w><h>120</h></coordinates><panel_attributes>ConstrainedTreeGraph
+style=autoresize
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>544</x><y>320</y><w>200</w><h>120</h></coordinates><panel_attributes>ConstrainedTreeGraph
 --
 - minAngle: int
 - maxAngle: int
@@ -86,4 +35,5 @@ style=autoresize</panel_attributes><additional_attributes></additional_attribute
 - moveLength:double
 - obstacles : Collection&lt;Obstacle&gt;
 style=wordwrap
-style=autoresize</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>650</x><y>590</y><w>50</w><h>100</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>10;80;30;10</additional_attributes></element><element><id>Relation</id><coordinates><x>230</x><y>190</y><w>30</w><h>130</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>10;110;10;10</additional_attributes></element></diagram>
+style=autoresize</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLInterface</id><coordinates><x>844</x><y>540</y><w>60</w><h>80</h></coordinates><panel_attributes>Obstacle
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>829</x><y>440</y><w>100</w><h>30</h></coordinates><panel_attributes>Building</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>869</x><y>460</y><w>30</w><h>110</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>10;90;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>634</x><y>430</y><w>30</w><h>140</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>10;120;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>165</x><y>460</y><w>30</w><h>110</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>10;90;10;10</additional_attributes></element></diagram>

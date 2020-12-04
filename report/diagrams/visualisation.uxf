@@ -1,6 +1,6 @@
 <diagram program="umletino" version="14.4.0-SNAPSHOT"><zoom_level>10</zoom_level><help_text>Space for diagram notes</help_text><element><id>UMLPackage</id><coordinates><x>0</x><y>370</y><w>770</w><h>480</h></coordinates><panel_attributes>visualisation
 --
-bg=orange</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>550</x><y>590</y><w>150</w><h>110</h></coordinates><panel_attributes>template=C
+bg=black</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>550</x><y>590</y><w>150</w><h>110</h></coordinates><panel_attributes>template=C
 UniformAttributeMap
 --
 -min: float

@@ -36,7 +36,7 @@ testcw2:
 	mvn test ${MVNFLAGS_CW2};
 watchcw2:
 	while inotifywait -e close_write test.txt; do make runcw2"; done
-submitcw2:
+submitcw2: makedocscw2
 	@cd ${SERVER_JAR_DIR} && java -jar ${SERVER_JAR} . ${SERVER_PORT}&
 	mvn clean package -Dmaven.test.skip=true ${MVNFLAGS_CW2};
 	./preparecw2.sh;

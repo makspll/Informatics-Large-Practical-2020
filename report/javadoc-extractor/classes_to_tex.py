@@ -14,7 +14,7 @@ def clean_string(s):
 def format_class_tex(c,all_classes):
     string = ""
 
-    string += "\cbox{{ {} {} }} {{\\scriptsize {}\n \n".format(clean_string(c.c_type),clean_string(c.name),format_class_names(clean_string(c.description),all_classes))
+    string += "\cbox{{ {} {} {} }} {{\\scriptsize {}\n \n".format("abstract" if c.is_abstract else "",clean_string(c.c_type),clean_string(c.name),format_class_names(clean_string(c.description),all_classes))
     
     if c.implements != [] or c.extends is not None:
         string += "\\vspace*{4pt} \\hrule \\vspace*{3pt}\n"
@@ -29,7 +29,7 @@ def format_class_tex(c,all_classes):
         string+= "\\vspace*{-5pt}\\tcbsubtitle[before skip=\\baselineskip]{Members} \n"
 
     if c.methods != []:
-        string+= "\\begin{tabularx}{\\linewidth}{X|m{0.5\\textwidth}}\n"
+        string+= "\\begin{tabularx}{\\linewidth}{m{0.45\\textwidth}|m{0.5\\textwidth}}\n"
         string+= "\\label{{tab:{}}}\n".format(c.name)
         i = 0
         for m in c.methods:
@@ -131,14 +131,26 @@ if __name__ == "__main__":
                         "public void setGoalsReached​",
                         "public void removeGoalReached​",
                         "public int getNumberOfGoalsReached",
-                        "public void setHeuristic​"]
+                        "public void setHeuristic​"],
+        "PointGoal":["public org.locationtech.jts.geom.Coordinate getCoordinates"],
+        "SensorDataCollectorFactory":[2],
+        "Sensor":["public String getW3WLocation",
+                   "public org.locationtech.jts.geom.Coordinate getCoordinates" ],
+        "DirectedSearchNode":["public int getDirectionFromParent",
+                                0],
+        "Building":["public org.locationtech.jts.geom.Polygon getShape"],
+        "ConstrainedTreeGraph":[1,
+                                "public Collection<Obstacle> getObstacles",
+                                "public org.locationtech.jts.geom.Polygon getBoundary",
+                                "public double getMoveLength"],
+        "PathSegment":[1,2,3,4]
     }
     classes = parse_jdoc(sys.argv[1])
     exclude_interfaces = True
 
     classes.sort(key=lambda x: x.module, reverse=True)
 
-    for a in sys.argv[1:] + ["App"]:
+    for a in sys.argv[1:] + ["App","HTTPException"]:
         for i, c in enumerate(classes):
             if c.name == a or (exclude_interfaces and c.c_type == "interface"):
                 del classes[i]
@@ -155,11 +167,13 @@ if __name__ == "__main__":
             c.extends = None
 
         leftover_ms = []
-        excluded_methods = exclusions[c.name] if c.name in exclusions else [] 
+        excluded_methods = exclusions[c.name] if c.name in exclusions else []
+        idx = 0
         for m in c.methods:
-            if not("toString" in m.signature  or "equals" in m.signature or "hashCode" in m.signature) and not (m.signature in excluded_methods):
+            if not("toString" in m.signature  or "equals" in m.signature or "hashCode" in m.signature) and not (m.signature in excluded_methods) and not(idx in excluded_methods):
                 leftover_ms.append(m)
                 print ('.'+ str(m.signature) +'.')
+            idx += 1
         c.methods = leftover_ms
 
         if module != prev_module:

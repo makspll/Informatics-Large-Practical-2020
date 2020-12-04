@@ -40,6 +40,7 @@ class class_info:
         self.extends = None
         self.methods = []
         self.description = None 
+        self.is_abstract = False
 
     def __str__(self):
         return str(self.c_type) +" " + str(self.name)
@@ -84,6 +85,9 @@ def load_class_detail(info,root_path):
     details = html_soup.select("div[class='details']")[0]
     description_text = description.text
 
+    is_abstract = "abstract" in description.find("pre").text
+    info.is_abstract = is_abstract
+    
     class_description_div = description.find("div")
 
     if class_description_div is not None:

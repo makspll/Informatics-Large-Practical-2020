@@ -56,142 +56,121 @@ The solution is divided into four main components:
 
 Most of the inter-module design choices explained below, are fueled by the dependency inversion principle and the rest by good general OOP practice. 
 Due to the size of the solution, a lot of the simpler classes are missed out of the diagrams. 
-The descriptions below will revolve mostly around the key decisions in the architecture and their benefits.
+The descriptions below will revolve mostly around the key decisions behind the architecture and their benefits/alternatives.
 
 \subsection{Client module}
-Figure \ref{fig:client} shows the structure of the client module classes, it contains Data classes which hold the intermediate, validated and standardised data.
-These intermediate classes detach the implementation from the exact shape input data. 
-Since any number of formats can map to these classes, the solution is not closely related to the input data - this is very desirable. \par
-
-The ClientService interface is used to actually create the data in the form of Data classes from the input data given. 
-In the case of AQmaps the data is given via http server and so an appropriate implementing class will need to know the base URI/location of the API where sensor/map/w3w data is stored, and have access to the Http protocol.
-
-\par 
-Any other classes which will "feed" into the rest of the system, but are constructed from input data, will be declared in this module and implement the appropriate external service interfaces.
+The first choice is deciding how input data is to be parsed and prepared for consumption in other modules. Three "Data" classes were appointed for this role.
+These closely match the structure of the json data provided, yet they do not copy the structure entirely. The alternatives included entirely omitting intermediate classes such as these, however
+should any change in strucutre of data happen, changes in all the classes consuming the data would need to be made, or at least their parsing code, in this case, we simply change the parsing code in the ClientService which 
+is responsible for generating the Data classes from the input data. The ClientService is modelled as an interface, in the case that the entire format of the data changes, a new ClientService implementation can be written 
+to handle it. Figure \ref{fig:client} shows the class diagram of the client module. In the case of this problem, the ClientService needs to communicate with a server and so the \hyperref[tab:AQWebServerClient]{\color{blue}AQWebServerClient} is modelled as an example
+The \hyperref[tab:AQSensor]{\color{blue}AQSensor} class is shown to show the relationship between the Client and the Simulation module (discussed in detail below), following dependency inversion principles, defining the concrete sensor class in this module,
+decouples the input data completely from the classes consuming it.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.7\columnwidth]{diagrams/client.uxf.pdf}
+    \includegraphics[width=0.8\columnwidth]{diagrams/client.uxf.pdf}
     \caption{UML diagram of the client module}
     \label{fig:client}
 \end{figure}
 
 \subsection{Pathfinding module}
-We separate the problem of pathfinding completely from the AQmap problem. This allows a broader range of techniques to be applied much more easilly.
+A big part of the problem is finding a path between two points on a plane, this is a widely studied area and a problem which can be easilly abstracted away from the specific domain of drone sensor data collection.
+To represent the abstract domain, the Graph interface and \hyperref[tab:SearchNode]{\color{blue}SearchNode} abstract class are created, each Graph provides at its core a method to retrieve the neighbours of each \hyperref[tab:SearchNode]{\color{blue}SearchNode}, each of which represents a point and path needing to be taken to reach that point.
+This representation allows the creation of algorithms able to find paths in a multitude of different domains. An alternative choice was skipping those classes and embedding the graph of the domain in each class modelling a pathfinding algorithm, 
+this approach however would force the creation of duplicate classes as soon as the domain evolves (as an example, the allowed angles of travel could change or dissapear entirely evolving this pathfinding problem into an any-angle pathfinding problem).
 \par 
-\medskip
-Figure \ref{fig:pathfinding} shows the most important classes from the pathfinding module. 
-The basis of this module is formed by the SearchNode and PathfindingAlgorithm abstract classes as well as the Graph interface.
-\par
-The PathfindingAlgorithm class defines an abstract findPath method for finding a path to a single goal, leaving the exact way this is done to the concrete implementation. 
-It is marked as abstract since we will always need to apply pathfinding to multiple goals as well, and so this class should deal with that, since this would otherwise always have to be done by the consumer.
-\par
-Each SearchNode is used to represent a part of the frontier of a graph search algorithm i.e. a \textbf{state} in the search space - in the pathfinding case, a path. 
-These are made abstract to allow for the use of generics in such a way that each parent node is of the specific node type needed and also because nodes are expected to be annotated with problem specific data.
-It is this generic parameter which propagates to the rest of the classes.
-\par
-Due to the fact we are mostly dealing with multiple goal pathfinding, each node should also hold a deque of goals which can be reached from it - take as an example the problem where you start at a position with 2 goals, no movement is necessary and both are reached.
-\par
-Pathfinding goals are represented by their own class, alternatively we could simply use coordinates as goals, 
-but this would force the consumer of this functionality to always have to match the coordinates of the path returned to the goals that it needed achieved,
-as opposed to simply looking through the goals achieved by each node and comparing them via reference to the deque of goals in order.
-
+The actual \hyperref[tab:PathfindingAlgorithm]{\color{blue}PathfindingAlgorithm}'s are modelled as abstract classes, this is because all pathfinding problems share the fact that they find a path between two points, and since most of the consumer classes of this module would require paths reaching multiple goals, we can place the shared functionality in this class.
+The fact this class is not concrete also allows us to decouple the consumer modules from a single concrete choice of \hyperref[tab:PathfindingAlgorithm]{\color{blue}PathfindingAlgorithm}.
 \par 
-Finally the Graph interface defines the transition function from any searchNode to all its neighbours. 
-PathfindingAlgorithms always accept the graph as a parameter as it forms the domain of each specific problem. 
-Separating the domain from the algorithm completely makes the algorithms much more flexible and easier to unit test.
-
+The PathfindingGoal interface allows for any class with a getCoordinates method to become a target for pathfinding, this class is going to be implemented by each sensor. This is because the algorithms do not need to know anything about the objects to which we're passing other than their coordinates.
+Without this interface, the pathfinding module would have to accept the \hyperref[tab:Sensor]{\color{blue}Sensor} class directly, which would couple these two modules and classes together. This would also defeat the purpose of abstracting pathfinding away.
+\par
+The Obstacle interface allows for the inclusion of obstacles and consideration of obstacles in the pathfinding without coupling it to the problem domain.
 \par 
-Other interfaces shown include the SpatialHash and PathfindingHeuristic, those will be used by implementing algorithms and are defined as interfaces 
-to again further separate the components of algorithms from the domain. This allows us to further change the behaviour and performance of algorithms,
-by swapping out their components to suit (Composition over Inheritance). 
-
-
-
+The SpatialHash interface is modelled to allow different techniques of spatial hashing to be used with the same \hyperref[tab:PathfindingAlgorithm]{\color{blue}PathfindingAlgorithm} without changing the class.
+The PathfindingHeuristic interface serves exactly the same role but for heuristic techniques.
+\par
+Figure \ref{fig:pathfinding} is a summarised class diagram of the pathfinding module. Overal the class choices form an entirely decoupled module which allows for pathfinding in various planar domains employing,
+with the flexibility of mixing any combination of \hyperref[tab:PathfindingAlgorithm]{\color{blue}PathfindingAlgorithm}, PathfindingHeuristic and SpatialHash classes.
 
 
 \subsection{Simulation module}
-The simulation module is responsible for: planning the route (using TSP solvers), applying pathfinding to find the detailed path required for collection, and setting the read status in sensors. 
-The name stems from the fact that our sensor data collection is only simulated. This module directly interfaces with the pathfinding module as expected. 
-Principles of dependency inverersion were applied to reduce coupling and increase flexibility.
-\par 
-\medskip
-Figure \ref{fig:simulation} shows the most important classes of the simulation module. The biggest architectural choice here is the splitting of the drone into components. 
-\\
-This means that we keep the specific pathfinding and route planning behaviour separate from the behaviour of the drone/data collector itself.
-Since it is not the job of the path or route planner to "read" any sensors, this will be the task of the drone in addition to perhaps applying some strategy
-to the produced path in case it is not satysfying enough (maybe re-routing from a point with a different collection order).
-\par
-Another big choice is the fact that this module does not know anything about the input data, it simply defines a contract for the sensor class, letting the consumers of this module deal with 
-data conversion.
+Once a mechanism for pathing between two points in space is found, the only problem left in creating a full path is finding out in which order to visit the sensors. This is the Travelling Salesman Problem,
+Many techniques exist for solving this problem and so general classes are estabilished to allow a variety of methods to be created as needed.
+Figures \ref{fig:simulation2} and \ref{fig:simulation} show a class diagrams of classes in the simulation module.
 
-\par 
-The path planner component itself is further composed of the PathfindingAlgorithm and DistanceMatrix which means it only concerns itself with the 
-task of translating a path of individual points it receives from the PathfindingAlgorithm to a path composed of path segments enforcing the move pattern of the drone.
-\par
-The PathSegment class is necessary since it is a major requirement that the collector must move in a specific pattern, this class can be used to enforce such a contract.
-\par 
-On the other hand CollectionOrderPlanners are only defined by their implementation and the choice of DistanceMatrix as well as the set of route optimisers. 
-This choice decouples the major TSP solving strategy from the distance measure that it uses. 
-\par
-Both the PathPlanner and CollectionOrderPlanner interfaces have a base abstract class implementation since:
-\begin{itemize}
-    \item Collection order planners will always apply the set of given optimisers to the final route.
-    \item They will also have to always set up the distance matrix with the given sensors 
-    \item Path planners will always have to apply the given pathfinding algorithm before actually performing conversion to path segments
-    \item We also use these abstract bases to enforce problem specific rules, such as the maximum number of moves, this leaves the possibility of
-            straying away from those base classes if the problem changes drastically in the future.
-\end{itemize}
-\par 
-This module also implements a specific Graph and SearchNode specific to the problem at hand. Here the ConstrainedTreeGraph produces nodes satisfying 
-the angle, move length and obstacle constraints, in effect all logic to do with checking whether the collector is hitting an obstacle, or if the move length is valid etc.. is contained 
-in the graph itself. This is very desirable and intentional. 
-The addition of the direction field to the DirectedSearchNode further emphasizes the angle requirements, and allows for the construction of 
-PathSegments from search nodes without calculating angles twice.
-\par Another important class here is the abstract Sensor class. This is made abstract for two reasons:
-\begin{itemize}
-    \item The concrete implementation of the sensor should be done in another module, since it is more convenient for example to closely link it 
-        to the input data for convenience. So according to the principle of dependency inversion we do not provide a concrete implementation in this module.
-    \item The sensor cannot show any reading unless it is actually read, this can be enforced by this abstact class using the setHasBeenRead method regardless of the 
-        concrete implementation/constructor.
-\end{itemize}
+The CollectionOrderPlanner interface allows for the decoupling of specific implementations of TSP solvers from the consumers of this class, It would be possible to simply reference a specific implementation, but then swapping out the TSP solver would require entirely new classes, or modifications to the consumer class.
+An abstract \hyperref[tab:BaseCollectionOrderPlanner]{\color{blue}BaseCollectionOrderPlanner} is also included since all CollectionOrderPlanner's will use a distance matrix of some sort as well as a set of common optimisations which can be applied on top of any TSP solver (an example would be 2-opt).
+The PathPlanner interface is introduced for the same reason as above, to decouple the consumer of this class from any specific implementation. This enables flexibility in swapping out behaviour via different PathPlanner implementations.
+Since PathPlanners are decoupled from the specific pathfinding algorithm, these classes are tasked with the conversion of path points received from the \hyperref[tab:PathfindingAlgorithm]{\color{blue}PathfindingAlgorithm}, to \hyperref[tab:PathSegment]{\color{blue}PathSegments} conforming to the design specification - a reading can only be performed at the end of a move.
+This conversion can be done in a variety of different ways, hence the interface - however a base abstract class is also provided to encapsulate the constraints of reading range and maximum amount of moves, should these constraints change in the specification, it would be easy to implement a new branch of these planners in the new domain.
 
+Finally, \hyperref[tab:Sensor]{\color{blue}Sensor}DataCollector is the interface representing the actual drone (or any data collector whatsoever), these classes apply the path and collection order planners to plan their journey, they may apply different strategies to how they use pathfinding and TSP solving to collect all the sensors, and prioritize the different goals differently.
+A base class is provided since all data collectors are expected to use both the planners, however should a collector be required which does not, this is also made possible thanks to this design.
 
+CollectionOrderOptimiser is an interface for all general algorithms designed to improve already existing TSP tours. Examples of these include: 2-opt, k-opt, Genetic Algorithms, etc..
+The interface allows for the application of a whole list of optimisers to an arbitrary path without knowing anything about the optimisers. 
 
+The \hyperref[tab:DistanceMatrix]{\color{blue}DistanceMatrix} abstract class encapsulates the general square adjacency matrix used to store distances between nodes in a graph, this allows for the swaping out of distance measures in the CollectionOrderPlanner's freely without changing the planners themselves.
+The Graph and \hyperref[tab:DistanceMatrix]{\color{blue}DistanceMatrix} classes completely define the domain of the problem together, and this makes this entire module applicable to a variety of different scenarios should new ones arise.
+
+Figure \ref{fig:simulation} shows the relationship of this module to the pathfinding module. The abstract \hyperref[tab:Sensor]{\color{blue}Sensor} class implements the PathfindingGoal interface, and it is used directly by the PathPlanner's for pathfinding.
+The module defines its own specific \hyperref[tab:SearchNode]{\color{blue}SearchNode} and Graph implementations which are propagated through the rest of the module.
+The \hyperref[tab:DirectedSearchNode]{\color{blue}DirectedSearchNode} defines an additional field to store the direction from its parent, and the \hyperref[tab:ConstrainedTreeGraph]{\color{blue}ConstrainedTreeGraph} produces these nodes in agreement with the move length, direction, obstacle and boundary constraints. This effectively removes the need for any other class 
+to deal with obstacle detection or working out any vector math, it's all encapsulated in this class. This centralisation of the collector's movement capability in a single class, means that 
+any optimisations require only modifications to the graph. This also means that the entire array of classes in this module could suddenly be passed an entirely different graph within an entirely different domain,
+and they would all still work. This is rather excellent.
+
+The \hyperref[tab:Building]{\color{blue}Building} class implements the Obstacle interface from the pathfinding module which allows it to be considered as an obstacle in pathfinding should need for it arise.
+
+The \hyperref[tab:PathSegment]{\color{blue}PathSegments} class is what enscapsulates the movement of the collector, i.e. move in an integer direction followed by single sensor reading.
+While this could have been further abstracted, it is believed, that any form of movement can be approximated with this format, i.e. should a more complex path be neccessary, the move length could be reduced and more angles allowed effectively increasing the flexibility of the drone extensively.
+
+The Client module is what actually provides an implementation of the \hyperref[tab:Sensor]{\color{blue}Sensor} class, meaning that this module could work in entirely different scenarios, with readings in different ranges,
+sensors with more complex behaviours and so on.
 
 \subsection{Visualisation module}
-This module only needs to interface with the output classes of the simulation module, i.e. the PathSegment and Sensor classes but other than that, it is 
-completely decoupled from the shape of the initial input data of the system. This is very desirable 
+This module only needs to interface with the output classes of the simulation module, i.e. the \hyperref[tab:PathSegment]{\color{blue}PathSegments} and Sensor classes but other than that, it is 
+completely decoupled from the shape of the initial input data of the system. This is uni-directional relationship is very desirable 
 \par
-Figure \ref{fig:visualisation} shows the UML diagram of the most important classes in the visualisation module.
+Figure \ref{fig:visualisation} shows the class diagram of the visualisation module.
 \\
-Classes implementing the SensorCollectionVisualiser interface generate geojson visualisations of sensor data collections.
-These have access to both the flight path and the sensors and hence their readings. The AQMapGenerator is the problem specific example of implementation of such a visualiser.
-\par
-Using an interface like like this allows for the swapping out of visualisers at will whenever new requirements arise or current ones change.
-\par 
+The SensorCollectionVisualiser interface is one to again decouple the consumers of this module from any specific implementation, should the requirements for visualisation change,
+this can easilly be done by creating a new visualiser class. 
 The OutputFormatter class deals with writing the visualisations and flight paths to a file, these are made static as changes in output format are assumed to be very few in the future,
-and should such changes be required, new methods can be added to the formatter.
+and should such changes be required, new methods can be added to the formatter, but this is not a problem since changes to output format would likely require entirely different libraries and as such new classes dealing with those libraries.
 \par 
-The usage of the AttributeMap interface allows for a lot of flexibility in the way the AQMapGenerator assigns colors and symbols, and should this behaviour need to be changed, it'd be very easy to do.
+\hyperref[tab:AQMapGenerator]{\color{blue}AQMapGenerator} is an example implementing class, which uses line strings and markers as in the specification.
+The usage of the AttributeMap interface allows for a lot of flexibility in the way the \hyperref[tab:AQMapGenerator]{\color{blue}AQMapGenerator} assigns colors and symbols, and should this behaviour need to be changed, it'd be very easy to do.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\columnwidth]{diagrams/visualisation.uxf.pdf}
-    \caption{UML diagram of the Visualisation module}
-    \label{fig:visualisation}
-\end{figure}
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.7\columnwidth]{diagrams/pathfinding.uxf.pdf}
+    \includegraphics[width=.9\columnwidth]{diagrams/pathfinding.uxf.pdf}
     \caption{UML diagram of the pathfinding module}
     \label{fig:pathfinding}
 \end{figure}
+
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\columnwidth]{diagrams/simulation.uxf.pdf}
-    \caption{UML diagram of the Simulation module}
+    \includegraphics[width=0.9\columnwidth]{diagrams/visualisation.uxf.pdf}
+    \caption{UML diagram of the Visualisation module}
+    \label{fig:visualisation}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\columnwidth]{diagrams/simulation.uxf.pdf}
+    \caption{UML diagram of the Simulation module part 1}
     \label{fig:simulation}
 \end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\columnwidth]{diagrams/simulation2.uxf.pdf}
+    \caption{UML diagram of the Simulation module part 2}
+    \label{fig:simulation2}
+\end{figure}
+
 
 \section{Drone Control Algorithm}
 \subsection{TSP Solver}
@@ -263,7 +242,7 @@ The heuristic chosen to tackle this part of the problem was the \hyperref[tab:Ne
 \par
 As pseuducode in Figure \ref{alg:ni} shows, the heuristic inserts sensors into the tour one at a time, choosing the sensor which is closest to any sensor in the tour.
 \\
-After a route is found, 2-opt optimisations are applied to it to remove paths which are crossing each other.
+After a route is found, \hyperref[tab:Optimiser2Opt]{\color{blue}2-opt optimisations} are applied to it to remove paths which are crossing each other.
 The 2-opt algorithm in each pass checks if reversing any sub-segment of all possible sub-segments of a full tour reduces it's cost, and if so keeps the reversal. 
 The passes are repetead until improvements fall under a threshold of 0.00003 degrees
 
@@ -363,8 +342,7 @@ We can do this by "sliding" a window over the points and always looking at two p
 We call the points at each position of the windo P and N, where P is the point before N. 
 The pathfinding algorithm also attaches a deque of sensors reached by each P/N.  
 A naive sequential pairing does not work due to multiple goals allowed at each point, and the requirement of the drone to move before collecting the reading.
-We apply a number of rules to make a valid path:
-
+We apply a number of rules to make a valid path
 \noindent (portrayed in Figure \ref{fig:segmenting}):
 \begin{itemize}
     \item While P attains a goal, create a proxy segment to any neighbouring node, and one back, assign the first sensor attained by P 
