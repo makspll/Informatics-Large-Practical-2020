@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GridSnappingSpatialHash.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">aqmaps</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ed.inf.aqmaps.pathfinding.hashing</a> &gt; <span class="el_source">GridSnappingSpatialHash.java</span></div><h1>GridSnappingSpatialHash.java</h1><pre class="source lang-java linenums">package uk.ac.ed.inf.aqmaps.pathfinding.hashing;
+
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.math.Vector2D;
+
+/**
+ * hashes real coordinates by scaling them and &quot;snapping&quot; them to a grid..
+ */
+public class GridSnappingSpatialHash implements SpatialHash {
+
+    /**
+     * Create new instance of grid snapping hash
+     * @param gridSize the width of each square of the grid
+     * @param gridCenter the center of the grid
+     */
+<span class="fc" id="L16">    public GridSnappingSpatialHash(double gridSize, Coordinate gridCenter){</span>
+<span class="fc" id="L17">        this.GRID_SIZE = gridSize;</span>
+<span class="fc" id="L18">        this.GRID_CENTER = gridCenter;</span>
+<span class="fc" id="L19">    }</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getHash(Coordinate a) {
+
+<span class="fc" id="L27">        Vector2D directionFromGrid = Vector2D.create(GRID_CENTER, a);</span>
+
+<span class="fc" id="L29">        int snappedX = (int)(directionFromGrid.getX() / GRID_SIZE);</span>
+<span class="fc" id="L30">        int snappedY = (int)(directionFromGrid.getY() / GRID_SIZE);</span>
+
+        // cantor hash (perfect and reversible)
+        // https://www.singlelunch.com/2018/09/26/programming-trick-cantor-pairing-perfect-hashing-of-two-integers/
+        // we modify it to allow for non-negative numbers
+<span class="fc" id="L35">        snappedX = makePositive(snappedX);</span>
+<span class="fc" id="L36">        snappedY = makePositive(snappedY);</span>
+
+<span class="fc" id="L38">        return (int)(((0.5 * (snappedX + snappedY)) * (snappedX + snappedY + 1)) + snappedY);</span>
+    }
+
+    /**
+     * &quot;shifts&quot; positive numbers in order to fit the negative numbers on the positive number line
+     * @param n
+     * @return
+     */
+    private int makePositive(int n){
+<span class="fc bfc" id="L47" title="All 2 branches covered.">        if(n &gt;= 0){</span>
+<span class="fc" id="L48">            return n*= 2;</span>
+        }else{
+<span class="fc" id="L50">            return (-n)*2 -1;</span>
+        }
+    }
+    /**
+     * the length of each square's width in the grid
+     */
+    private final double GRID_SIZE;
+
+    /**
+     * the center of the grid
+     */
+    private final Coordinate GRID_CENTER;
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

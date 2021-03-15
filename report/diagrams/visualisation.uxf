@@ -1,0 +1,30 @@
+<diagram program="umletino" version="14.4.0-SNAPSHOT"><zoom_level>10</zoom_level><help_text>Space for diagram notes</help_text><element><id>UMLPackage</id><coordinates><x>0</x><y>370</y><w>770</w><h>480</h></coordinates><panel_attributes>visualisation
+--
+bg=black</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>550</x><y>590</y><w>150</w><h>110</h></coordinates><panel_attributes>template=C
+UniformAttributeMap
+--
+-min: float
+-max: float
+-attributes: Collection&lt;C&gt;
+style=wordwrap</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLInterface</id><coordinates><x>160</x><y>440</y><w>480</w><h>120</h></coordinates><panel_attributes>SensorCollectionVisualiser
+--
++plotMap(path:Deque&lt;PathSegment&gt;,sensors:Collection&lt;Sensor&gt;): FeatureCollection
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>35</x><y>750</y><w>350</w><h>70</h></coordinates><panel_attributes>OutputFormatter
+--
+_+writePath(flightPath:Deque&lt;PathSegment&gt;,filename:Stream)_
+_+writeReadingsMap(f:FeatureCollection,filename:Stream)_
+style=wordwrap
+style=autoresize</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLInterface</id><coordinates><x>555</x><y>750</y><w>120</w><h>90</h></coordinates><panel_attributes>AttributeMap&lt;T,C&gt;
+--
++getFor(val:T):C</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>600</x><y>690</y><w>60</w><h>90</h></coordinates><panel_attributes>lt=&lt;&lt;.
+T: float</panel_attributes><additional_attributes>10;70;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>30</x><y>580</y><w>280</w><h>150</h></coordinates><panel_attributes>AQMapGenerator
+--
+-colourMap : AttributeMap&lt;Float, String&gt;
+-symbolMap : AttributeMap&lt;Float, MarkerSymbol&gt;
+-lowBatteryMarkerColour : String
+-lowBatteryMarkerSymbol : MarkerSymbol
+-notVisitedMarkerColour : String
+-notVisitedMarkerSymbol : MarkerSymbol
+-lowBatteryThreshold : float
+style=autoresize</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>20</x><y>460</y><w>390</w><h>140</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>370;10;20;10;20;120;10;120</additional_attributes></element></diagram>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SensorData.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">aqmaps</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ed.inf.aqmaps.client.data</a> &gt; <span class="el_source">SensorData.java</span></div><h1>SensorData.java</h1><pre class="source lang-java linenums">package uk.ac.ed.inf.aqmaps.client.data;
+
+import java.util.Objects;
+
+
+/**
+ * Object representing the reading, battery and location data of a sensor
+ */
+public class SensorData {
+
+    /**
+     * Empty constructor, necessary for proper de-serialization
+     */
+<span class="fc" id="L14">    public SensorData() {</span>
+<span class="fc" id="L15">    }</span>
+
+    /**
+     * Constructs a new sensor data object
+     * @param location the what 3 words location of this sensor
+     * @param battery the battery reading of the sensor
+     * @param reading the sensor reading 
+     */
+<span class="fc" id="L23">    public SensorData(String W3WLocation, float battery, float reading) {</span>
+<span class="fc" id="L24">        this.W3WLocation = W3WLocation;</span>
+<span class="fc" id="L25">        this.battery = battery;</span>
+<span class="fc" id="L26">        this.reading = reading;</span>
+<span class="fc" id="L27">    }</span>
+
+    /**
+     * Returns the w3w location of this sensor
+     */
+    public String getW3WLocation() {
+<span class="fc" id="L33">        return this.W3WLocation;</span>
+    }
+
+    /**
+     * Returns the battery level of the sensor, always a normal float value
+     */
+    public Float getBattery() {
+<span class="fc" id="L40">        return this.battery;</span>
+    }
+
+    /**
+     * Returns the reading value of the sensor, can be NaN or a float
+     * @return
+     */
+    public float getReading() {
+<span class="fc" id="L48">        return this.reading;</span>
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+<span class="pc bpc" id="L54" title="1 of 2 branches missed.">        if (o == this)</span>
+<span class="nc" id="L55">            return true;</span>
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">        if (!(o instanceof SensorData)) {</span>
+<span class="nc" id="L57">            return false;</span>
+        }
+<span class="fc" id="L59">        SensorData sensor = (SensorData) o;</span>
+<span class="pc bpc" id="L60" title="3 of 6 branches missed.">        return Objects.equals(W3WLocation, sensor.W3WLocation) &amp;&amp; Objects.equals(battery, sensor.battery) &amp;&amp; Objects.equals(reading, sensor.reading);</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L65">        return Objects.hash(W3WLocation, battery, reading);</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L70">        return &quot;{&quot; +</span>
+<span class="nc" id="L71">            &quot; location='&quot; + getW3WLocation() + &quot;'&quot; +</span>
+<span class="nc" id="L72">            &quot;, battery='&quot; + getBattery() + &quot;'&quot; +</span>
+<span class="nc" id="L73">            &quot;, reading='&quot; + getReading() + &quot;'&quot; +</span>
+            &quot;}&quot;;
+    }
+
+    private String W3WLocation;
+    private float battery;
+    private float reading;
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

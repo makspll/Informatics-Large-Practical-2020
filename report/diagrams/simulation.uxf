@@ -1,0 +1,39 @@
+<diagram program="umletino" version="14.4.0-SNAPSHOT"><zoom_level>10</zoom_level><help_text>Space for diagram notes</help_text><element><id>UMLPackage</id><coordinates><x>34</x><y>270</y><w>980</w><h>220</h></coordinates><panel_attributes>simulation
+--
+bg=black
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>824</x><y>310</y><w>130</w><h>100</h></coordinates><panel_attributes>PathSegment
+--
+-startPoint:Coordinate
+-direction:int
+-endPoint:Coordinate
+-sensorRead:Sensor
+style=wordwrap
+style=autoresize</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>34</x><y>510</y><w>960</w><h>110</h></coordinates><panel_attributes>Pathfinding
+--
+bg=gray</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLInterface</id><coordinates><x>534</x><y>540</y><w>220</w><h>80</h></coordinates><panel_attributes>Graph&lt;N: SpatialTreeSearchNode&gt;
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>373</x><y>560</y><w>100</w><h>30</h></coordinates><panel_attributes>/SearchNode/
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>343</x><y>340</y><w>150</w><h>60</h></coordinates><panel_attributes>DirectedSearchNode
+--
+-directionFromParent : int
+style=wordwrap
+style=autoresize</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>413</x><y>386</y><w>30</w><h>200</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;172;10;10</additional_attributes></element><element><id>UMLInterface</id><coordinates><x>122</x><y>540</y><w>100</w><h>80</h></coordinates><panel_attributes>PathfindingGoal
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>73</x><y>320</y><w>200</w><h>150</h></coordinates><panel_attributes>/Sensor/
+--
++setHasBeenRead(read : boolean)
++hasBeenRead() : boolean
++getReading() : double
++getBatteryLevel(): double
++getCoordinates : JTS::Coordinate
++getW3WLocaion : String
+style=wordwrap
+style=autoresize
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>544</x><y>320</y><w>200</w><h>120</h></coordinates><panel_attributes>ConstrainedTreeGraph
+--
+- minAngle: int
+- maxAngle: int
+- angleIncrement: int
+- moveLength:double
+- obstacles : Collection&lt;Obstacle&gt;
+style=wordwrap
+style=autoresize</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLInterface</id><coordinates><x>844</x><y>540</y><w>60</w><h>80</h></coordinates><panel_attributes>Obstacle
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>829</x><y>440</y><w>100</w><h>30</h></coordinates><panel_attributes>Building</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>869</x><y>460</y><w>30</w><h>110</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>10;90;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>634</x><y>430</y><w>30</w><h>140</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>10;120;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>165</x><y>460</y><w>30</w><h>110</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>10;90;10;10</additional_attributes></element></diagram>

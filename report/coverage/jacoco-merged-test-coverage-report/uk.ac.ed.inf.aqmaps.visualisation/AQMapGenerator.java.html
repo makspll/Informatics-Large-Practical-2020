@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AQMapGenerator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">aqmaps</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ed.inf.aqmaps.visualisation</a> &gt; <span class="el_source">AQMapGenerator.java</span></div><h1>AQMapGenerator.java</h1><pre class="source lang-java linenums">package uk.ac.ed.inf.aqmaps.visualisation;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Deque;
+
+import com.mapbox.geojson.Feature;
+import com.mapbox.geojson.FeatureCollection;
+import com.mapbox.geojson.LineString;
+import com.mapbox.geojson.Point;
+
+
+import uk.ac.ed.inf.aqmaps.simulation.Sensor;
+import uk.ac.ed.inf.aqmaps.simulation.planning.path.PathSegment;
+import uk.ac.ed.inf.aqmaps.utilities.GeometryUtilities;
+
+/**
+ * A visualiser which produces a geojson representation of the collection
+ */
+<span class="pc bpc" id="L21" title="1 of 2 branches missed.">public class AQMapGenerator implements SensorCollectionVisualiser {</span>
+
+    /**
+     * Create an AQMapGenerator with the default low battery and non-visited symbol/colour values
+     * @param colourMap the map from sensor readings to colours used in the visualisation
+     * @param symbolMap the map from sensor readings to symbols usedi in the visualisation
+     */
+<span class="fc" id="L28">    public AQMapGenerator(AttributeMap&lt;Float, String&gt; colourMap, AttributeMap&lt;Float, MarkerSymbol&gt; symbolMap) {</span>
+<span class="fc" id="L29">        this.colourMap = colourMap;</span>
+<span class="fc" id="L30">        this.symbolMap = symbolMap;</span>
+<span class="fc" id="L31">    }</span>
+
+    /**
+     * Create an AQMapGenerator specyfing all its parameters
+     * @param colourMap the map from sensor readings to colours used in the visualisation
+     * @param symbolMap the map from sensor readings to symbols usedi in the visualisation
+     * @param lowBatteryColour the color used for sensors with a low battery value
+     * @param lowBatterySymbol the symbol used for sensors with a low battery value
+     * @param notVisitedColour the color used for sensors which were not visited
+     * @param notVisitedSymbol the symbol used for sensors which were not visited
+     */
+    public AQMapGenerator(AttributeMap&lt;Float, String&gt; colourMap, AttributeMap&lt;Float, MarkerSymbol&gt; symbolMap,
+            String lowBatteryColour, MarkerSymbol lowBatterySymbol, String notVisitedColour,
+<span class="fc" id="L44">            MarkerSymbol notVisitedSymbol) {</span>
+<span class="fc" id="L45">        this.colourMap = colourMap;</span>
+<span class="fc" id="L46">        this.symbolMap = symbolMap;</span>
+<span class="fc" id="L47">        this.lowBatteryMarkerColour = lowBatteryColour;</span>
+<span class="fc" id="L48">        this.lowBatteryMarkerSymbol = lowBatterySymbol;</span>
+<span class="fc" id="L49">        this.notVisitedMarkerColour = notVisitedColour;</span>
+<span class="fc" id="L50">        this.notVisitedMarkerSymbol = notVisitedSymbol;</span>
+<span class="fc" id="L51">    }</span>
+
+    @Override
+    public FeatureCollection plotMap(Deque&lt;PathSegment&gt; flightPath, Collection&lt;Sensor&gt; sensorsToBeVisited) 
+        throws IOException, InterruptedException  {
+        
+<span class="fc" id="L57">        var mapFeatures = new ArrayList&lt;Feature&gt;();</span>
+<span class="fc" id="L58">        var flightPathPoints = new ArrayList&lt;Point&gt;();</span>
+<span class="fc" id="L59">        int segmentCount = flightPath.size();</span>
+
+
+        //// first process the flight path
+
+        // go through each segment, and add collect each start point
+        // also collect the last segment's end point 
+<span class="fc bfc" id="L66" title="All 2 branches covered.">        for (PathSegment segment : flightPath) {</span>
+
+            // add each segment's start point
+<span class="fc" id="L69">            var startPoint = segment.getStartPoint();</span>
+
+<span class="fc" id="L71">            flightPathPoints.add(</span>
+<span class="fc" id="L72">                GeometryUtilities.JTSCoordinateToMapboxPoint(</span>
+                    startPoint));
+
+            // segment count counts how many segments are left
+<span class="fc" id="L76">            segmentCount -= 1;</span>
+
+
+            // collect the last segment's end point
+<span class="fc" id="L80">            var endPoint = segment.getEndPoint();</span>
+
+<span class="fc bfc" id="L82" title="All 2 branches covered.">            if(segmentCount == 0)</span>
+<span class="fc" id="L83">                flightPathPoints.add(</span>
+<span class="fc" id="L84">                    GeometryUtilities.JTSCoordinateToMapboxPoint(</span>
+                        endPoint));
+<span class="fc" id="L86">        }</span>
+
+        // compile collected flight path points into 
+        // a line string feature
+<span class="fc" id="L90">        mapFeatures.add(</span>
+<span class="fc" id="L91">            Feature.fromGeometry(</span>
+<span class="fc" id="L92">                LineString.fromLngLats(flightPathPoints)));</span>
+
+
+        //// next process the sensors
+        // create and collect a marker feature for each sensor (visited or not)
+<span class="fc bfc" id="L97" title="All 2 branches covered.">        for (Sensor sensor : sensorsToBeVisited) {</span>
+<span class="fc" id="L98">            mapFeatures.add(createMarker(sensor));</span>
+<span class="fc" id="L99">        }</span>
+
+        // collect all features under a feature collection
+<span class="fc" id="L102">        return FeatureCollection.fromFeatures(mapFeatures);</span>
+    }
+
+
+    private Feature createMarker(Sensor sensor) throws IOException, InterruptedException {
+
+        // make coordinate precise to avoid floating point error
+<span class="fc" id="L109">        var position = sensor.getCoordinates();</span>
+
+        // convert to feature
+<span class="fc" id="L112">        Feature feature = Feature.fromGeometry(</span>
+<span class="fc" id="L113">                            GeometryUtilities.JTSCoordinateToMapboxPoint(</span>
+                                position));
+
+
+        // work out the attributes depending on the sensor's values
+<span class="fc" id="L118">        String colour = null;</span>
+<span class="fc" id="L119">        MarkerSymbol symbol = null;</span>
+
+<span class="fc bfc" id="L121" title="All 2 branches covered.">        if (!sensor.hasBeenRead()) {    </span>
+<span class="fc" id="L122">            colour = notVisitedMarkerColour;</span>
+<span class="fc" id="L123">            symbol = notVisitedMarkerSymbol;</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">        } else if (sensor.getBatteryLevel() &lt; LOW_BATTERY_THRESHOLD) {</span>
+<span class="fc" id="L125">            colour = lowBatteryMarkerColour;</span>
+<span class="fc" id="L126">            symbol = lowBatteryMarkerSymbol;</span>
+        } else {
+<span class="fc" id="L128">            var sensorReading = sensor.getReading();</span>
+
+            // we should get a concrete value if the sensor has both a normal battery level and has been read
+<span class="pc bpc" id="L131" title="2 of 4 branches missed.">            assert sensorReading != Float.NaN;</span>
+
+            // retrieve the mapping
+<span class="fc" id="L134">            colour = colourMap.getFor(sensorReading);</span>
+<span class="fc" id="L135">            symbol = symbolMap.getFor(sensorReading);</span>
+        }
+
+        // add the attributes 
+<span class="fc" id="L139">        feature.addStringProperty(&quot;location&quot;, sensor.getW3WLocation());</span>
+<span class="fc" id="L140">        feature.addStringProperty(&quot;rgb-string&quot;, colour);</span>
+<span class="fc" id="L141">        feature.addStringProperty(&quot;marker-color&quot;, colour);</span>
+
+        // no symbol means we do not add a symbol property
+<span class="fc bfc" id="L144" title="All 2 branches covered.">        if(symbol != MarkerSymbol.NO_SYMBOL)</span>
+<span class="fc" id="L145">            feature.addStringProperty(&quot;marker-symbol&quot;, symbol.toString());</span>
+
+<span class="fc" id="L147">        return feature;</span>
+    }
+
+    private AttributeMap&lt;Float, String&gt; colourMap;
+
+    private AttributeMap&lt;Float, MarkerSymbol&gt; symbolMap;
+
+<span class="fc" id="L154">    private String lowBatteryMarkerColour = &quot;#000000&quot;;</span>
+<span class="fc" id="L155">    private MarkerSymbol lowBatteryMarkerSymbol = MarkerSymbol.CROSS;</span>
+<span class="fc" id="L156">    private String notVisitedMarkerColour = &quot;aaaaaa&quot;;</span>
+<span class="fc" id="L157">    private MarkerSymbol notVisitedMarkerSymbol = MarkerSymbol.NO_SYMBOL;</span>
+
+    private static final double LOW_BATTERY_THRESHOLD = 10f;
+
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

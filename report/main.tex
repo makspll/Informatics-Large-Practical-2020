@@ -1,0 +1,401 @@
+\documentclass[10pt,a4paper]{article}
+
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage[margin=0.5in]{geometry}
+\usepackage{amsmath}
+\usepackage{enumitem}% http://ctan.org/pkg/enumitem
+\usepackage{etoolbox}
+
+
+\usepackage{tcolorbox}
+\usepackage[hidelinks]{hyperref}
+\usepackage{array}
+\usepackage{tabularx}
+\AtBeginEnvironment{tabularx}{\scriptsize}
+\renewcommand{\tabularxcolumn}[1]{m{#1}}
+\setlist{nolistsep}
+\setlist{nosep}
+\newcommand{\cbox}[2]{
+    \begin{tcolorbox}[title=#1,
+        colback=red!5!white,
+        colframe=red!50!black,
+        size=fbox,
+        % left=2mm,
+        % right=3mm,
+        fonttitle=\bfseries]
+        #2
+    \end{tcolorbox}
+}
+
+
+
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+\begin{document}
+
+
+
+\pagenumbering{Roman}
+% \tableofcontents
+% \newpage
+\pagenumbering{arabic}
+
+
+\section{Software Architecture}
+The solution is divided into four main components: 
+\begin{itemize}
+    \item The \textbf{client} - responsible for interfacing with the server or other methods of data input
+    \item The \textbf{pathfinding} module - handling graph search and pathing between two points in any space
+    \item The \textbf{simulation} module - handling the route selection and the actual "drone control" with the use of pathfinding
+    \item The \textbf{visualisation} module - responsible for generating visualisations of the output from the simulation module
+\end{itemize}
+
+Most of the inter-module design choices explained below, are fueled by the dependency inversion principle and the rest by good general OOP practice. 
+Due to the size of the solution, a lot of the simpler classes are missed out of the diagrams. 
+The descriptions below will revolve mostly around the key decisions behind the architecture and their benefits/alternatives.
+
+\subsection{Client module}
+The first choice is deciding how input data is to be parsed and prepared for consumption in other modules. Three "Data" classes were appointed for this role.
+These closely match the structure of the json data provided, yet they do not copy the structure entirely. The alternatives included entirely omitting intermediate classes such as these, however
+should any change in strucutre of data happen, changes in all the classes consuming the data would need to be made, or at least their parsing code, in this case, we simply change the parsing code in the ClientService which 
+is responsible for generating the Data classes from the input data. The ClientService is modelled as an interface, in the case that the entire format of the data changes, a new ClientService implementation can be written 
+to handle it. Figure \ref{fig:client} shows the class diagram of the client module. In the case of this problem, the ClientService needs to communicate with a server and so the \hyperref[tab:AQWebServerClient]{\color{blue}AQWebServerClient} is modelled as an example
+The \hyperref[tab:AQSensor]{\color{blue}AQSensor} class is shown to show the relationship between the Client and the Simulation module (discussed in detail below), following dependency inversion principles, defining the concrete sensor class in this module,
+decouples the input data completely from the classes consuming it.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\columnwidth]{diagrams/client.uxf.pdf}
+    \caption{UML diagram of the client module}
+    \label{fig:client}
+\end{figure}
+
+\subsection{Pathfinding module}
+A big part of the problem is finding a path between two points on a plane, this is a widely studied area and a problem which can be easilly abstracted away from the specific domain of drone sensor data collection.
+To represent the abstract domain, the Graph interface and \hyperref[tab:SearchNode]{\color{blue}SearchNode} abstract class are created, each Graph provides at its core a method to retrieve the neighbours of each \hyperref[tab:SearchNode]{\color{blue}SearchNode}, each of which represents a point and path needing to be taken to reach that point.
+This representation allows the creation of algorithms able to find paths in a multitude of different domains. An alternative choice was skipping those classes and embedding the graph of the domain in each class modelling a pathfinding algorithm, 
+this approach however would force the creation of duplicate classes as soon as the domain evolves (as an example, the allowed angles of travel could change or dissapear entirely evolving this pathfinding problem into an any-angle pathfinding problem).
+\par 
+The actual \hyperref[tab:PathfindingAlgorithm]{\color{blue}PathfindingAlgorithm}'s are modelled as abstract classes, this is because all pathfinding problems share the fact that they find a path between two points, and since most of the consumer classes of this module would require paths reaching multiple goals, we can place the shared functionality in this class.
+The fact this class is not concrete also allows us to decouple the consumer modules from a single concrete choice of \hyperref[tab:PathfindingAlgorithm]{\color{blue}PathfindingAlgorithm}.
+\par 
+The PathfindingGoal interface allows for any class with a getCoordinates method to become a target for pathfinding, this class is going to be implemented by each sensor. This is because the algorithms do not need to know anything about the objects to which we're passing other than their coordinates.
+Without this interface, the pathfinding module would have to accept the \hyperref[tab:Sensor]{\color{blue}Sensor} class directly, which would couple these two modules and classes together. This would also defeat the purpose of abstracting pathfinding away.
+\par
+The Obstacle interface allows for the inclusion of obstacles and consideration of obstacles in the pathfinding without coupling it to the problem domain.
+\par 
+The SpatialHash interface is modelled to allow different techniques of spatial hashing to be used with the same \hyperref[tab:PathfindingAlgorithm]{\color{blue}PathfindingAlgorithm} without changing the class.
+The PathfindingHeuristic interface serves exactly the same role but for heuristic techniques.
+\par
+Figure \ref{fig:pathfinding} is a summarised class diagram of the pathfinding module. Overal the class choices form an entirely decoupled module which allows for pathfinding in various planar domains employing,
+with the flexibility of mixing any combination of \hyperref[tab:PathfindingAlgorithm]{\color{blue}PathfindingAlgorithm}, PathfindingHeuristic and SpatialHash classes.
+
+
+\subsection{Simulation module}
+Once a mechanism for pathing between two points in space is found, the only problem left in creating a full path is finding out in which order to visit the sensors. This is the Travelling Salesman Problem,
+Many techniques exist for solving this problem and so general classes are estabilished to allow a variety of methods to be created as needed.
+Figures \ref{fig:simulation2} and \ref{fig:simulation} show a class diagrams of classes in the simulation module.
+
+The CollectionOrderPlanner interface allows for the decoupling of specific implementations of TSP solvers from the consumers of this class, It would be possible to simply reference a specific implementation, but then swapping out the TSP solver would require entirely new classes, or modifications to the consumer class.
+An abstract \hyperref[tab:BaseCollectionOrderPlanner]{\color{blue}BaseCollectionOrderPlanner} is also included since all CollectionOrderPlanner's will use a distance matrix of some sort as well as a set of common optimisations which can be applied on top of any TSP solver (an example would be 2-opt).
+The PathPlanner interface is introduced for the same reason as above, to decouple the consumer of this class from any specific implementation. This enables flexibility in swapping out behaviour via different PathPlanner implementations.
+Since PathPlanners are decoupled from the specific pathfinding algorithm, these classes are tasked with the conversion of path points received from the \hyperref[tab:PathfindingAlgorithm]{\color{blue}PathfindingAlgorithm}, to \hyperref[tab:PathSegment]{\color{blue}PathSegments} conforming to the design specification - a reading can only be performed at the end of a move.
+This conversion can be done in a variety of different ways, hence the interface - however a base abstract class is also provided to encapsulate the constraints of reading range and maximum amount of moves, should these constraints change in the specification, it would be easy to implement a new branch of these planners in the new domain.
+
+Finally, \hyperref[tab:Sensor]{\color{blue}Sensor}DataCollector is the interface representing the actual drone (or any data collector whatsoever), these classes apply the path and collection order planners to plan their journey, they may apply different strategies to how they use pathfinding and TSP solving to collect all the sensors, and prioritize the different goals differently.
+A base class is provided since all data collectors are expected to use both the planners, however should a collector be required which does not, this is also made possible thanks to this design.
+
+CollectionOrderOptimiser is an interface for all general algorithms designed to improve already existing TSP tours. Examples of these include: 2-opt, k-opt, Genetic Algorithms, etc..
+The interface allows for the application of a whole list of optimisers to an arbitrary path without knowing anything about the optimisers. 
+
+The \hyperref[tab:DistanceMatrix]{\color{blue}DistanceMatrix} abstract class encapsulates the general square adjacency matrix used to store distances between nodes in a graph, this allows for the swaping out of distance measures in the CollectionOrderPlanner's freely without changing the planners themselves.
+The Graph and \hyperref[tab:DistanceMatrix]{\color{blue}DistanceMatrix} classes completely define the domain of the problem together, and this makes this entire module applicable to a variety of different scenarios should new ones arise.
+
+Figure \ref{fig:simulation} shows the relationship of this module to the pathfinding module. The abstract \hyperref[tab:Sensor]{\color{blue}Sensor} class implements the PathfindingGoal interface, and it is used directly by the PathPlanner's for pathfinding.
+The module defines its own specific \hyperref[tab:SearchNode]{\color{blue}SearchNode} and Graph implementations which are propagated through the rest of the module.
+The \hyperref[tab:DirectedSearchNode]{\color{blue}DirectedSearchNode} defines an additional field to store the direction from its parent, and the \hyperref[tab:ConstrainedTreeGraph]{\color{blue}ConstrainedTreeGraph} produces these nodes in agreement with the move length, direction, obstacle and boundary constraints. This effectively removes the need for any other class 
+to deal with obstacle detection or working out any vector math, it's all encapsulated in this class. This centralisation of the collector's movement capability in a single class, means that 
+any optimisations require only modifications to the graph. This also means that the entire array of classes in this module could suddenly be passed an entirely different graph within an entirely different domain,
+and they would all still work. This is rather excellent.
+
+The \hyperref[tab:Building]{\color{blue}Building} class implements the Obstacle interface from the pathfinding module which allows it to be considered as an obstacle in pathfinding should need for it arise.
+
+The \hyperref[tab:PathSegment]{\color{blue}PathSegments} class is what enscapsulates the movement of the collector, i.e. move in an integer direction followed by single sensor reading.
+While this could have been further abstracted, it is believed, that any form of movement can be approximated with this format, i.e. should a more complex path be neccessary, the move length could be reduced and more angles allowed effectively increasing the flexibility of the drone extensively.
+
+The Client module is what actually provides an implementation of the \hyperref[tab:Sensor]{\color{blue}Sensor} class, meaning that this module could work in entirely different scenarios, with readings in different ranges,
+sensors with more complex behaviours and so on.
+
+\subsection{Visualisation module}
+This module only needs to interface with the output classes of the simulation module, i.e. the \hyperref[tab:PathSegment]{\color{blue}PathSegments} and Sensor classes but other than that, it is 
+completely decoupled from the shape of the initial input data of the system. This is uni-directional relationship is very desirable 
+\par
+Figure \ref{fig:visualisation} shows the class diagram of the visualisation module.
+\\
+The SensorCollectionVisualiser interface is one to again decouple the consumers of this module from any specific implementation, should the requirements for visualisation change,
+this can easilly be done by creating a new visualiser class. 
+The OutputFormatter class deals with writing the visualisations and flight paths to a file, these are made static as changes in output format are assumed to be very few in the future,
+and should such changes be required, new methods can be added to the formatter, but this is not a problem since changes to output format would likely require entirely different libraries and as such new classes dealing with those libraries.
+\par 
+\hyperref[tab:AQMapGenerator]{\color{blue}AQMapGenerator} is an example implementing class, which uses line strings and markers as in the specification.
+The usage of the AttributeMap interface allows for a lot of flexibility in the way the \hyperref[tab:AQMapGenerator]{\color{blue}AQMapGenerator} assigns colors and symbols, and should this behaviour need to be changed, it'd be very easy to do.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.9\columnwidth]{diagrams/pathfinding.uxf.pdf}
+    \caption{UML diagram of the pathfinding module}
+    \label{fig:pathfinding}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\columnwidth]{diagrams/visualisation.uxf.pdf}
+    \caption{UML diagram of the Visualisation module}
+    \label{fig:visualisation}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\columnwidth]{diagrams/simulation.uxf.pdf}
+    \caption{UML diagram of the Simulation module part 1}
+    \label{fig:simulation}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\columnwidth]{diagrams/simulation2.uxf.pdf}
+    \caption{UML diagram of the Simulation module part 2}
+    \label{fig:simulation2}
+\end{figure}
+
+
+\section{Drone Control Algorithm}
+\subsection{TSP Solver}
+
+\lstdefinestyle{mystyle}{
+    % backgroundcolor=\color{backcolour},
+    % commentstyle=\color{codegreen},
+    % keywordstyle=\color{magenta},
+    % numberstyle=\tiny\color{codegray},
+    % stringstyle=\color{codepurple},
+    basicstyle=\footnotesize,
+    % breakatwhitespace=false,
+    % breaklines=true,
+    % captionpos=b,
+    % keepspaces=true,
+    % numbers=left,
+    % numbersep=5pt,
+    % showspaces=false,
+    % showstringspaces=false,
+    % showtabs=false,
+    % tabsize=2,
+    % numberfirstline=false,
+    mathescape,
+    literate=
+        {=}{$\leftarrow{}$}{1}
+        {==}{$={}$}{1}
+        {!=}{$\neq$}{1}
+        {leq}{$\leq{}$}{1}
+        {nullset}{$\emptyset$}{1}
+        {geq}{$\geq{}$}{1},
+    morekeywords={Let,While,ArgMax,ArgMin, Function, For, If, return, Return, Algorithm, Skip},
+}
+
+\begin{figure}[H]
+    \begin{lstlisting}[style=mystyle]
+        Algorithm NearestInsertion:
+            Let R be the sensor nearest to the starting point
+            Let U = unvisited sensors
+            Let T = [R] be the current tour (implicitly looping)
+
+            While U != nullset:
+                R = $\argmin_{s\in R}$ distanceToTour(s) 
+                i = $\argmin_{i\in I(T)}$ insertionCost(i,R)
+                T = T with R inserted at i
+                U = U - {R}
+            
+            Return T
+
+        Function distanceToTour(s):
+            minimum = $\infty$
+            For t in T:
+                If dist(s,t) < minimum:
+                    minimum = dist(s,t)
+            Return minimum
+        
+        Function insertionCost(i,s):
+            N = T with s inserted at i
+            Return euclidian length of N
+        
+
+    \end{lstlisting}
+    \caption{Nearest Insertion TSP solver}
+    \label{alg:ni}
+\end{figure}
+
+The choice of which order to visit the sensors in is a general TSP problem.
+\par 
+The heuristic chosen to tackle this part of the problem was the \hyperref[tab:NearestInsertionCollectionOrderPlanner]{\color{blue}Nearest Insertion heuristic} followed by a number of \hyperref[tab:Optimiser2Opt]{\color{blue}2-opt optimisations}.
+\par
+As pseuducode in Figure \ref{alg:ni} shows, the heuristic inserts sensors into the tour one at a time, choosing the sensor which is closest to any sensor in the tour.
+\\
+After a route is found, \hyperref[tab:Optimiser2Opt]{\color{blue}2-opt optimisations} are applied to it to remove paths which are crossing each other.
+The 2-opt algorithm in each pass checks if reversing any sub-segment of all possible sub-segments of a full tour reduces it's cost, and if so keeps the reversal. 
+The passes are repetead until improvements fall under a threshold of 0.00003 degrees
+
+This alrogithm turns out to be pareto-optimal \cite{metric-tsp} among a family of cutting-edge algorithms for problem sizes of between 30-50 vertices.
+Pareto-optimality means that this algorithm was either finding the best path compared to the other algorithms, or was finding one the quickest. 
+Since this process yields the route built on the Minimum Spanning Tree, 
+the path found will always be less than or equal to 2 times the optimal solution \cite{2-approximation-ni}.
+\subsection{Generating neighbour nodes}
+All the other sections of the algorithm make use of the "neighbour" function, i.e. the function which generates neighbour nodes for any node representing 
+a point on the map.
+
+This is done using the \hyperref[tab:BVHNode]{\color{blue}{Bounding Volume Hierarchy}} data structure. 
+The structure allows for logarithmic time lookups of possibly colliding obstacles (with any shape).
+We do this by creating a binary tree whose nodes are defined by an Axis Aligned Bounding Volume enveloping all the obstacles present in the leaf nodes underneath the node.
+The root node then envelops all the obstacles present in the hierarchy.
+\par
+When creating the tree we find the axis along which the difference between the extremal coordinates of the AABB's is the largest, i.e. the "longest axis".
+We then pick a splitting point on the axis and partition the shapes into the left and right sub trees according to which side of the splitting point they're on.
+\par 
+With this setup, the structure can tell us which obstacles are possibly colliding with any given shape by checking for collisions (cheaply) with the AABB's and only returning those leafs whose AABB's were collided with (possibly from both subtrees).
+
+\subsection{Pathfinding}
+\begin{figure}[H]
+    \begin{lstlisting}[style=mystyle]
+        Algorithm A*:
+            Let R = starting node
+            let G = goal coordinates
+            Let O = {R} // open set
+            Let V = {} // approximately visited
+            
+            While O != nullset:
+                R = $\argmin_{o\in O}$ Fvalue(o)
+                O = O - R
+
+                If isNearGoal(R):
+                    R.goalsReached = R.goalsReached + G
+                    Return reconstructPath(R) // using parent references
+
+                // generate neighbour nodes with appropriate costs and parent set to R
+                // nodes colliding with obstacles or outside of boundary are excluded
+                // this is done via Bounding Volume Hierarchies
+                N = neighbours(R) 
+
+                For n in N:
+                    
+                    hash = cantorHash(n.x,n.y)
+
+                    If hash in V:
+                        Skip n
+                    
+                    V = V + hash
+                    O = O + n
+            
+            // no path found
+            Return []
+
+        Function Fvalue(n):
+            Return dist(n,G)*1.5 + cost(n)
+
+        Function cantorHash(x,y):
+            Let gridWidth = $\frac{1}{75} * 0.0003 $
+            Let gridX,gridY = coordinates of center of drone confinement area 
+            nx,ny = (x - gridX)/gridWidth,(y - gridY)/gridWidth
+            nx,ny = makePositive($\lfloor nx \rfloor$),makePositive($\lfloor ny \rfloor$)
+
+            return $\lfloor$(((0.5 * (nx + ny)) * (nx + ny + 1)) + ny)$\rfloor$;
+        
+        Function makePositive(n):
+            If n $\geq$ 0:
+                Return $2n$
+            Otherwise:
+                Return $-2n - 1$
+               
+            
+            
+    \end{lstlisting}
+    \caption{Custom A* pathfinding algorithm}
+    \label{alg:a*}
+\end{figure}
+
+Pathfinding between any two points on the plane was carried out using the \hyperref[tab:AstarTreeSearch]{\color{blue}A* tree search} algorithm using the euclidian distance heuristic. 
+The algorithm is just a modified breadth-first search, where the search nodes are picked in order of least f value which is defined as:
+    $f(n) = 1.5 \cdot h(n) + c(n)$
+with $c(n)$ being the cost of reaching the node n from the start state, and $h(n)$ is the approximation of the cost of reaching the goal state from the node n.
+\\
+
+\noindent The heuristic is relaxed by a factor of 1.5, to promote the expansion of straighter paths.
+\noindent This means that the paths are no longer optimal as the heuristic is no longer admissible, but since most paths would not be obstucted by buildings - this
+change does not actually impact the length of the paths all that much.
+
+To speed up the algorithm \hyperref[tab:GridSnappingSpatialHash]{\color{blue}spatial hashing} was used to prune nodes which were visited (or visited close-enough), expressing their coordinates relative to a grid centered around the center of the boundary (with integer width square size), and hashing those coordinates
+using a modified cantor pairing allowing for negative values.
+
+\subsection{Path segmenting}
+Once we have a path of individual points, we need to convert it to a path of path segments with information about which sensor is read at each segment.
+We can do this by "sliding" a window over the points and always looking at two points at a time in order. 
+We call the points at each position of the windo P and N, where P is the point before N. 
+The pathfinding algorithm also attaches a deque of sensors reached by each P/N.  
+A naive sequential pairing does not work due to multiple goals allowed at each point, and the requirement of the drone to move before collecting the reading.
+We apply a number of rules to make a valid path
+\noindent (portrayed in Figure \ref{fig:segmenting}):
+\begin{itemize}
+    \item While P attains a goal, create a proxy segment to any neighbouring node, and one back, assign the first sensor attained by P 
+        to the newest back-facing segment's N node
+    \item If N attains no goals, see if the next segment's P node attains any sensors, if so "steal" one away from it
+    \item while N attains more than one sensor reduce the number of attained sensors by creating proxy segments as above for each
+    \item If N only attains one sensor or none, create P-N path segment as normal
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\columnwidth]{diagrams/diagram.pdf}
+    \caption{Segmenting behaviours}
+    \label{fig:segmenting}
+\end{figure}
+
+\subsection{Examples}
+The algorithm was tested on over 35000 configurations over the data provided. 
+The hardest and easiest collection days' geojson visualisations are shown below (with the algorithm set to optimal parameters as given above) 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\columnwidth]{diagrams/hard-day.png}
+    \caption{geojson.io rendering of hardest collection at day 9-2-2020 with a starting point of -3.19087,55.945778, with 111 moves}
+    \label{fig:hardmap}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\columnwidth]{diagrams/easy-day.png}
+    \caption{geojson.io rendering of easiest collection at day 2-1-2021 with a starting point of -3.1878,55.9444, with 46 moves}
+    \label{fig:easymap}
+\end{figure}
+
+The artifacts of path segmenting are evident in the harder day, where the drone wanders near closely spaced sensors on the bottom right it creates a horizontal 
+proxy segment. But overall the algorithm manages very well, never carrying out the collection in more than 111 moves and averaging at 90 moves $\pm$ 6.7. Execution times averaged at 103ms.
+
+\section{Class Documentation}
+
+\input{"javadoc-extractor/doc.tex"}
+
+\normalsize
+\begin{thebibliography}{9}
+
+\bibitem{metric-tsp} 
+The Metric Travelling Salesman Problem:
+The Experiment on Pareto-optimal
+Algorithms,
+Sergey Avdoshin, E.N.Beresneva
+2017.
+\bibitem{2-approximation-ni} 
+https://aswani.ieor.berkeley.edu/teaching/FA13/151/lecture\_notes/ieor151\_lec17.pdf,
+The Traveling Salesman Problem
+Professor Z. Max Shen
+
+\end{thebibliography}
+
+\end{document}

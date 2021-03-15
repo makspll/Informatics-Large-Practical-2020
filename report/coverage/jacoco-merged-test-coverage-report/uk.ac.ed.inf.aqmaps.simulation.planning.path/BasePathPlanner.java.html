@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BasePathPlanner.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">aqmaps</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ed.inf.aqmaps.simulation.planning.path</a> &gt; <span class="el_source">BasePathPlanner.java</span></div><h1>BasePathPlanner.java</h1><pre class="source lang-java linenums">package uk.ac.ed.inf.aqmaps.simulation.planning.path;
+
+import java.util.Deque;
+import java.util.LinkedList;
+
+
+import org.locationtech.jts.geom.Coordinate;
+
+import uk.ac.ed.inf.aqmaps.pathfinding.PathfindingAlgorithm;
+import uk.ac.ed.inf.aqmaps.pathfinding.goals.PathfindingGoal;
+import uk.ac.ed.inf.aqmaps.pathfinding.goals.PointGoal;
+import uk.ac.ed.inf.aqmaps.simulation.Sensor;
+import uk.ac.ed.inf.aqmaps.simulation.DirectedSearchNode;
+import uk.ac.ed.inf.aqmaps.simulation.planning.ConstrainedTreeGraph;
+
+/**
+ * Base class for planners with a limited number of maximum moves and a
+ * minimum reading range. All inheriting path planners must make sure that each sensor is read at the endpoint of some path segment
+ * and that that sensor is within reading range of the endpoint. They also must make sure that the path is under the maximum move limit
+ */
+<span class="pc bpc" id="L21" title="1 of 2 branches missed.">public abstract class BasePathPlanner implements PathPlanner {</span>
+
+<span class="fc" id="L23">    public BasePathPlanner(double readingRange, int maxMoves, PathfindingAlgorithm&lt;DirectedSearchNode&gt; algorithm) {</span>
+<span class="fc" id="L24">        this.READING_RANGE = readingRange;</span>
+<span class="fc" id="L25">        this.MAX_MOVES = maxMoves;</span>
+<span class="fc" id="L26">        this.ALGORITHM = algorithm;</span>
+<span class="fc" id="L27">    }</span>
+
+    /**
+     * {@inheritDoc}
+     * The ConstrainedPathPlanner class adds a maximum move,reading range and also the move sequence constraint to the path planning problem, a valid path will allow the collector
+     * to come within READING_RANGE of each sensor (the distance between each sensor and the collector at some path segment's endpoint will be less than or equal to READING_RANGE).
+     * The number of segments returned will always be &lt;= MAX_MOVES. The move sequence in each path segment requires that a sensor be read at the end of each path segment only, i.e. the collector must move before collecting
+     * any reading, and only one reading must be made per path segment. 
+     */
+    @Override
+    public Deque&lt;PathSegment&gt; planPath(Coordinate startCoordinate, Deque&lt;Sensor&gt; route,
+            ConstrainedTreeGraph graph,
+            boolean formLoop) {
+        
+
+        // create start node
+        // the parent and direction values can be anything as 
+        // they won't ever be used in construction of the path segments
+<span class="fc" id="L45">        var startNode = new DirectedSearchNode(startCoordinate,</span>
+            null,
+            -1,
+            0);
+
+        // create goal nodes
+<span class="fc" id="L51">        Deque&lt;PathfindingGoal&gt; goals = new LinkedList&lt;PathfindingGoal&gt;(route);</span>
+
+<span class="fc" id="L53">        PointGoal loopBackGoal = null;</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">        if(formLoop){</span>
+            // we include the start node goal at the end so that our path loops
+            // keep the reference so we can remove it from the last node's reached list
+<span class="fc" id="L57">            loopBackGoal = new PointGoal(startCoordinate);</span>
+<span class="fc" id="L58">            goals.add(loopBackGoal);</span>
+        }
+
+        // invoke the algorithm and set out a path
+
+<span class="fc" id="L63">        var path = ALGORITHM.findPath(graph, goals, startNode, READING_RANGE);</span>
+
+<span class="fc bfc" id="L65" title="All 2 branches covered.">        if(formLoop){</span>
+            // remove the goal reached for the loopback segment as 
+            // these should only contain sensors
+
+            //TODO: this might need fixin
+<span class="fc bfc" id="L70" title="All 2 branches covered.">            if(path.size() != 0){</span>
+<span class="fc" id="L71">                path.getLast().removeGoalReached(loopBackGoal);</span>
+            }
+
+<span class="fc" id="L74">            goals.remove(loopBackGoal);</span>
+        }
+
+
+        
+        // pass copy of route to make sure it doesn't get overwritten
+<span class="fc" id="L80">        var pathOfSegments = pathPointsToSegmentsStrategy(</span>
+            path,
+            goals,
+            new LinkedList&lt;Sensor&gt;(route),
+            graph);
+        
+<span class="pc bpc" id="L86" title="2 of 4 branches missed.">        assert pathOfSegments.size() &lt;= MAX_MOVES;</span>
+
+<span class="fc" id="L88">        return pathOfSegments;</span>
+    }
+
+    
+    /**
+     * The main defining characteristic of a constrained path planner. Converts a path of points to a path of path segments
+     * needs to make sure that each pathfinding goal is visited only in the end segment of some path segment in range.
+     * the passed deque arguments will be consumed
+     * @param pathPoints the whole path (will be consumed)
+     * @param goalsRoute the pathfinding goals route
+     * @param sensorRoute the sensor route which directly correspond to the goalsROute
+     * @param graph the graph which defines the transitions between nodes
+     * @return the path segments connecting the path points given
+     */
+    protected abstract Deque&lt;PathSegment&gt; pathPointsToSegmentsStrategy(Deque&lt;DirectedSearchNode&gt; pathPoints,
+        Deque&lt;PathfindingGoal&gt; goalsRoute,
+        Deque&lt;Sensor&gt; sensorRoute,
+        ConstrainedTreeGraph graph
+        );
+    
+  
+
+    protected final double READING_RANGE;
+    protected final int MAX_MOVES;
+    protected final PathfindingAlgorithm&lt;DirectedSearchNode&gt; ALGORITHM;
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

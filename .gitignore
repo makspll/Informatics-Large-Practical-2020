@@ -25,3 +25,9 @@ hs_err_pid*
 #project
 *.geojson
 heatmap/target
+aqmaps/target
+/WebServer
+/output
+/outputAnalyser
+/aqmaps/results
+/submission

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SearchNode.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">aqmaps</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ed.inf.aqmaps.pathfinding</a> &gt; <span class="el_source">SearchNode.java</span></div><h1>SearchNode.java</h1><pre class="source lang-java linenums">package uk.ac.ed.inf.aqmaps.pathfinding;
+
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.Objects;
+
+import org.locationtech.jts.geom.Coordinate;
+
+import uk.ac.ed.inf.aqmaps.pathfinding.goals.PathfindingGoal;
+
+/**
+ * Search Nodes are used to hold the path information in pathfinding algorithms including heuristic, cost and parent node values. Search nodes also contain information about which
+ * pathfinding goals can be achieved from their position (can be multiple).
+ */
+public abstract class SearchNode&lt;T extends SearchNode&lt;T&gt;&gt; {
+    /**
+     * Creates a new spatial tree search node which is fully specified apart from
+     * the heuristic value
+     * @param location the location of the new node
+     * @param parent the parent of the given node (if null the node is considered to be the starting node)
+     * @param cost the cost of reaching this node from the start of the search
+     */
+    public SearchNode(Coordinate location,
+        T parent,
+<span class="fc" id="L25">        double cost){</span>
+<span class="fc" id="L26">            this.location = location;</span>
+<span class="fc" id="L27">            this.parentNode = parent;</span>
+<span class="fc" id="L28">            this.cost = cost;</span>
+<span class="fc" id="L29">        }</span>
+
+    /**
+     * Creates a fully specified search node
+     * @param location
+     * @param parent
+     * @param heuristic
+     * @param cost
+     */
+    public SearchNode(Coordinate location,
+        T parent, 
+        double heuristic, 
+        double cost
+<span class="fc" id="L42">        ){</span>
+
+<span class="fc" id="L44">        this.location = location;</span>
+<span class="fc" id="L45">        this.parentNode = parent;</span>
+<span class="fc" id="L46">        this.heuristic = heuristic;</span>
+<span class="fc" id="L47">        this.cost = cost;</span>
+<span class="fc" id="L48">    }</span>
+
+    /**
+     * Retrieve the deque of goals achievable from this search node's position
+     */
+    public Deque&lt;PathfindingGoal&gt; getGoalsReached() {
+<span class="fc" id="L54">        return this.goalsReached;</span>
+    }
+
+    /**
+     * Set the goals achievable from this search node's position
+     * @param goalReached
+     */
+    public void setGoalsReached(Deque&lt;PathfindingGoal&gt; goalReached) {
+<span class="nc" id="L62">        this.goalsReached = goalReached;</span>
+<span class="nc" id="L63">    }</span>
+
+    /**
+     * Add a goal achievable from this node's position to the tail of its deque
+     * @param goalReached
+     */
+    public void addGoalReached(PathfindingGoal goalReached){
+<span class="fc" id="L70">        this.goalsReached.add(goalReached);</span>
+<span class="fc" id="L71">    }</span>
+
+    public int getNumberOfGoalsReached(){
+<span class="fc" id="L74">        return this.goalsReached.size();</span>
+    }
+
+    /**
+     * pop the first goal achievable at this node's position from its deque
+     * @param goalReached
+     */
+    public void removeGoalReached(PathfindingGoal goalReached){
+<span class="fc" id="L82">        this.goalsReached.remove(goalReached);</span>
+<span class="fc" id="L83">    }</span>
+
+    /**
+     * Retrieve the heuristic value of this node
+     */
+    public double getHeuristic() {
+<span class="fc" id="L89">        return this.heuristic;</span>
+    }
+
+    /**
+     * Retrieve the coordinates in space of this node
+     */
+    public Coordinate getCoordinates() {
+<span class="fc" id="L96">        return this.location;</span>
+    }
+
+    /**
+     * Set the heuristic value of this node
+     * @param heuristic
+     */
+    public void setHeuristic(double heuristic) {
+<span class="fc" id="L104">        this.heuristic = heuristic;</span>
+<span class="fc" id="L105">    }</span>
+
+    /**
+     * Retrieve the cost of reaching this search node
+     * @return
+     */
+    public double getCost() {
+<span class="fc" id="L112">        return this.cost;</span>
+    }
+
+    /**
+     * Retrieve the parent node of this node
+     * @return
+     */
+    public T getParentNode() {
+<span class="fc" id="L120">        return this.parentNode;</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L125">        return Objects.hash(location);</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L130">        return &quot;{&quot; +</span>
+<span class="nc" id="L131">            &quot;location='&quot; + getCoordinates() + &quot;'&quot; +</span>
+<span class="nc" id="L132">            &quot;, heuristic+cost='&quot; + (getHeuristic() + getCost())  + &quot;'&quot; +</span>
+            &quot;}&quot;;
+    }
+
+<span class="fc" id="L136">    protected double heuristic = -1;</span>
+<span class="fc" id="L137">    protected double cost = -1;</span>
+<span class="fc" id="L138">    protected T parentNode = null;</span>
+    protected Coordinate location;
+<span class="fc" id="L140">    protected Deque&lt;PathfindingGoal&gt; goalsReached = new LinkedList&lt;PathfindingGoal&gt;();</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

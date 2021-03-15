@@ -1,0 +1,35 @@
+<diagram program="umletino" version="14.4.0-SNAPSHOT"><zoom_level>10</zoom_level><help_text>Space for diagram notes</help_text><element><id>UMLPackage</id><coordinates><x>30</x><y>203</y><w>730</w><h>370</h></coordinates><panel_attributes>Client
+--
+bg=black</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLInterface</id><coordinates><x>100</x><y>433</y><w>360</w><h>130</h></coordinates><panel_attributes>ClientService
+--
++fetchSensorsForDate(date:Date):List&lt;SensorData&gt;
++fetchW3WAddress(w1:String,w2:String,w3:String):W3WAddress
++fetchBuildings():FeatureCollection
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>562</x><y>480</y><w>130</w><h>70</h></coordinates><panel_attributes>AQWebServerClient
+--
+-APIBaseURI: URI
+-httpClient : HttpClient
+style=autoresize</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>442</x><y>250</y><w>160</w><h>70</h></coordinates><panel_attributes>W3WSquareData
+--
+-southwest: Mapbox::Point
+-northeast: Mapbox::Point
+style=autoresize</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>302</x><y>250</y><w>100</w><h>90</h></coordinates><panel_attributes>SensorData
+--
+-location:String
+-battery:float
+-reading:float
+style=autoresize</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>62</x><y>250</y><w>200</w><h>150</h></coordinates><panel_attributes>W3WAddressData
+--
+-country:String
+-square: W3WSquareData
+-nearestPlace: String
+-coordinates: Mapbox::Point
+-words:String
+-language:String
+-map:String
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>287</x><y>440</y><w>370</w><h>60</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>10;10;350;10;350;40</additional_attributes></element><element><id>UMLPackage</id><coordinates><x>770</x><y>340</y><w>140</w><h>70</h></coordinates><panel_attributes>Simulation
+--
+bg=gray
+group=2</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>780</x><y>370</y><w>100</w><h>30</h></coordinates><panel_attributes>/Sensor/
+
+group=2</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>600</x><y>370</y><w>100</w><h>30</h></coordinates><panel_attributes>AQSensor</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>690</x><y>370</y><w>110</w><h>30</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>90;10;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>260</x><y>380</y><w>360</w><h>30</h></coordinates><panel_attributes>lt=&lt;-</panel_attributes><additional_attributes>10;10;340;10</additional_attributes></element><element><id>Relation</id><coordinates><x>340</x><y>330</y><w>270</w><h>80</h></coordinates><panel_attributes>lt=&lt;-</panel_attributes><additional_attributes>10;10;10;60;250;60</additional_attributes></element><element><id>Relation</id><coordinates><x>500</x><y>310</y><w>120</w><h>100</h></coordinates><panel_attributes>lt=&lt;-</panel_attributes><additional_attributes>10;10;10;80;100;80</additional_attributes></element></diagram>

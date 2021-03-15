@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PathfindingAlgorithm.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">aqmaps</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ed.inf.aqmaps.pathfinding</a> &gt; <span class="el_source">PathfindingAlgorithm.java</span></div><h1>PathfindingAlgorithm.java</h1><pre class="source lang-java linenums">package uk.ac.ed.inf.aqmaps.pathfinding;
+
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.Stack;
+
+import uk.ac.ed.inf.aqmaps.pathfinding.goals.PathfindingGoal;
+
+
+/**
+ * Pathfinding algorithms operate over any valid search nodes and graph definitions. The graph defines the transition function between one node and its neighbours while the search nodes are used as 
+ * the path constructing object. Any number of pathfinding algorithms can be defines in these terms, both tree and graph searches are possible with the correct set of graph and node definitions.
+ */
+<span class="fc" id="L14">public abstract class PathfindingAlgorithm&lt;T extends SearchNode&lt;T&gt;&gt;{</span>
+    
+    /**
+     * Finds a path from the start to the goal node and outputs the result into the provided deque.
+     * If a path doesn't exist no nodes will be added to the output, if it does at least one node will be added. The nodes will have their goalsReached deque's set
+     * to the corresponding goals that can be reached from their locations within the goal threshold. One node can reach multiple nodes
+     * @param g the graph which will build the traversal tree
+     * @param goal the goal node *location will be modified if the goal threshold is not zero*
+     * @param start the node from which to begin pathfinding
+     * @param goalThreshold the distance d such that for a node is thought to reach the goal only if it's distance from it is less than or equal to d
+     * @param output the Deque into which the final path will be deposited. The last node will always be the goal node provided. If the threshold is non-zero, 
+     * the goal node's location will be changed in order to accomodate for the real path traversed.
+     */
+    public abstract  void findPath(SearchGraph&lt;T&gt; g,
+        PathfindingGoal goal,
+        T start,
+        double goalThreshold,
+        Deque&lt;T&gt; output);
+
+
+    /**
+     * Finds a path from the start node through the provided route. Modifies the goal nodes' locations to accomodate for the goal threshold.
+     * if at any point there exists no path between the given goals, the route will halt before that segment (so might be empty).
+     * 
+     * @param g the graph which will build the traversal tree
+     * @param route the goal nodes *location will be modified if the goal threshold is not zero*
+     * @param start the node from which to begin pathfinding
+     * @param goalThreshold the distance away from the goal allowed for a node to be considered as reaching one of the goals.
+     * @return Deque with the final path. The route nodes will be part of the route and the last route node will be at the end. If the threshold is non-zero, 
+     * the goal node's locations will be changed in order to accomodate for the real path traversed.
+     */
+    public  Deque&lt;T&gt; findPath(SearchGraph&lt;T&gt; g, Deque&lt;PathfindingGoal&gt; route, T start, double goalThreshold) {
+
+        // we perform smaller searches between the sequential start and end goals
+<span class="fc" id="L48">        var startNode = start;</span>
+<span class="fc" id="L49">        var finalPath = new LinkedList&lt;T&gt;();</span>
+
+<span class="fc" id="L51">        int lastPathSize = 0;</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        for (var goalNode : route) {</span>
+            
+            // find the path for the segment, remove the last point
+            // start the next search on that point
+<span class="fc" id="L56">            findPath(g,goalNode,startNode,goalThreshold, finalPath);</span>
+
+            // if we couldn't find a path at all
+<span class="fc bfc" id="L59" title="All 2 branches covered.">            if(lastPathSize == finalPath.size()){</span>
+                // we halt and return the path we have so far
+                // which might be nothing
+<span class="fc" id="L62">                return finalPath;</span>
+            } else {
+<span class="fc" id="L64">                startNode = finalPath.pollLast();</span>
+<span class="fc" id="L65">                lastPathSize = finalPath.size();</span>
+
+            }
+
+<span class="fc" id="L69">        }</span>
+
+        // we will be missing the last goal node at the end so we
+        // add it back
+<span class="fc" id="L73">        finalPath.add(startNode);</span>
+
+        // return the merged paths
+<span class="fc" id="L76">        return finalPath;</span>
+    }
+
+
+
+    /**
+     * Checks whether the given node is within a threshold away from the goal
+     * @param threshold
+     * @param node
+     * @param goal
+     * @return
+     */
+    protected  boolean isAtGoal(double threshold, T node, PathfindingGoal goal){
+<span class="fc bfc" id="L89" title="All 2 branches covered.">        return node.getCoordinates().distance(goal.getCoordinates()) &lt; threshold;</span>
+    }
+    
+    /**
+     * reconstructs the path to node and deposits it in the given queue
+     * @param node the node to which to reconstruct the path
+     * @param out the queue to deposit the output into
+     */
+    protected  void reconstructPathUpToIncluding(T node, Deque&lt;T&gt; out,T limitNode){
+        
+        // follow the chain of child-parent relationships
+        // deposit them in the stack in effect reversing the order
+<span class="fc" id="L101">        Stack&lt;T&gt; nodeStack = new Stack&lt;T&gt;();</span>
+<span class="fc" id="L102">        T currNode = node;</span>
+
+<span class="pc bpc" id="L104" title="1 of 2 branches missed.">        while(currNode != null){</span>
+<span class="fc" id="L105">            nodeStack.push(currNode);</span>
+
+<span class="fc bfc" id="L107" title="All 2 branches covered.">            if(currNode == limitNode)</span>
+<span class="fc" id="L108">                break;</span>
+
+<span class="fc" id="L110">            currNode = (T)currNode.getParentNode();</span>
+        }
+
+<span class="fc bfc" id="L113" title="All 2 branches covered.">        while(!nodeStack.isEmpty()){</span>
+<span class="fc" id="L114">            out.add(nodeStack.pop());</span>
+        }
+<span class="fc" id="L116">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

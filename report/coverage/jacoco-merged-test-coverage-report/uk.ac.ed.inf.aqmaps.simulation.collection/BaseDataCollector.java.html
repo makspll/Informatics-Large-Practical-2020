@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BaseDataCollector.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">aqmaps</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ed.inf.aqmaps.simulation.collection</a> &gt; <span class="el_source">BaseDataCollector.java</span></div><h1>BaseDataCollector.java</h1><pre class="source lang-java linenums">package uk.ac.ed.inf.aqmaps.simulation.collection;
+
+import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.BaseCollectionOrderPlanner;
+import uk.ac.ed.inf.aqmaps.simulation.planning.path.PathPlanner;
+
+/**
+ * Each data collector follows the same pattern, it uses a path planner to find a way between two points, as well as a collection order planner which
+ * sets out the route around all the sensors. Each collector may use this data differently, for example it may discard the path given by a path planner under certain circumstances,
+ * or change the route mid-way. 
+ */
+public abstract class BaseDataCollector implements SensorDataCollector {
+    
+<span class="fc" id="L13">    public BaseDataCollector(PathPlanner fp, BaseCollectionOrderPlanner rp){</span>
+<span class="fc" id="L14">        pathPlanner = fp;</span>
+<span class="fc" id="L15">        collectionOrderPlanner = rp;</span>
+<span class="fc" id="L16">    }</span>
+
+
+    PathPlanner pathPlanner;
+    BaseCollectionOrderPlanner collectionOrderPlanner;
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

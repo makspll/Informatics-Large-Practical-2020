@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GreedyCollectionOrderPlanner.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">aqmaps</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder</a> &gt; <span class="el_source">GreedyCollectionOrderPlanner.java</span></div><h1>GreedyCollectionOrderPlanner.java</h1><pre class="source lang-java linenums">package uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder;
+
+import java.util.Collection;
+import java.util.HashSet;
+import uk.ac.ed.inf.aqmaps.simulation.Sensor;
+import uk.ac.ed.inf.aqmaps.simulation.planning.DistanceMatrix;
+import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.optimisers.CollectionOrderOptimiser;
+
+/**
+ * Plans a collection of sensor data in a greedy order and in a way that forms a loop, 
+ * i.e. by picking the closest sensor at each step.
+ */
+<span class="pc bpc" id="L13" title="1 of 2 branches missed.">public class GreedyCollectionOrderPlanner extends BaseCollectionOrderPlanner {</span>
+
+
+    public GreedyCollectionOrderPlanner(Collection&lt;CollectionOrderOptimiser&gt; optimiser, DistanceMatrix distMat) {
+<span class="fc" id="L17">        super(optimiser, distMat);</span>
+<span class="fc" id="L18">    }</span>
+
+    @Override
+    protected int[] planInitialRoute(int startSensorIdx, Sensor[] sensors, DistanceMatrix distanceMatrix,
+            boolean formLoop) {
+
+    
+        // decide on the length of the route
+<span class="pc bpc" id="L26" title="1 of 2 branches missed.">        int routeLength = sensors.length + (formLoop ? 1 : 0);</span>
+
+<span class="fc" id="L28">        int[] route = new int[routeLength];</span>
+<span class="fc" id="L29">        int currentSensorIndex = startSensorIdx;</span>
+
+        // keep track of what we've visited
+<span class="fc" id="L32">        var visitedSensorIdxs = new HashSet&lt;Integer&gt;();</span>
+<span class="fc" id="L33">        visitedSensorIdxs.add(currentSensorIndex);</span>
+
+        // route starts at the start sensor given
+<span class="fc" id="L36">        route[0] = startSensorIdx;</span>
+
+        // this variable points to the current route index being
+        // filled
+<span class="fc" id="L40">        int routeIndexCounter = 1;</span>
+
+        // now keep visiting the nearest sensor untill we visit all of them
+<span class="fc bfc" id="L43" title="All 2 branches covered.">        while(visitedSensorIdxs.size() != sensors.length ){</span>
+<span class="fc" id="L44">            int lastVisitedSensor = route[routeIndexCounter - 1];</span>
+
+            // we find the sensor which is closest to the current sensor at each step
+<span class="fc" id="L47">            double smallestDistance = Double.MAX_VALUE;</span>
+<span class="fc" id="L48">            int closestSensorIdx = -1;</span>
+
+<span class="fc bfc" id="L50" title="All 2 branches covered.">            for(int i = 0; i &lt; sensors.length; i++){</span>
+<span class="pc bpc" id="L51" title="1 of 4 branches missed.">                if(visitedSensorIdxs.contains(i) || i == lastVisitedSensor)</span>
+<span class="nc" id="L52">                    continue;</span>
+                else{
+<span class="fc" id="L54">                    double distance = distanceMatrix.distanceBetween(lastVisitedSensor,i);</span>
+
+<span class="fc bfc" id="L56" title="All 2 branches covered.">                    if(distance &lt; smallestDistance){</span>
+<span class="fc" id="L57">                        smallestDistance = distance;</span>
+<span class="fc" id="L58">                        closestSensorIdx = i;</span>
+                    }
+                }
+            }
+
+<span class="fc" id="L63">            visitedSensorIdxs.add(closestSensorIdx);</span>
+<span class="fc" id="L64">            route[routeIndexCounter] = closestSensorIdx;</span>
+
+<span class="fc" id="L66">            routeIndexCounter += 1;</span>
+<span class="fc" id="L67">        }</span>
+
+
+        // if we are looping, we will have one slot left to fill
+        // routeIndexCounter will be one more than the last added index
+        // and so if we are looping it should be equal to the last index of hte route
+<span class="pc bpc" id="L73" title="4 of 8 branches missed.">        assert !formLoop || (formLoop &amp;&amp; routeIndexCounter == route.length - 1);</span>
+<span class="pc bpc" id="L74" title="1 of 2 branches missed.">        if(formLoop){</span>
+            // fill that slot with the start sensor
+<span class="fc" id="L76">            route[routeIndexCounter] = startSensorIdx;</span>
+        }
+
+<span class="fc" id="L79">        return route;</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

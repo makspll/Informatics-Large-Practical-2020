@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Drone.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">aqmaps</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ed.inf.aqmaps.simulation.collection</a> &gt; <span class="el_source">Drone.java</span></div><h1>Drone.java</h1><pre class="source lang-java linenums">package uk.ac.ed.inf.aqmaps.simulation.collection;
+
+import java.util.Deque;
+import java.util.Set;
+
+import org.locationtech.jts.geom.Coordinate;
+
+import uk.ac.ed.inf.aqmaps.simulation.Sensor;
+import uk.ac.ed.inf.aqmaps.simulation.planning.ConstrainedTreeGraph;
+import uk.ac.ed.inf.aqmaps.simulation.planning.collectionOrder.BaseCollectionOrderPlanner;
+import uk.ac.ed.inf.aqmaps.simulation.planning.path.PathPlanner;
+import uk.ac.ed.inf.aqmaps.simulation.planning.path.PathSegment;
+
+/**
+ * the drone collector is not constrained by the map layout, if the graph (or map) allows a node to be reached
+ * the drone can fly through it, the graph itself may impose constraints indirectly, but the drone assumes absolutely no restrictions in its movements.
+ */
+public class Drone extends BaseDataCollector {
+
+    public Drone(PathPlanner fp, BaseCollectionOrderPlanner rp){
+<span class="fc" id="L21">        super(fp,rp);</span>
+<span class="fc" id="L22">    }</span>
+
+    @Override
+    public Deque&lt;PathSegment&gt; planCollection(Coordinate startCoordinate,
+        Set&lt;Sensor&gt; sensors,
+        ConstrainedTreeGraph graph,
+        boolean formLoop,
+        int randomSeed) {
+        
+        //// first we identify which sensor we are the closest to
+        //// at the start coordinate
+
+        // iterate over all sensors and find the closest one
+<span class="fc" id="L35">        Sensor startSensor = null;</span>
+<span class="fc" id="L36">        var smallestDistance = Double.MAX_VALUE;</span>
+
+<span class="fc bfc" id="L38" title="All 2 branches covered.">        for (Sensor sensor : sensors) {</span>
+
+<span class="fc" id="L40">            double distance = sensor.getCoordinates().distance(startCoordinate);</span>
+
+<span class="fc bfc" id="L42" title="All 2 branches covered.">            if(distance &lt; smallestDistance){</span>
+<span class="fc" id="L43">                startSensor = sensor;</span>
+<span class="fc" id="L44">                smallestDistance = distance;</span>
+            }
+                
+<span class="fc" id="L47">        }</span>
+
+        //// then plan the high-level route
+        // the other sensors set must not contain the start sensor
+        // but we don't want to modify the data structure, so we put it back at the end
+<span class="fc" id="L52">        sensors.remove(startSensor);</span>
+
+<span class="fc" id="L54">        Deque&lt;Sensor&gt; route = collectionOrderPlanner.planRoute(startSensor,sensors,formLoop);</span>
+
+<span class="fc bfc" id="L56" title="All 2 branches covered.">        if(formLoop){</span>
+            // remove the last sensor, since we form a loop but we do not need to visit it anymore
+<span class="fc" id="L58">            route.removeLast();</span>
+        }
+
+
+        //// plan the detailed flight path along the route
+<span class="fc" id="L63">        Deque&lt;PathSegment&gt; flightPath = pathPlanner.planPath(startCoordinate, </span>
+                                            route, 
+                                            graph,
+                                            formLoop);
+
+<span class="fc bfc" id="L68" title="All 2 branches covered.">        for (PathSegment pathSegment : flightPath) {</span>
+<span class="fc" id="L69">            Sensor read = pathSegment.getSensorRead();</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">            if(read != null)</span>
+<span class="fc" id="L71">                read.setHaveBeenRead(true);</span>
+<span class="fc" id="L72">        }</span>
+
+<span class="fc" id="L74">        sensors.add(startSensor);</span>
+
+<span class="fc" id="L76">        return flightPath;</span>
+    }
+
+
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AstarTreeSearch.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">aqmaps</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ed.inf.aqmaps.pathfinding</a> &gt; <span class="el_source">AstarTreeSearch.java</span></div><h1>AstarTreeSearch.java</h1><pre class="source lang-java linenums">package uk.ac.ed.inf.aqmaps.pathfinding;
+
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.PriorityQueue;
+
+import uk.ac.ed.inf.aqmaps.pathfinding.goals.PathfindingGoal;
+import uk.ac.ed.inf.aqmaps.pathfinding.hashing.SpatialHash;
+import uk.ac.ed.inf.aqmaps.pathfinding.heuristics.PathfindingHeuristic;
+
+
+/**
+ * Classic pathfinding algorithm, modified BFS which uses both the cost to reach a node and the predicted cost from that node to the goal
+ * to chose the nodes to be expanded next. This version of Astar treats the search as a tree search and so uses a hashing function to determine if a node has been visited yet.
+ */
+public class AstarTreeSearch&lt;T extends SearchNode&lt;T&gt;&gt; extends PathfindingAlgorithm&lt;T&gt; {
+
+    /**
+     * Creates a new instance of Astar search with the given heuristic and spatial hashing function.
+     * @param heuristic the huristic which determines order of expansion
+     * @param hash the hashing function used to prune the search from states we've already visited. While this is a tree search implementation of the algorithm,
+     * using a hashing function causes it to act slightly like a graph search algorithm.
+     */
+<span class="fc" id="L24">    public AstarTreeSearch(PathfindingHeuristic heuristic, SpatialHash hash){</span>
+<span class="fc" id="L25">        this.heuristic = heuristic;</span>
+<span class="fc" id="L26">        this.hash = hash;</span>
+<span class="fc" id="L27">    }</span>
+
+
+
+
+    @Override
+    public  void findPath(SearchGraph&lt;T&gt; g, PathfindingGoal goal, T start, double goalThreshold,Deque&lt;T&gt; output) {
+        
+        // we keep an open set where the nodes are sorted by their heuristic + 
+        // cost values. If the heuristic is admissible
+        // Astar will return an optimal solution
+<span class="fc" id="L38">        var openSet = new PriorityQueue&lt;T&gt;(1,(a,b)-&gt;compareNodes(a,b));</span>
+        
+        // even though floating point issues may arise,
+        // we benefit from at least avoiding some of the visited points
+<span class="fc" id="L42">        var visitedSet = new HashSet&lt;Integer&gt;();</span>
+<span class="fc" id="L43">        visitedSet.add(hash.getHash(start.getCoordinates()));</span>
+
+        // start with the initial node in the open set
+<span class="fc" id="L46">        openSet.add(start);</span>
+
+        // terminate when we have no more nodes in the open set
+        // this means we have not found a solution
+<span class="fc bfc" id="L50" title="All 2 branches covered.">        while(!openSet.isEmpty()){</span>
+
+            // we expand the &quot;best&quot; node in the open set
+            // then generate its neighbours if we haven't reached the goal
+<span class="fc" id="L54">            var expandedNode = openSet.poll();</span>
+
+            // if the node is our goal
+            // re-construct the path
+<span class="fc bfc" id="L58" title="All 2 branches covered.">            if(isAtGoal(goalThreshold, expandedNode , goal)){</span>
+
+<span class="fc" id="L60">                expandedNode.addGoalReached(goal);</span>
+<span class="fc" id="L61">                reconstructPathUpToIncluding(expandedNode, output, start);</span>
+
+<span class="fc" id="L63">                return;</span>
+            }
+            
+<span class="fc" id="L66">            var neighbours = g.getNeighbouringNodes(expandedNode);</span>
+
+            // we add each neighbour to the open set
+<span class="fc bfc" id="L69" title="All 2 branches covered.">            for (T n : neighbours) {</span>
+
+<span class="fc" id="L71">                int spatialHash = hash.getHash(n.getCoordinates());</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">                if(visitedSet.contains(spatialHash))</span>
+<span class="fc" id="L73">                    continue;</span>
+
+<span class="fc" id="L75">                n.setHeuristic(heuristic.heuristic(n, goal));</span>
+
+<span class="fc" id="L77">                visitedSet.add(spatialHash);</span>
+                        
+<span class="fc" id="L79">                openSet.add(n);</span>
+<span class="fc" id="L80">            }</span>
+<span class="fc" id="L81">        }</span>
+
+        // no solution
+<span class="fc" id="L84">        return;</span>
+    }
+
+    /**
+     * The comparison function used when ordering the nodes in the open set. 
+     * @param A node 1
+     * @param B node 2 
+     * @return a positive integer, zero or a negative integer if A has greater cost + heuristic, A and B have the same values or if A has lower cost + heuristic
+     */
+    private int compareNodes(T A, T B){
+
+        // this wil be either 1,0 or -1 depending on the values of the nodes
+<span class="fc" id="L96">        int signOfDistance = (int)Math.signum((A.getCost() + A.getHeuristic()) - (B.getCost() + B.getHeuristic()));</span>
+       
+        // this is the tie breaking mechanism
+        // this is particularly important with floating point errors
+        // we want to limit the number of nodes searched as much as possible
+<span class="fc bfc" id="L101" title="All 2 branches covered.">        if(signOfDistance == 0){</span>
+            // tie breaker,
+            // pick based on cost only
+<span class="fc" id="L104">            return (int)Math.signum((A.getHeuristic() - B.getHeuristic()));</span>
+        } else {
+<span class="fc" id="L106">            return signOfDistance;</span>
+        }
+    }
+
+    /**
+     * The huristic used to compare nodes
+     */
+    private final PathfindingHeuristic heuristic;
+
+    /**
+     * The hashing function used to prune the search
+     */
+    private final SpatialHash hash;
+
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

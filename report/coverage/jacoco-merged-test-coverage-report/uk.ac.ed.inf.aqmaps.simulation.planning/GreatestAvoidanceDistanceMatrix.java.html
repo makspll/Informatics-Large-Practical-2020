@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GreatestAvoidanceDistanceMatrix.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">aqmaps</a> &gt; <a href="index.source.html" class="el_package">uk.ac.ed.inf.aqmaps.simulation.planning</a> &gt; <span class="el_source">GreatestAvoidanceDistanceMatrix.java</span></div><h1>GreatestAvoidanceDistanceMatrix.java</h1><pre class="source lang-java linenums">package uk.ac.ed.inf.aqmaps.simulation.planning;
+
+import java.util.ArrayList;
+import java.util.Collection;
+
+import org.locationtech.jts.algorithm.MinimumBoundingCircle;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.math.Vector2D;
+
+import uk.ac.ed.inf.aqmaps.pathfinding.Obstacle;
+import uk.ac.ed.inf.aqmaps.simulation.Sensor;
+import uk.ac.ed.inf.aqmaps.utilities.BVHNode;
+import uk.ac.ed.inf.aqmaps.utilities.GeometryUtilities;
+
+/**
+ * Distance matrix using the greatest avoidance distance as the distance metric. This distance is calculated by forming a minimum bounding circle around all obstacles
+ * between any two sensors and calculating the length of the path which &quot;wraps&quot; around the circle (approximated as a triangle)
+ */
+public class GreatestAvoidanceDistanceMatrix extends DistanceMatrix {
+
+    /**
+     * initialize blank distance matrix with the given obstacles
+     * @param obstacles
+     */
+<span class="fc" id="L26">    public GreatestAvoidanceDistanceMatrix(Collection&lt;Obstacle&gt; obstacles){</span>
+<span class="fc" id="L27">        this.obstacles = obstacles;</span>
+<span class="fc" id="L28">        this.obstacleBVHTree = new BVHNode&lt;Obstacle&gt;(obstacles);</span>
+<span class="fc" id="L29">    }</span>
+
+    @Override
+    protected double distanceMetric(Sensor a, Sensor b) {
+<span class="fc" id="L33">        return greatestAvoidanceDistance(a, b);</span>
+    }
+
+    private double greatestAvoidanceDistance(Sensor a, Sensor b){
+
+<span class="fc" id="L38">        Coordinate posA = a.getCoordinates();</span>
+<span class="fc" id="L39">        Coordinate posB = b.getCoordinates();</span>
+        
+   
+<span class="fc" id="L42">        var line = GeometryUtilities.geometryFactory.createLineString(new Coordinate[]{</span>
+            posA,posB
+        });
+
+        // find all obstacles which are on the way
+<span class="fc" id="L47">        var obstaclesOnTheWay = new ArrayList&lt;Polygon&gt;();</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">        for (Obstacle obstacle : obstacleBVHTree.getPossibleCollisions(line)) {</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">            if(obstacle.intersectsPath(posA, posB)){</span>
+<span class="fc" id="L50">                obstaclesOnTheWay.add(obstacle.getShape());</span>
+            }
+<span class="fc" id="L52">        }</span>
+
+        // if there are no obstacles return the normal distance
+<span class="fc bfc" id="L55" title="All 2 branches covered.">        if(obstaclesOnTheWay.size() == 0)</span>
+<span class="fc" id="L56">            return posA.distance(posB);</span>
+
+        //form a minimum bounding circle around all found obstacles
+<span class="fc" id="L59">        var mergedGeometry = GeometryUtilities.geometryFactory.buildGeometry(obstaclesOnTheWay);</span>
+<span class="fc" id="L60">        var minimumBoundingCircle = new MinimumBoundingCircle(mergedGeometry);</span>
+        
+        // form the points of the maximum avoidance triangle
+        
+<span class="fc" id="L64">        Vector2D directionToB = Vector2D.create(posA, posB);</span>
+<span class="fc" id="L65">        Vector2D perpendicularDirection = directionToB.rotateByQuarterCircle(1).normalize();</span>
+
+<span class="fc" id="L67">        var circleCenter = minimumBoundingCircle.getCentre();</span>
+<span class="fc" id="L68">        var circleRadius = minimumBoundingCircle.getRadius();</span>
+
+<span class="fc" id="L70">        Coordinate turningPoint = perpendicularDirection.multiply(</span>
+                                    circleRadius)
+<span class="fc" id="L72">                                    .translate(circleCenter);</span>
+
+<span class="fc" id="L74">        Vector2D segmentToTurningPoint = new Vector2D(posA, turningPoint);</span>
+
+        // sum the lengths to the turning point, around the circle and towards the goal from the end of the circle
+<span class="fc" id="L77">        return segmentToTurningPoint.length() </span>
+            + (circleRadius*Math.PI*1/2)
+<span class="fc" id="L79">            + (circleCenter.distance(posB) - circleRadius);</span>
+    }
+
+    private final Collection&lt;Obstacle&gt; obstacles;
+    private final BVHNode&lt;Obstacle&gt; obstacleBVHTree;
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>
